@@ -1,0 +1,275 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produtos | MTS Vendas</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css">
+  <link rel="icon" type="image/png" href="../ee.png">
+  <style>
+    .filters-bar {
+      display:flex; align-items:center; gap:0.8rem; flex-wrap:wrap;
+      padding:1.5rem 2.5rem; max-width:1200px; margin:0 auto;
+      border-bottom:1px solid var(--border-soft);
+    }
+    .filter-btn {
+      padding:8px 18px;
+      background:var(--black-card);
+      border:1px solid var(--border-soft);
+      color:var(--gray-light);
+      font-family:'Space Grotesk',sans-serif;
+      font-size:0.68rem; font-weight:600;
+      letter-spacing:2px; text-transform:uppercase;
+      cursor:pointer; transition:all 0.25s;
+      display:flex; align-items:center; gap:6px;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      border-color:var(--gold); color:var(--gold);
+      background:var(--gold-pale);
+    }
+    .search-bar { display:flex; margin-left:auto; }
+    .search-bar input {
+      width:240px; padding:9px 16px;
+      background:var(--black-card); border:1px solid var(--border-soft);
+      border-right:none; color:var(--white);
+      font-family:'DM Sans',sans-serif; font-size:0.85rem; outline:none;
+      transition:all 0.25s;
+    }
+    .search-bar input:focus { border-color:var(--gold); }
+    .search-bar button {
+      padding:9px 16px; background:var(--gold);
+      border:none; color:var(--black); cursor:pointer; font-size:0.9rem;
+      transition:all 0.25s;
+    }
+    .search-bar button:hover { background:var(--gold-light); }
+    .sort-select {
+      padding:9px 14px; background:var(--black-card);
+      border:1px solid var(--border-soft); color:var(--gray-light);
+      font-family:'Space Grotesk',sans-serif; font-size:0.72rem;
+      letter-spacing:1px; outline:none; cursor:pointer;
+      transition:all 0.25s;
+    }
+    .sort-select:focus { border-color:var(--gold); }
+    .sort-select option { background:var(--black-card); }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+
+<nav class="navbar" id="navbar">
+  <a href="../index.html" class="navbar-brand">
+    <img src="../ee.png" alt="MTS Vendas">
+    <span class="navbar-brand-text">MTS Vendas</span>
+  </a>
+  <ul class="navbar-nav">
+    <li><a href="../index.html">Início</a></li>
+    <li><a href="produtos.html" class="active">Produtos</a></li>
+    <li><a href="perfumes.html">Perfumes</a></li>
+    <li><a href="roupas.html">Roupas</a></li>
+    <li><a href="contato.html">Contato</a></li>
+    <li><a href="minha-conta.html">Minha Conta</a></li>
+  </ul>
+  <div class="navbar-actions">
+    <a href="minha-conta.html" class="btn-icon" title="Minha Conta"><i class="ri-user-line"></i></a>
+    <button class="btn-icon" onclick="toggleCart()"><i class="ri-shopping-bag-line"></i><span class="cart-count" style="display:none">0</span></button>
+    <button class="hamburger" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="../index.html">Início</a><a href="produtos.html">Produtos</a>
+  <a href="perfumes.html">Perfumes</a><a href="roupas.html">Roupas</a>
+  <a href="contato.html">Contato</a><a href="minha-conta.html">Minha Conta</a>
+</div>
+
+<!-- TICKER DINAMICO -->
+<div id="ticker-wrap" style="background:var(--gold);color:var(--black);padding:10px 0;overflow:hidden;position:relative;z-index:1;display:none">
+  <div id="ticker-inner" style="display:flex;white-space:nowrap;width:max-content"></div>
+</div>
+<style>@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}</style>
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div style="position:relative;z-index:1">
+    <div class="tag">Catálogo Completo</div>
+    <h1 style="margin-top:1.5rem">Todos os <em>Produtos</em></h1>
+    <div class="divider"></div>
+    <p>Explore nossa coleção premium de produtos exclusivos</p>
+  </div>
+</div>
+
+<!-- FILTROS -->
+<div class="filters-bar">
+  <button class="filter-btn active" onclick="filterProducts('all',this)">
+    <i class="ri-apps-line"></i> Todos
+  </button>
+  <button class="filter-btn" onclick="filterProducts('perfumes',this)">
+    <i class="ri-flask-line"></i> Perfumes
+  </button>
+  <button class="filter-btn" onclick="filterProducts('roupas',this)">
+    <i class="ri-t-shirt-line"></i> Roupas
+  </button>
+  <button class="filter-btn" onclick="filterProducts('relogios',this)">
+    <i class="ri-time-line"></i> Relógios
+  </button>
+  <button class="filter-btn" onclick="filterProducts('joias',this)">
+    <i class="ri-gem-line"></i> Joias
+  </button>
+  <button class="filter-btn" onclick="filterProducts('bones',this)">
+    <i class="ri-shield-star-line"></i> Bonés
+  </button>
+  <select class="sort-select" onchange="sortProducts(this.value)">
+    <option value="default">Ordenar por</option>
+    <option value="price-asc">Menor Preço</option>
+    <option value="price-desc">Maior Preço</option>
+    <option value="name">Nome A–Z</option>
+  </select>
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="Buscar produto..." oninput="applyFilters()">
+    <button><i class="ri-search-line"></i></button>
+  </div>
+</div>
+
+<!-- GRID -->
+<section class="section">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+    <span id="products-count" style="font-family:'Space Grotesk',sans-serif;font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray)"></span>
+  </div>
+  <div class="products-grid" id="all-products"></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="../ee.png" alt="MTS Vendas">
+      <p>Sua loja premium de moda e estilo. Perfumes importados, roupas, relógios, joias e muito mais.</p>
+      <div class="social-links">
+        <a href="#" class="social-link"><i class="ri-instagram-line"></i></a>
+        <a href="#" class="social-link"><i class="ri-whatsapp-line"></i></a>
+        <a href="#" class="social-link"><i class="ri-facebook-line"></i></a>
+        <a href="#" class="social-link"><i class="ri-tiktok-line"></i></a>
+      </div>
+    </div>
+    <div class="footer-col"><h4>Produtos</h4><ul>
+      <li><a href="perfumes.html"><i class="ri-flask-line"></i> Perfumes</a></li>
+      <li><a href="roupas.html"><i class="ri-t-shirt-line"></i> Roupas</a></li>
+      <li><a href="produtos.html?cat=relogios"><i class="ri-time-line"></i> Relógios</a></li>
+      <li><a href="produtos.html?cat=joias"><i class="ri-gem-line"></i> Joias</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Informações</h4><ul>
+      <li><a href="contato.html">Contato</a></li>
+      <li><a href="#">Sobre Nós</a></li>
+      <li><a href="#">Política de Entrega</a></li>
+      <li><a href="#">Trocas e Devoluções</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Contato</h4><ul>
+      <li><a href="#"><i class="ri-whatsapp-line"></i> (11) 99999-9999</a></li>
+      <li><a href="#"><i class="ri-mail-line"></i> mts@mtsvendas.com</a></li>
+      <li><a href="#"><i class="ri-time-line"></i> Seg–Sex 9h–18h</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 <span>MTS Vendas</span>. Todos os direitos reservados.</p>
+    <p>Pagamento seguro com <span>SSL</span></p>
+  </div>
+</footer>
+
+<!-- CARRINHO -->
+<div class="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-sidebar">
+  <div class="cart-header"><h3><i class="ri-shopping-bag-line"></i> &nbsp;Carrinho</h3><button class="cart-close" onclick="toggleCart()"><i class="ri-close-line"></i></button></div>
+  <div class="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-subtotal"><span>Subtotal</span><strong>R$ 0,00</strong></div>
+    <button class="btn btn-gold w-full" onclick="showToast('Entre em contato pelo WhatsApp! 📱')"><i class="ri-secure-payment-line"></i> Finalizar Pedido</button>
+    <button class="btn btn-dark w-full mt-1" onclick="toggleCart()">Continuar Comprando</button>
+  </div>
+</div>
+
+<!-- CHATBOT -->
+<button class="chatbot-toggle" onclick="toggleChatbot()"><i class="ri-customer-service-2-line"></i></button>
+<div class="chatbot-window">
+  <div class="chatbot-header"><div><h4>MTS Atendimento</h4><div class="chatbot-status">● Online agora</div></div><button onclick="toggleChatbot()"><i class="ri-close-line"></i></button></div>
+  <div class="chatbot-messages"><div class="chat-msg bot">Olá! 👋 Como posso ajudar?</div></div>
+  <div class="chatbot-suggestions">
+    <button class="suggest-btn" onclick="sendChatMessage('entrega')">📦 Entrega</button>
+    <button class="suggest-btn" onclick="sendChatMessage('pagamento')">💳 Pagamento</button>
+    <button class="suggest-btn" onclick="sendChatMessage('troca')">🔄 Trocas</button>
+  </div>
+  <div class="chatbot-input"><input type="text" id="chat-input" placeholder="Digite sua dúvida..."><button onclick="sendChatMessage()"><i class="ri-send-plane-fill"></i></button></div>
+</div>
+
+<script src="../js/main.js"></script>
+<script>
+  let currentFilter = 'all';
+  let currentSort = 'default';
+
+  function applyFilters() {
+    const adminProds = JSON.parse(localStorage.getItem('mts_admin_products') || 'null');
+    if (adminProds) MTS.products = adminProds;
+
+    let filtered = [...MTS.products];
+    if (currentFilter !== 'all') filtered = filtered.filter(p => p.category === currentFilter);
+    const search = document.getElementById('search-input')?.value?.toLowerCase() || '';
+    if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search) || p.category.includes(search));
+    if (currentSort === 'price-asc') filtered.sort((a,b) => a.price - b.price);
+    if (currentSort === 'price-desc') filtered.sort((a,b) => b.price - a.price);
+    if (currentSort === 'name') filtered.sort((a,b) => a.name.localeCompare(b.name));
+    document.getElementById('products-count').textContent = `${filtered.length} produto${filtered.length !== 1 ? 's' : ''} encontrado${filtered.length !== 1 ? 's' : ''}`;
+    renderProducts(filtered, 'all-products');
+  }
+
+  function filterProducts(cat, btn) {
+    currentFilter = cat;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilters();
+  }
+
+  function sortProducts(val) {
+    currentSort = val;
+    applyFilters();
+  }
+
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat');
+    if (cat) {
+      currentFilter = cat;
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        const match = b.getAttribute('onclick')?.includes(`'${cat}'`);
+        b.classList.toggle('active', !!match);
+      });
+    }
+    applyFilters();
+  });
+</script>
+<script>
+// Ticker dinâmico
+(function(){
+  var cfg = JSON.parse(localStorage.getItem('mts_site_config')||'{}');
+  var def = ['FRETE GRÁTIS ACIMA DE R$ 299','PERFUMES IMPORTADOS ORIGINAIS','PARCELE EM ATÉ 12X SEM JUROS','30 DIAS PARA TROCA'];
+  var msgs = JSON.parse(localStorage.getItem('mts_ticker')||JSON.stringify(def));
+  var on = cfg['sw-ticker'] !== false;
+  var wrap = document.getElementById('ticker-wrap');
+  var inner = document.getElementById('ticker-inner');
+  if(on && msgs.length > 0 && wrap && inner){
+    var s = "font-family:'Space Grotesk',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;padding:0 3.5rem";
+    var html = msgs.map(function(m){return '<span style="'+s+'">◆ '+m+'</span>';}).join('');
+    inner.innerHTML = html + html;
+    var dur = Math.max(18, msgs.length * 7);
+    inner.style.animation = 'ticker '+dur+'s linear infinite';
+    wrap.style.display = 'block';
+  }
+})();
+</script>
+</body>
+</html>
+

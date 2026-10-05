@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Conta | MTS Vendas</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css">
+  <link rel="icon" type="image/png" href="../ee.png">
+  <style>
+    .page-hero { padding:120px 2rem 3rem; background:linear-gradient(135deg,var(--black-soft),var(--black)); text-align:center; border-bottom:1px solid var(--border); }
+    .account-layout { display:grid; grid-template-columns:260px 1fr; gap:2rem; max-width:1100px; margin:3rem auto; padding:0 2rem; align-items:start; }
+    .account-sidebar { background:var(--black-card); border:1px solid var(--border); overflow:hidden; }
+    .account-nav-item { display:flex; align-items:center; gap:12px; padding:13px 1.5rem; color:var(--gray); font-size:0.85rem; cursor:pointer; transition:all 0.3s; border-left:2px solid transparent; }
+    .account-nav-item:hover { color:var(--white); background:rgba(255,255,255,0.02); }
+    .account-nav-item.active { color:var(--gold); border-left-color:var(--gold); background:rgba(201,168,76,0.05); }
+    .account-nav-item i { font-size:1rem; width:18px; }
+    .account-panel { display:none; }
+    .account-panel.active { display:block; }
+    .panel-header { background:var(--black-card); border:1px solid var(--border); padding:1.5rem; margin-bottom:1.5rem; }
+    .panel-header h2 { font-size:1rem; letter-spacing:2px; text-transform:uppercase; }
+    .panel-body { background:var(--black-card); border:1px solid var(--border); padding:2rem; }
+    .info-row { display:flex; justify-content:space-between; align-items:center; padding:1rem 0; border-bottom:1px solid rgba(201,168,76,0.06); }
+    .info-row:last-child { border-bottom:none; }
+    .info-label { font-size:0.72rem; letter-spacing:2px; text-transform:uppercase; color:var(--gray); }
+    .info-value { font-size:0.9rem; color:var(--white-soft); }
+    @media(max-width:768px) { .account-layout { grid-template-columns:1fr; } }
+    /* AUTH SCREEN */
+    .auth-screen { max-width:460px; margin:0 auto; }
+    .auth-tabs { display:flex; margin-bottom:0; }
+    .auth-tab { flex:1; padding:12px; text-align:center; font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; cursor:pointer; background:var(--black-hover); border:1px solid var(--border); color:var(--gray); transition:all 0.3s; font-family:'Raleway',sans-serif; font-weight:600; }
+    .auth-tab.active { background:rgba(201,168,76,0.08); border-color:var(--gold); color:var(--gold); }
+    .auth-form-wrap { background:var(--black-card); border:1px solid var(--border); border-top:none; padding:2rem; }
+  </style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="navbar-brand">
+    <img src="../ee.png" alt="MTS Vendas">
+    <span>MTS Vendas</span>
+  </div>
+  <ul class="navbar-nav">
+    <li><a href="../index.html">Início</a></li>
+    <li><a href="produtos.html">Produtos</a></li>
+    <li><a href="perfumes.html">Perfumes</a></li>
+    <li><a href="roupas.html">Roupas</a></li>
+    <li><a href="contato.html">Contato</a></li>
+  </ul>
+  <div class="navbar-actions">
+    <button class="btn-icon" onclick="toggleCart()"><i class="ri-shopping-bag-line"></i><span class="cart-count" style="display:none">0</span></button>
+    <button class="hamburger" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-menu">
+  <a href="../index.html">Início</a>
+  <a href="produtos.html">Produtos</a>
+  <a href="perfumes.html">Perfumes</a>
+  <a href="roupas.html">Roupas</a>
+  <a href="contato.html">Contato</a>
+</div>
+
+<div class="page-hero">
+  <div class="tag" style="display:inline-block;font-size:0.68rem;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:1rem">Área do Cliente</div>
+  <h1>Minha <span style="color:var(--gold)">Conta</span></h1>
+  <div class="divider"></div>
+</div>
+
+<!-- AUTH SCREEN (shown when not logged in) -->
+<div id="auth-screen" style="padding:3rem 2rem">
+  <div class="auth-screen">
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Entrar</button>
+      <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Criar Conta</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="auth-form-wrap" id="login-panel">
+      <div style="text-align:center;margin-bottom:2rem">
+        <img src="../ee.png" style="height:55px;margin:0 auto 1rem;filter:drop-shadow(0 0 8px rgba(201,168,76,0.3))">
+        <p style="color:var(--gray);font-size:0.88rem">Acesse sua conta para ver seus pedidos e favoritos</p>
+      </div>
+      <div class="form-group"><label>E-mail</label><input type="email" id="login-email" placeholder="seu@email.com"></div>
+      <div class="form-group"><label>Senha</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+      <button class="btn btn-gold w-full" style="margin-top:0.5rem" onclick="doLogin()"><i class="ri-login-circle-line"></i> Entrar na Conta</button>
+      <div id="login-error" style="display:none;margin-top:1rem;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);color:#e74c3c;padding:10px 14px;font-size:0.82rem"><i class="ri-error-warning-line"></i> E-mail ou senha incorretos.</div>
+      <p style="text-align:center;margin-top:1.5rem;font-size:0.82rem;color:var(--gray)">Não tem conta? <a href="#" onclick="switchAuthTab('register')" style="color:var(--gold)">Cadastre-se grátis</a></p>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="auth-form-wrap" id="register-panel" style="display:none">
+      <div style="text-align:center;margin-bottom:2rem">
+        <img src="../ee.png" style="height:55px;margin:0 auto 1rem;filter:drop-shadow(0 0 8px rgba(201,168,76,0.3))">
+        <p style="color:var(--gray);font-size:0.88rem">Crie sua conta e aproveite ofertas exclusivas</p>
+      </div>
+      <div class="form-group"><label>Nome Completo</label><input type="text" id="reg-name" placeholder="Seu nome completo"></div>
+      <div class="form-group"><label>E-mail</label><input type="email" id="reg-email" placeholder="seu@email.com"></div>
+      <div class="form-group"><label>WhatsApp (opcional)</label><input type="tel" id="reg-phone" placeholder="(11) 99999-9999"></div>
+      <div class="form-group"><label>Senha</label><input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres"></div>
+      <div class="form-group"><label>Confirmar Senha</label><input type="password" id="reg-confirm" placeholder="Repita a senha"></div>
+      <button class="btn btn-gold w-full" style="margin-top:0.5rem" onclick="doRegister()"><i class="ri-user-add-line"></i> Criar Conta Grátis</button>
+      <div id="reg-error" style="display:none;margin-top:1rem;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);color:#e74c3c;padding:10px 14px;font-size:0.82rem"></div>
+      <p style="text-align:center;margin-top:1.5rem;font-size:0.82rem;color:var(--gray)">Já tem conta? <a href="#" onclick="switchAuthTab('login')" style="color:var(--gold)">Entrar</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ACCOUNT DASHBOARD (shown when logged in) -->
+<div id="account-dashboard" style="display:none">
+  <div class="account-layout">
+    <!-- Sidebar -->
+    <div class="account-sidebar">
+      <div style="padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+        <div style="width:46px;height:46px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--black);font-size:1.1rem" id="account-avatar">?</div>
+        <div>
+          <strong id="account-name" style="display:block;font-size:0.95rem"></strong>
+          <span id="account-email" style="font-size:0.75rem;color:var(--gold)"></span>
+        </div>
+      </div>
+      <div class="account-nav-item active" onclick="switchAccountPanel('overview',this)"><i class="ri-dashboard-line"></i> Visão Geral</div>
+      <div class="account-nav-item" onclick="switchAccountPanel('orders',this)"><i class="ri-file-list-3-line"></i> Meus Pedidos</div>
+      <div class="account-nav-item" onclick="switchAccountPanel('profile',this)"><i class="ri-user-settings-line"></i> Meu Perfil</div>
+      <div class="account-nav-item" onclick="switchAccountPanel('wishlist',this)"><i class="ri-heart-line"></i> Lista de Desejos</div>
+      <div class="account-nav-item" onclick="doLogout()" style="margin-top:1rem;border-top:1px solid var(--border)"><i class="ri-logout-box-line"></i> Sair da Conta</div>
+    </div>
+
+    <!-- Content -->
+    <div>
+      <!-- OVERVIEW -->
+      <div class="account-panel active" id="panel-overview">
+        <div class="panel-header"><h2>Bem-vindo(a) de volta! 👋</h2></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem">
+          <div style="background:var(--black-card);border:1px solid var(--border);padding:1.5rem;text-align:center">
+            <div style="font-size:1.8rem;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif">0</div>
+            <div style="font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-top:4px">Pedidos</div>
+          </div>
+          <div style="background:var(--black-card);border:1px solid var(--border);padding:1.5rem;text-align:center">
+            <div style="font-size:1.8rem;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif" id="cart-item-count">0</div>
+            <div style="font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-top:4px">No Carrinho</div>
+          </div>
+          <div style="background:var(--black-card);border:1px solid var(--border);padding:1.5rem;text-align:center">
+            <div style="font-size:1.8rem;font-weight:700;color:var(--gold);font-family:'Playfair Display',serif">VIP</div>
+            <div style="font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-top:4px">Status</div>
+          </div>
+        </div>
+        <div class="panel-body">
+          <h3 style="font-size:0.88rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:1.5rem">Acesso Rápido</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <a href="produtos.html" style="display:flex;align-items:center;gap:12px;padding:1.2rem;background:var(--black-hover);border:1px solid var(--border);color:var(--gray-light);text-decoration:none;transition:all 0.3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+              <i class="ri-shopping-bag-line" style="font-size:1.3rem;color:var(--gold)"></i>
+              <div><strong style="display:block;font-size:0.88rem">Ver Produtos</strong><span style="font-size:0.75rem;color:var(--gray)">Explorar catálogo</span></div>
+            </a>
+            <a href="contato.html" style="display:flex;align-items:center;gap:12px;padding:1.2rem;background:var(--black-hover);border:1px solid var(--border);color:var(--gray-light);text-decoration:none;transition:all 0.3s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--border)'">
+              <i class="ri-customer-service-2-line" style="font-size:1.3rem;color:var(--gold)"></i>
+              <div><strong style="display:block;font-size:0.88rem">Suporte</strong><span style="font-size:0.75rem;color:var(--gray)">Falar com a gente</span></div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="account-panel" id="panel-orders">
+        <div class="panel-header"><h2>Meus Pedidos</h2></div>
+        <div class="panel-body" style="text-align:center;padding:3rem">
+          <i class="ri-file-list-3-line" style="font-size:3rem;color:var(--border);display:block;margin-bottom:1rem"></i>
+          <p style="color:var(--gray)">Você ainda não fez nenhum pedido.</p>
+          <a href="produtos.html" class="btn btn-gold" style="margin-top:1.5rem;display:inline-flex">Explorar Produtos</a>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="account-panel" id="panel-profile">
+        <div class="panel-header"><h2>Meu Perfil</h2></div>
+        <div class="panel-body">
+          <div class="form-group"><label>Nome Completo</label><input type="text" id="profile-name"></div>
+          <div class="form-group"><label>E-mail</label><input type="email" id="profile-email"></div>
+          <div class="form-group"><label>Nova Senha (deixe em branco para manter)</label><input type="password" id="profile-pass" placeholder="••••••••"></div>
+          <button class="btn btn-gold" onclick="saveProfile()"><i class="ri-save-line"></i> Salvar Alterações</button>
+          <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)">
+            <p style="font-size:0.78rem;color:var(--gray);margin-bottom:1rem"><i class="ri-information-line" style="color:var(--gold)"></i> Quer excluir sua conta? Entre em contato pelo nosso suporte.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- WISHLIST -->
+      <div class="account-panel" id="panel-wishlist">
+        <div class="panel-header"><h2>Lista de Desejos</h2></div>
+        <div class="panel-body" style="text-align:center;padding:3rem">
+          <i class="ri-heart-line" style="font-size:3rem;color:var(--border);display:block;margin-bottom:1rem"></i>
+          <p style="color:var(--gray)">Sua lista de desejos está vazia.</p>
+          <p style="color:var(--gray);font-size:0.82rem;margin-top:0.5rem">Em breve você poderá salvar produtos favoritos aqui.</p>
+          <a href="produtos.html" class="btn btn-outline" style="margin-top:1.5rem;display:inline-flex">Ver Produtos</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer style="margin-top:4rem">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="../ee.png" alt="MTS Vendas">
+      <p>Sua loja premium de moda e estilo. Perfumes importados, roupas, relógios, joias e muito mais.</p>
+      <div class="social-links">
+        <a href="#" class="social-link"><i class="ri-instagram-line"></i></a>
+        <a href="#" class="social-link"><i class="ri-whatsapp-line"></i></a>
+        <a href="#" class="social-link"><i class="ri-facebook-line"></i></a>
+      </div>
+    </div>
+    <div class="footer-col"><h4>Produtos</h4><ul><li><a href="perfumes.html">Perfumes</a></li><li><a href="roupas.html">Roupas</a></li><li><a href="produtos.html?cat=relogios">Relógios</a></li><li><a href="produtos.html?cat=joias">Joias</a></li></ul></div>
+    <div class="footer-col"><h4>Informações</h4><ul><li><a href="contato.html">Contato</a></li><li><a href="#">Sobre Nós</a></li><li><a href="#">Política de Entrega</a></li><li><a href="#">Trocas e Devoluções</a></li></ul></div>
+    <div class="footer-col"><h4>Contato</h4><ul><li><a href="#"><i class="ri-whatsapp-line"></i> (11) 99999-9999</a></li><li><a href="#"><i class="ri-mail-line"></i> mts@mtsvendas.com</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 <span>MTS Vendas</span>. Todos os direitos reservados.</p>
+    <p>Pagamento seguro com <span>SSL</span></p>
+  </div>
+</footer>
+
+<!-- CARRINHO -->
+<div class="cart-overlay"></div>
+<div class="cart-sidebar">
+  <div class="cart-header"><h3><i class="ri-shopping-bag-line"></i> Carrinho</h3><button class="cart-close" onclick="toggleCart()"><i class="ri-close-line"></i></button></div>
+  <div class="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-subtotal"><span>Subtotal</span><strong>R$ 0,00</strong></div>
+    <button class="btn btn-gold w-full" onclick="showToast('Entre em contato pelo WhatsApp para finalizar! 📱')"><i class="ri-secure-payment-line"></i> Finalizar Pedido</button>
+    <button class="btn btn-dark w-full mt-1" onclick="toggleCart()">Continuar Comprando</button>
+  </div>
+</div>
+
+<!-- CHATBOT -->
+<button class="chatbot-toggle" onclick="toggleChatbot()"><i class="ri-customer-service-2-line"></i></button>
+<div class="chatbot-window">
+  <div class="chatbot-header"><div><h4>MTS Atendimento</h4><div class="chatbot-status">● Online agora</div></div><button onclick="toggleChatbot()"><i class="ri-close-line"></i></button></div>
+  <div class="chatbot-messages"><div class="chat-msg bot">Olá! 👋 Como posso ajudar?</div></div>
+  <div class="chatbot-suggestions">
+    <button class="suggest-btn" onclick="sendChatMessage('entrega')">📦 Entrega</button>
+    <button class="suggest-btn" onclick="sendChatMessage('pagamento')">💳 Pagamento</button>
+    <button class="suggest-btn" onclick="sendChatMessage('whatsapp')">📱 Atendente</button>
+  </div>
+  <div class="chatbot-input"><input type="text" id="chat-input" placeholder="Digite sua dúvida..."><button onclick="sendChatMessage()"><i class="ri-send-plane-fill"></i></button></div>
+</div>
+
+<script src="../js/main.js"></script>
+<script>
+  function checkAuth() {
+    const user = JSON.parse(localStorage.getItem('mts_user') || 'null');
+    if (user) {
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('account-dashboard').style.display = 'block';
+      document.getElementById('account-name').textContent = user.name;
+      document.getElementById('account-email').textContent = user.email;
+      document.getElementById('account-avatar').textContent = user.name.charAt(0).toUpperCase();
+      document.getElementById('profile-name').value = user.name;
+      document.getElementById('profile-email').value = user.email;
+      // Cart count
+      const cart = JSON.parse(localStorage.getItem('mts_cart') || '[]');
+      document.getElementById('cart-item-count').textContent = cart.reduce((s,i) => s+i.qty, 0);
+    }
+  }
+
+  function switchAuthTab(tab) {
+    document.getElementById('login-panel').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('register-panel').style.display = tab === 'register' ? 'block' : 'none';
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  }
+
+  function doLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const pass = document.getElementById('login-pass').value;
+    const err = document.getElementById('login-error');
+    if (!email || !pass) { err.style.display = 'block'; err.innerHTML = '<i class="ri-error-warning-line"></i> Preencha todos os campos.'; return; }
+    const users = JSON.parse(localStorage.getItem('mts_users') || '[]');
+    const user = users.find(u => u.email === email && u.password === pass);
+    if (user) {
+      localStorage.setItem('mts_user', JSON.stringify(user));
+      err.style.display = 'none';
+      checkAuth();
+      showToast(`Bem-vindo(a) de volta, ${user.name}! 🎉`);
+    } else {
+      err.style.display = 'block';
+      err.innerHTML = '<i class="ri-error-warning-line"></i> E-mail ou senha incorretos.';
+    }
+  }
+
+  function doRegister() {
+    const name = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const pass = document.getElementById('reg-pass').value;
+    const confirm = document.getElementById('reg-confirm').value;
+    const err = document.getElementById('reg-error');
+    if (!name || !email || !pass) { err.style.display = 'block'; err.textContent = 'Preencha todos os campos obrigatórios.'; return; }
+    if (pass.length < 6) { err.style.display = 'block'; err.textContent = 'Senha deve ter ao menos 6 caracteres.'; return; }
+    if (pass !== confirm) { err.style.display = 'block'; err.textContent = 'As senhas não conferem.'; return; }
+    const users = JSON.parse(localStorage.getItem('mts_users') || '[]');
+    if (users.find(u => u.email === email)) { err.style.display = 'block'; err.textContent = 'Este e-mail já está cadastrado.'; return; }
+    const newUser = { id: Date.now(), name, email, password: pass, phone: document.getElementById('reg-phone').value, createdAt: new Date().toLocaleDateString('pt-BR') };
+    users.push(newUser);
+    localStorage.setItem('mts_users', JSON.stringify(users));
+    localStorage.setItem('mts_user', JSON.stringify(newUser));
+    err.style.display = 'none';
+    checkAuth();
+    showToast(`Conta criada! Bem-vindo(a), ${name}! 🎉`);
+  }
+
+  function doLogout() {
+    localStorage.removeItem('mts_user');
+    document.getElementById('account-dashboard').style.display = 'none';
+    document.getElementById('auth-screen').style.display = 'block';
+    showToast('Você saiu da conta.');
+  }
+
+  function switchAccountPanel(id, el) {
+    document.querySelectorAll('.account-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.account-nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    if (el) el.classList.add('active');
+  }
+
+  function saveProfile() {
+    const user = JSON.parse(localStorage.getItem('mts_user'));
+    if (!user) return;
+    const name = document.getElementById('profile-name').value.trim();
+    const email = document.getElementById('profile-email').value.trim();
+    const pass = document.getElementById('profile-pass').value;
+    user.name = name || user.name;
+    user.email = email || user.email;
+    if (pass) user.password = pass;
+    // Atualizar lista de usuários
+    const users = JSON.parse(localStorage.getItem('mts_users') || '[]');
+    const idx = users.findIndex(u => u.id === user.id);
+    if (idx >= 0) users[idx] = user;
+    localStorage.setItem('mts_users', JSON.stringify(users));
+    localStorage.setItem('mts_user', JSON.stringify(user));
+    document.getElementById('account-name').textContent = user.name;
+    document.getElementById('account-avatar').textContent = user.name.charAt(0).toUpperCase();
+    showToast('Perfil atualizado com sucesso! ✓');
+  }
+
+  document.addEventListener('DOMContentLoaded', checkAuth);
+
+  // Enter no login
+  document.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      const loginVisible = document.getElementById('login-panel').style.display !== 'none' && document.getElementById('auth-screen').style.display !== 'none';
+      if (loginVisible) doLogin();
+    }
+  });
+</script>
+</body>
+</html>

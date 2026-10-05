@@ -1,0 +1,2242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Admin | MTS Vendas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css">
+  <link rel="icon" type="image/png" href="../ee.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --gold:#C9A84C; --gold-light:#E8C97A; --gold-dark:#A07830;
+      --gold-pale:rgba(201,168,76,0.08);
+      --black:#050505; --black-soft:#090909; --black-card:#0E0E0E;
+      --black-hover:#131313; --black-el:#181818;
+      --border:rgba(201,168,76,0.15); --border-soft:rgba(255,255,255,0.05);
+      --white:#FFFFFF; --white-soft:#E8E4DE; --gray:#5a5a5a; --gray-light:#999;
+      --green:#27ae60; --red:#c0392b; --yellow:#f39c12; --blue:#2980b9;
+      --sidebar-w:270px;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { font-size:16px; height:100%; }
+    body {
+      font-family:'Space Grotesk', sans-serif;
+      background:var(--black);
+      color:var(--white);
+      display:flex;
+      min-height:100vh;
+      overflow-x:hidden;
+      -webkit-font-smoothing:antialiased;
+    }
+    a { text-decoration:none; color:inherit; }
+    button { font-family:'Space Grotesk', sans-serif; cursor:pointer; outline:none; }
+    input, select, textarea { font-family:'Space Grotesk', sans-serif; }
+    ::-webkit-scrollbar { width:3px; height:3px; }
+    ::-webkit-scrollbar-track { background:var(--black); }
+    ::-webkit-scrollbar-thumb { background:var(--gold-dark); border-radius:2px; }
+
+    /* ═══════════════════════════════
+       SIDEBAR
+    ═══════════════════════════════ */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--black-soft);
+      border-right: 1px solid var(--border-soft);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      z-index: 200;
+      overflow: hidden;
+    }
+
+    /* Logo área */
+    .sb-logo {
+      padding: 1.4rem 1.6rem;
+      border-bottom: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .sb-logo img {
+      height: 36px;
+      filter: drop-shadow(0 0 10px rgba(201,168,76,0.4));
+      flex-shrink: 0;
+    }
+    .sb-logo-text h3 {
+      font-family:'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--white);
+      line-height: 1.2;
+    }
+    .sb-logo-text span {
+      font-size: 0.56rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    /* Nav scroll area */
+    .sb-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem 0;
+    }
+
+    /* Grupo de navegação */
+    .sb-group {
+      padding: 1rem 1.6rem 0.3rem;
+    }
+    .sb-group-label {
+      font-size: 0.52rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(90,90,90,0.7);
+      font-weight: 700;
+    }
+
+    /* Item de nav */
+    .sb-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 1.6rem;
+      color: var(--gray-light);
+      font-size: 0.78rem;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 2px solid transparent;
+      position: relative;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .sb-item i {
+      font-size: 0.95rem;
+      width: 18px;
+      flex-shrink: 0;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .sb-item:hover {
+      color: var(--white);
+      background: rgba(255,255,255,0.025);
+    }
+    .sb-item:hover i { opacity: 1; }
+    .sb-item.active {
+      color: var(--gold);
+      border-left-color: var(--gold);
+      background: var(--gold-pale);
+      font-weight: 500;
+    }
+    .sb-item.active i { opacity: 1; }
+
+    /* Badge no nav item */
+    .sb-badge {
+      margin-left: auto;
+      background: var(--gold);
+      color: var(--black);
+      font-size: 0.55rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Separador */
+    .sb-sep {
+      height: 1px;
+      background: var(--border-soft);
+      margin: 0.8rem 1.6rem;
+    }
+
+    /* Footer sidebar */
+    .sb-footer {
+      padding: 1.2rem 1.6rem;
+      border-top: 1px solid var(--border-soft);
+      flex-shrink: 0;
+    }
+    .sb-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+      padding: 0.7rem;
+      background: var(--black-card);
+      border: 1px solid var(--border-soft);
+    }
+    .sb-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      color: var(--black);
+      font-weight: 700;
+      font-size: 0.82rem;
+      flex-shrink: 0;
+    }
+    .sb-user-info strong { font-size: 0.8rem; display: block; }
+    .sb-user-info span { font-size: 0.6rem; color: var(--gold); letter-spacing: 1px; }
+    .sb-footer-links { display: flex; gap: 1rem; }
+    .sb-footer-links a {
+      font-size: 0.68rem;
+      color: var(--gray);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.2s;
+    }
+    .sb-footer-links a:hover { color: var(--gold); }
+
+    /* ═══════════════════════════════
+       MAIN CONTENT
+    ═══════════════════════════════ */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      min-width: 0;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: rgba(9,9,9,0.96);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-soft);
+      padding: 0 2rem;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      flex-shrink: 0;
+    }
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .topbar-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--white);
+    }
+    .topbar-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.68rem;
+      color: var(--gray);
+    }
+    .topbar-breadcrumb i { font-size: 0.55rem; }
+    .topbar-breadcrumb span.cur { color: var(--gold); }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .topbar-date {
+      font-size: 0.68rem;
+      color: var(--gray);
+      letter-spacing: 0.5px;
+    }
+    .topbar-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: var(--gold-pale);
+      border: 1px solid var(--border);
+      color: var(--gold);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .topbar-btn:hover { background: var(--gold); color: var(--black); }
+    .topbar-av {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      color: var(--black);
+      font-size: 0.8rem;
+    }
+
+    /* ── PÁGINAS ── */
+    .page {
+      padding: 2rem;
+      display: none;
+      animation: fadeUp 0.2s ease;
+      flex: 1;
+    }
+    .page.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(8px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .page-header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 300;
+      color: var(--white);
+      margin-bottom: 0.4rem;
+    }
+    .page-header h1 em { font-style: normal; color: var(--gold); }
+    .page-header p {
+      font-size: 0.78rem;
+      color: var(--gray);
+      line-height: 1.7;
+      max-width: 580px;
+    }
+
+    /* ── STAT CARDS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border-soft);
+      margin-bottom: 2rem;
+      border: 1px solid var(--border-soft);
+    }
+    .stat-card {
+      background: var(--black-card);
+      padding: 1.6rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.2s;
+    }
+    .stat-card:hover { background: var(--black-hover); }
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 2px; height: 100%;
+      background: linear-gradient(180deg, var(--gold), transparent);
+    }
+    .stat-icon {
+      width: 38px; height: 38px;
+      background: var(--gold-pale);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+    .stat-val {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-lbl {
+      font-size: 0.6rem;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--gray);
+    }
+    .stat-note {
+      font-size: 0.65rem;
+      color: var(--gray);
+      margin-top: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .stat-note.up { color: var(--green); }
+    .stat-note.off { color: var(--gray); }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--black-card);
+      border: 1px solid var(--border-soft);
+      overflow: hidden;
+    }
+    .card-head {
+      padding: 1.1rem 1.5rem;
+      border-bottom: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .card-title {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title i { color: var(--gold); font-size: 0.85rem; }
+    .card-body { padding: 1.5rem; }
+    .card-hint {
+      font-size: 0.72rem;
+      color: var(--gray);
+      line-height: 1.6;
+      padding: 0 1.5rem 1rem;
+    }
+
+    /* ── GRID LAYOUTS ── */
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+    .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.2rem; }
+    .grid-70-30 { display:grid; grid-template-columns:1.5fr 1fr; gap:1.2rem; }
+    .col-span-2 { grid-column:1/-1; }
+
+    /* ── TABELA ── */
+    .tbl-wrap { overflow-x: auto; }
+    table { width:100%; border-collapse:collapse; }
+    thead th {
+      background: var(--black-hover);
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.58rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    tbody td {
+      padding: 12px 14px;
+      font-size: 0.8rem;
+      border-bottom: 1px solid var(--border-soft);
+      color: var(--gray-light);
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(255,255,255,0.015); }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .badge-gold  { background:rgba(201,168,76,.1); color:var(--gold); border:1px solid rgba(201,168,76,.25); }
+    .badge-green { background:rgba(39,174,96,.1); color:var(--green); border:1px solid rgba(39,174,96,.25); }
+    .badge-red   { background:rgba(192,57,43,.1); color:var(--red); border:1px solid rgba(192,57,43,.25); }
+    .badge-gray  { background:rgba(255,255,255,.04); color:var(--gray-light); border:1px solid var(--border-soft); }
+    .badge-blue  { background:rgba(41,128,185,.1); color:var(--blue); border:1px solid rgba(41,128,185,.25); }
+    .badge-yellow{ background:rgba(243,156,18,.1); color:var(--yellow); border:1px solid rgba(243,156,18,.25); }
+
+    /* ── BOTÕES ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 20px;
+      border: none;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      color: var(--black);
+    }
+    .btn-gold:hover { box-shadow:0 4px 20px rgba(201,168,76,.4); transform:translateY(-1px); }
+    .btn-outline { background:transparent; color:var(--gold); border:1px solid var(--gold); }
+    .btn-outline:hover { background:var(--gold); color:var(--black); }
+    .btn-ghost { background:transparent; color:var(--gray-light); border:1px solid var(--border-soft); }
+    .btn-ghost:hover { border-color:var(--border); color:var(--white); }
+    .btn-danger { background:rgba(192,57,43,.08); color:var(--red); border:1px solid rgba(192,57,43,.2); }
+    .btn-danger:hover { background:rgba(192,57,43,.18); }
+    .btn-success { background:rgba(39,174,96,.1); color:var(--green); border:1px solid rgba(39,174,96,.2); }
+    .btn-success:hover { background:rgba(39,174,96,.2); }
+    .btn-edit { background:var(--gold-pale); color:var(--gold); border:1px solid var(--border); }
+    .btn-edit:hover { background:rgba(201,168,76,.18); }
+    .btn-sm { padding:6px 14px; font-size:0.6rem; }
+    .btn-xs { padding:4px 10px; font-size:0.58rem; }
+    .w-full { width:100%; }
+    .mt-sm { margin-top:0.6rem; }
+
+    /* ── FORMS ── */
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; }
+    .fg { margin-bottom:0; }
+    .fg.full { grid-column:1/-1; }
+    .fg label {
+      display: block;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 6px;
+    }
+    .fg label .req { color:var(--gold); margin-left:2px; }
+    .fg input, .fg select, .fg textarea {
+      width: 100%;
+      padding: 10px 13px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--border-soft);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.84rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .fg input:focus, .fg select:focus, .fg textarea:focus {
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.04);
+    }
+    .fg input::placeholder, .fg textarea::placeholder { color:var(--gray); }
+    .fg select option { background:var(--black-card); }
+    .fg textarea { resize:vertical; }
+    .fg-hint {
+      font-size: 0.62rem;
+      color: var(--gray);
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+    .form-sep {
+      grid-column: 1/-1;
+      font-size: 0.58rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-soft);
+      margin-top: 0.5rem;
+    }
+    .form-actions {
+      grid-column: 1/-1;
+      display: flex;
+      gap: 0.7rem;
+      margin-top: 0.5rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--border-soft);
+      flex-wrap: wrap;
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.88);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--black-card);
+      border: 1px solid var(--border);
+      padding: 2.2rem;
+      width: 100%;
+      max-width: 620px;
+      position: relative;
+      margin: auto;
+    }
+    .modal::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 15%; right: 15%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.5;
+    }
+    .modal-close {
+      position: absolute; top: 1rem; right: 1rem;
+      background: none; border: none;
+      color: var(--gray); font-size: 1.1rem; cursor: pointer;
+      transition: color 0.2s;
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-close:hover { color: var(--gold); }
+    .modal-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 300;
+      margin-bottom: 0.4rem;
+    }
+    .modal-subtitle {
+      font-size: 0.72rem;
+      color: var(--gray);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 30px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--black-card);
+      border: 1px solid var(--gold);
+      color: var(--white);
+      padding: 10px 24px;
+      font-size: 0.72rem;
+      letter-spacing: 1px;
+      z-index: 9999;
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(.23,1,.32,1);
+      pointer-events: none;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    .toast i { color:var(--gold); }
+
+    /* ── INFO / ALERTA ── */
+    .info-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 1rem 1.2rem;
+      font-size: 0.76rem;
+      color: var(--gray-light);
+      line-height: 1.7;
+      border: 1px solid var(--border-soft);
+      background: var(--gold-pale);
+    }
+    .info-box i { color:var(--gold); margin-top:1px; flex-shrink:0; font-size:0.9rem; }
+    .info-box strong { color:var(--white); }
+    .alert-danger {
+      background:rgba(192,57,43,.06);
+      border-color:rgba(192,57,43,.2);
+    }
+    .alert-danger i { color:var(--red); }
+    .alert-success {
+      background:rgba(39,174,96,.06);
+      border-color:rgba(39,174,96,.2);
+    }
+    .alert-success i { color:var(--green); }
+
+    /* ── SEARCH ── */
+    .search-wrap { display:flex; }
+    .search-wrap input {
+      padding: 8px 14px;
+      background: var(--black-hover);
+      border: 1px solid var(--border-soft);
+      border-right: none;
+      color: var(--white);
+      font-size: 0.78rem;
+      outline: none;
+      width: 220px;
+      transition: all 0.2s;
+    }
+    .search-wrap input:focus { border-color:var(--gold); }
+    .search-wrap button {
+      padding: 8px 14px;
+      background: var(--gold);
+      border: none;
+      color: var(--black);
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    /* ── THUMB ── */
+    .thumb {
+      width: 44px; height: 44px;
+      background: var(--black-hover);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(201,168,76,0.2);
+      font-size: 1rem;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .thumb img { width:100%; height:100%; object-fit:cover; }
+
+    /* ── SWITCH ── */
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .switch-row:last-child { border-bottom:none; }
+    .switch-info strong { display:block; font-size:0.78rem; margin-bottom:2px; }
+    .switch-info span { font-size:0.68rem; color:var(--gray); }
+    .switch {
+      position: relative;
+      width: 40px; height: 22px;
+      flex-shrink: 0;
+    }
+    .switch input { opacity:0; width:0; height:0; }
+    .sw-track {
+      position: absolute; inset: 0;
+      background: var(--black-el);
+      border: 1px solid var(--border-soft);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .sw-track::before {
+      content: '';
+      position: absolute;
+      width: 14px; height: 14px;
+      left: 3px; top: 3px;
+      background: var(--gray);
+      transition: all 0.3s;
+    }
+    .switch input:checked + .sw-track { background:var(--gold-pale); border-color:var(--gold); }
+    .switch input:checked + .sw-track::before { transform:translateX(18px); background:var(--gold); }
+
+    /* ── ACTIVITY ── */
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.025);
+    }
+    .activity-item:last-child { border-bottom:none; }
+    .act-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+    .act-dot.gray { background: var(--gray); }
+    .act-text { font-size:0.78rem; color:var(--gray-light); }
+    .act-time { font-size:0.65rem; color:var(--gray); margin-top:2px; }
+
+    /* ── TICKER EDITOR ── */
+    .ticker-item-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.6rem;
+    }
+    .ticker-item-row input {
+      flex: 1;
+      padding: 9px 12px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--border-soft);
+      color: var(--white);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.8rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .ticker-item-row input:focus { border-color:var(--gold); background:var(--gold-pale); }
+    .ticker-drag-handle {
+      color: var(--gray);
+      cursor: grab;
+      font-size: 1rem;
+      padding: 4px;
+    }
+
+    /* ── COLOR SWATCH ── */
+    .color-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .color-row:last-child { border-bottom:none; }
+    .color-info strong { display:block; font-size:0.78rem; margin-bottom:2px; }
+    .color-info span { font-size:0.68rem; color:var(--gray); }
+    .color-pick {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .color-swatch {
+      width: 30px; height: 30px;
+      border: 1px solid var(--border);
+      display: inline-block;
+    }
+    .color-pick input[type=color] {
+      width: 36px; height: 30px;
+      padding: 2px;
+      background: none;
+      border: 1px solid var(--border-soft);
+      cursor: pointer;
+    }
+
+    /* ── EMPTY ── */
+    .empty-state {
+      text-align: center;
+      padding: 3.5rem 2rem;
+      color: var(--gray);
+    }
+    .empty-state i { font-size:2.5rem; color:rgba(255,255,255,0.06); display:block; margin-bottom:0.8rem; }
+    .empty-state p { font-size:0.82rem; }
+    .empty-state small { font-size:0.72rem; color:var(--gray); display:block; margin-top:0.3rem; }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:1024px) {
+      .stats-grid { grid-template-columns:1fr 1fr; }
+      .grid-3 { grid-template-columns:1fr 1fr; }
+    }
+    @media(max-width:900px) {
+      .sidebar { transform:translateX(-100%); }
+      .main { margin-left:0; }
+      .grid-2, .grid-70-30, .form-grid { grid-template-columns:1fr; }
+      .fg.full { grid-column:1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <img src="../ee.png" alt="MTS">
+    <div class="sb-logo-text">
+      <h3>MTS Vendas</h3>
+      <span>Painel Admin</span>
+    </div>
+  </div>
+
+  <nav class="sb-nav">
+
+    <div class="sb-group"><span class="sb-group-label">Principal</span></div>
+    <div class="sb-item active" onclick="nav('dashboard',this)">
+      <i class="ri-dashboard-line"></i> Dashboard
+    </div>
+
+    <div class="sb-sep"></div>
+
+    <div class="sb-group"><span class="sb-group-label">Catálogo</span></div>
+    <div class="sb-item" onclick="nav('produtos',this)">
+      <i class="ri-shopping-bag-line"></i> Produtos
+      <span class="sb-badge" id="nb-prods">0</span>
+    </div>
+    <div class="sb-item" onclick="nav('categorias',this)">
+      <i class="ri-price-tag-3-line"></i> Categorias
+    </div>
+    <div class="sb-item" onclick="nav('pedidos',this)">
+      <i class="ri-file-list-3-line"></i> Pedidos
+    </div>
+
+    <div class="sb-sep"></div>
+
+    <div class="sb-group"><span class="sb-group-label">Página Inicial</span></div>
+    <div class="sb-item" onclick="nav('hero',this)">
+      <i class="ri-layout-top-line"></i> Hero & Textos
+    </div>
+    <div class="sb-item" onclick="nav('anuncios',this)">
+      <i class="ri-megaphone-line"></i> Anúncios / Ticker
+    </div>
+    <div class="sb-item" onclick="nav('banners',this)">
+      <i class="ri-image-2-line"></i> Banner Promo
+    </div>
+
+    <div class="sb-sep"></div>
+
+    <div class="sb-group"><span class="sb-group-label">Usuários</span></div>
+    <div class="sb-item" onclick="nav('clientes',this)">
+      <i class="ri-group-line"></i> Clientes
+      <span class="sb-badge" id="nb-users">0</span>
+    </div>
+    <div class="sb-item" onclick="nav('admins',this)">
+      <i class="ri-shield-user-line"></i> Administradores
+    </div>
+
+    <div class="sb-sep"></div>
+
+    <div class="sb-group"><span class="sb-group-label">Sistema</span></div>
+    <div class="sb-item" onclick="nav('config',this)">
+      <i class="ri-settings-3-line"></i> Configurações
+    </div>
+    <div class="sb-item" onclick="nav('aparencia',this)">
+      <i class="ri-palette-line"></i> Aparência
+    </div>
+
+    <div class="sb-sep"></div>
+
+    <div class="sb-item" onclick="adminLogout()" style="color:var(--red);margin-top:0.2rem">
+      <i class="ri-logout-box-line"></i> Sair do Painel
+    </div>
+
+  </nav>
+
+  <div class="sb-footer">
+    <div class="sb-user">
+      <div class="sb-avatar">A</div>
+      <div class="sb-user-info">
+        <strong>Administrador</strong>
+        <span>Super Admin</span>
+      </div>
+    </div>
+    <div class="sb-footer-links">
+      <a href="../index.html" target="_blank"><i class="ri-external-link-line"></i> Ver Loja</a>
+      <a href="login.html" onclick="adminLogout();return false;"><i class="ri-logout-box-line"></i> Sair</a>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════
+     MAIN
+═══════════════════════════════════════ -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title" id="topbar-title">Dashboard</span>
+      <div class="topbar-breadcrumb">
+        <i class="ri-arrow-right-s-line"></i>
+        <span class="cur" id="topbar-cur">Visão Geral</span>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-date" id="topbar-date"></span>
+      <a href="../index.html" target="_blank" class="topbar-btn">
+        <i class="ri-eye-line"></i> Ver Loja
+      </a>
+      <div class="topbar-av">A</div>
+    </div>
+  </div>
+
+  <!-- ═══ DASHBOARD ═══ -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <h1>Bem-vindo ao <em>Painel</em></h1>
+      <p>Aqui você tem uma visão geral da sua loja. Use o menu lateral para gerenciar produtos, textos, anúncios e muito mais.</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon"><i class="ri-shopping-bag-line"></i></div>
+        <div class="stat-val" id="ds-prods">0</div>
+        <div class="stat-lbl">Produtos Cadastrados</div>
+        <div class="stat-note up"><i class="ri-checkbox-circle-line"></i> Ativos na loja</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="ri-group-line"></i></div>
+        <div class="stat-val" id="ds-users">0</div>
+        <div class="stat-lbl">Clientes Cadastrados</div>
+        <div class="stat-note up"><i class="ri-user-add-line"></i> Contas ativas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="ri-megaphone-line"></i></div>
+        <div class="stat-val" id="ds-anuncios">0</div>
+        <div class="stat-lbl">Anúncios no Ticker</div>
+        <div class="stat-note"><i class="ri-information-line"></i> Gerenciar em Anúncios</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon"><i class="ri-file-list-3-line"></i></div>
+        <div class="stat-val">—</div>
+        <div class="stat-lbl">Pedidos Recebidos</div>
+        <div class="stat-note off"><i class="ri-time-line"></i> Em breve</div>
+      </div>
+    </div>
+
+    <div class="grid-70-30" style="margin-bottom:1.2rem">
+      <!-- Produtos recentes -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><i class="ri-shopping-bag-line"></i> Produtos Recentes</span>
+          <button class="btn btn-ghost btn-sm" onclick="nav('produtos',null)">Ver Todos →</button>
+        </div>
+        <div class="tbl-wrap" id="ds-prod-table">
+          <div class="empty-state"><i class="ri-shopping-bag-line"></i><p>Sem produtos</p></div>
+        </div>
+      </div>
+      <!-- Atividade -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><i class="ri-pulse-line"></i> Atividade</span>
+        </div>
+        <div style="padding:0.8rem 1.2rem" id="ds-activity">
+          <div class="activity-item">
+            <div class="act-dot"></div>
+            <div><div class="act-text">Painel iniciado com sucesso</div><div class="act-time">Agora</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clientes recentes -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title"><i class="ri-group-line"></i> Clientes Recentes</span>
+        <button class="btn btn-ghost btn-sm" onclick="nav('clientes',null)">Ver Todos →</button>
+      </div>
+      <div class="tbl-wrap" id="ds-client-table">
+        <div class="empty-state"><i class="ri-group-line"></i><p>Nenhum cliente ainda</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PRODUTOS ═══ -->
+  <div class="page" id="page-produtos">
+    <div class="page-header">
+      <h1>Gestão de <em>Produtos</em></h1>
+      <p>Adicione, edite ou remova produtos do catálogo. Todos os produtos cadastrados aqui aparecem automaticamente na loja.</p>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:1rem">
+      <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center">
+        <div class="search-wrap">
+          <input type="text" id="prod-search" placeholder="Buscar por nome..." oninput="renderProds()">
+          <button><i class="ri-search-line"></i></button>
+        </div>
+        <select id="prod-cat-filter" style="padding:8px 12px;background:var(--black-hover);border:1px solid var(--border-soft);color:var(--gray-light);font-family:'Space Grotesk',sans-serif;font-size:0.72rem;outline:none;cursor:pointer" onchange="renderProds()">
+          <option value="">Todas as categorias</option>
+          <option value="perfumes">Perfumes</option>
+          <option value="roupas">Roupas</option>
+          <option value="relogios">Relógios</option>
+          <option value="joias">Joias</option>
+          <option value="bones">Bonés</option>
+        </select>
+      </div>
+      <button class="btn btn-gold" onclick="openProdModal()">
+        <i class="ri-add-line"></i> Novo Produto
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title"><i class="ri-list-check"></i> Catálogo</span>
+        <span id="prod-count" style="font-size:0.68rem;color:var(--gray)"></span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Img</th><th>Nome do Produto</th><th>Categoria</th>
+              <th>Preço</th><th>Ant.</th><th>Estoque</th><th>Status</th><th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="prod-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CATEGORIAS ═══ -->
+  <div class="page" id="page-categorias">
+    <div class="page-header">
+      <h1>Gestão de <em>Categorias</em></h1>
+      <p>Categorias organizam os produtos da loja. Crie novas categorias e elas aparecerão nos filtros de produtos.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><i class="ri-price-tag-3-line"></i> Categorias Ativas</span>
+        </div>
+        <div id="cat-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><i class="ri-add-circle-line"></i> Nova Categoria</span>
+        </div>
+        <div class="card-body">
+          <div class="info-box" style="margin-bottom:1.2rem">
+            <i class="ri-information-line"></i>
+            <span>Use os nomes de ícones do <strong>RemixIcon</strong>. Ex: <code style="color:var(--gold)">ri-handbag-line</code>, <code style="color:var(--gold)">ri-footprint-line</code></span>
+          </div>
+          <div class="fg" style="margin-bottom:1rem">
+            <label>Nome da Categoria <span class="req">*</span></label>
+            <input type="text" id="cat-name" placeholder="Ex: Acessórios">
+          </div>
+          <div class="fg" style="margin-bottom:1.2rem">
+            <label>Ícone RemixIcon</label>
+            <input type="text" id="cat-icon" placeholder="ri-handbag-line">
+            <div class="fg-hint">Deixe em branco para usar o ícone padrão.</div>
+          </div>
+          <button class="btn btn-gold w-full" onclick="addCat()">
+            <i class="ri-add-line"></i> Criar Categoria
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PEDIDOS ═══ -->
+  <div class="page" id="page-pedidos">
+    <div class="page-header">
+      <h1>Gestão de <em>Pedidos</em></h1>
+      <p>Os pedidos aparecerão aqui quando o sistema de checkout estiver integrado com WhatsApp ou gateway de pagamento.</p>
+    </div>
+    <div class="info-box alert-success" style="margin-bottom:1.5rem">
+      <i class="ri-information-line"></i>
+      <span>Para receber pedidos agora, configure o WhatsApp de checkout em <strong>Configurações → WhatsApp de Checkout</strong>. Os clientes serão redirecionados para finalizar pelo WhatsApp.</span>
+    </div>
+    <div class="card">
+      <div class="empty-state" style="padding:5rem">
+        <i class="ri-file-list-3-line"></i>
+        <p>Nenhum pedido registrado</p>
+        <small>Os pedidos aparecerão aqui automaticamente</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ HERO & TEXTOS ═══ -->
+  <div class="page" id="page-hero">
+    <div class="page-header">
+      <h1>Hero & <em>Textos</em></h1>
+      <p>Edite os textos que aparecem na seção principal da página inicial. As alterações são salvas e carregadas automaticamente pela loja.</p>
+    </div>
+
+    <div class="info-box" style="margin-bottom:1.5rem">
+      <i class="ri-magic-line"></i>
+      <span><strong>Como funciona:</strong> edite os campos abaixo e clique em <strong>Salvar Alterações</strong>. Ao abrir a página inicial da loja, os textos novos serão carregados automaticamente.</span>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title"><i class="ri-layout-top-line"></i> Seção Hero (Topo da Página)</span>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-sep">Eyebrow / Tag</div>
+          <div class="fg full">
+            <label>Texto da tag acima do título</label>
+            <input type="text" id="cfg-heroTag" placeholder="Ex: Coleção 2026">
+            <div class="fg-hint">Aparece com linhas douradas ao lado. Ex: "Coleção 2026", "Lançamento Exclusivo"</div>
+          </div>
+
+          <div class="form-sep">Título Principal</div>
+          <div class="fg">
+            <label>Linha 1 do título (normal)</label>
+            <input type="text" id="cfg-heroTitle1" placeholder="Ex: O Luxo que">
+            <div class="fg-hint">Texto em branco, fonte leve.</div>
+          </div>
+          <div class="fg">
+            <label>Linha 2 do título (dourado / negrito)</label>
+            <input type="text" id="cfg-heroTitle2" placeholder="Ex: Você Merece">
+            <div class="fg-hint">Aparece em dourado e negrito.</div>
+          </div>
+          <div class="fg full">
+            <label>Descrição / Subtítulo</label>
+            <textarea id="cfg-heroSubtitle" rows="3" placeholder="Texto descritivo abaixo do título..."></textarea>
+            <div class="fg-hint">Frase curta que descreve a loja. Aparece em cinza claro.</div>
+          </div>
+
+          <div class="form-sep">Botões de Ação</div>
+          <div class="fg">
+            <label>Botão Principal (dourado)</label>
+            <input type="text" id="cfg-heroBtn1" placeholder="Ex: Ver Coleção">
+            <div class="fg-hint">Botão dourado principal. Link: /pages/produtos.html</div>
+          </div>
+          <div class="fg">
+            <label>Botão Secundário (contorno)</label>
+            <input type="text" id="cfg-heroBtn2" placeholder="Ex: Perfumes">
+            <div class="fg-hint">Botão com borda dourada. Link: /pages/perfumes.html</div>
+          </div>
+
+          <div class="form-sep">Tags de Categoria (hero)</div>
+          <div class="fg full">
+            <label>Nome da Loja (Navbar)</label>
+            <input type="text" id="cfg-siteName" placeholder="MTS Vendas">
+            <div class="fg-hint">Texto que aparece ao lado da logo na barra de navegação.</div>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-gold" onclick="saveCfg()"><i class="ri-save-line"></i> Salvar Alterações</button>
+            <button class="btn btn-ghost" onclick="loadCfg()"><i class="ri-refresh-line"></i> Recarregar</button>
+            <button class="btn btn-danger btn-sm" onclick="if(confirm('Resetar textos para o padrão?')){localStorage.removeItem('mts_site_config');loadCfg();toast('Textos resetados.','ri-refresh-line')}">
+              <i class="ri-delete-bin-line"></i> Resetar Padrão
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ANÚNCIOS / TICKER ═══ -->
+  <div class="page" id="page-anuncios">
+    <div class="page-header">
+      <h1>Anúncios & <em>Ticker</em></h1>
+      <p>O ticker é a faixa dourada animada que aparece abaixo do hero na página inicial. Você controla 100% as mensagens exibidas.</p>
+    </div>
+
+    <div class="info-box" style="margin-bottom:1.5rem">
+      <i class="ri-megaphone-line"></i>
+      <span>
+        <strong>Como funciona:</strong> cada linha abaixo é uma mensagem do ticker. Elas ficam rolando em sequência.
+        Use textos curtos e chamativos. Escreva tudo em <strong>MAIÚSCULAS</strong> para melhor visual.
+        Clique em <strong>Salvar Ticker</strong> e recarregue a loja para ver as mudanças.
+      </span>
+    </div>
+
+    <div class="grid-70-30">
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><i class="ri-text-wrap"></i> Mensagens do Ticker</span>
+          <button class="btn btn-gold btn-sm" onclick="addTickerRow()">
+            <i class="ri-add-line"></i> Adicionar Mensagem
+          </button>
+        </div>
+        <div class="card-body">
+          <div id="ticker-list"></div>
+          <div style="display:flex;gap:0.8rem;margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid var(--border-soft)">
+            <button class="btn btn-gold" onclick="saveTicker()"><i class="ri-save-line"></i> Salvar Ticker</button>
+            <button class="btn btn-ghost" onclick="loadTicker()"><i class="ri-refresh-line"></i> Recarregar</button>
+            <button class="btn btn-danger btn-sm" onclick="resetTicker()"><i class="ri-delete-bin-line"></i> Limpar Tudo</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:1.2rem">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title"><i class="ri-eye-line"></i> Pré-visualização</span>
+          </div>
+          <div class="card-body">
+            <div style="background:var(--gold);color:var(--black);padding:8px;overflow:hidden;font-family:'Space Grotesk',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;white-space:nowrap;text-overflow:ellipsis" id="ticker-preview">
+              — sem mensagens —
+            </div>
+            <p style="font-size:0.68rem;color:var(--gray);margin-top:0.8rem;line-height:1.6">
+              A faixa acima mostra como ficará o ticker. Salve e recarregue a loja para ver animado.
+            </p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title"><i class="ri-lightbulb-line"></i> Dicas</span>
+          </div>
+          <div class="card-body">
+            <div style="display:flex;flex-direction:column;gap:0.8rem">
+              <div style="font-size:0.72rem;color:var(--gray-light);line-height:1.7">
+                <strong style="color:var(--gold);display:block;margin-bottom:2px">Bons exemplos:</strong>
+                FRETE GRÁTIS ACIMA DE R$ 299<br>
+                PERFUMES IMPORTADOS ORIGINAIS<br>
+                PARCELE EM ATÉ 12X SEM JUROS
+              </div>
+              <div style="font-size:0.72rem;color:var(--gray);line-height:1.7">
+                Use textos curtos de até 50 caracteres para melhor visualização no mobile.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ BANNER PROMO ═══ -->
+  <div class="page" id="page-banners">
+    <div class="page-header">
+      <h1>Banner <em>Promocional</em></h1>
+      <p>Configure o banner de benefícios que aparece na página inicial entre os produtos e os perfumes.</p>
+    </div>
+
+    <div class="info-box" style="margin-bottom:1.5rem">
+      <i class="ri-image-2-line"></i>
+      <span><strong>Localização:</strong> o banner aparece na seção de benefícios (4 colunas: Entrega Rápida, Compra Segura, 30 Dias Troca, Parcelamento). Em breve: banners de imagem e pop-ups.</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><i class="ri-truck-line"></i> Benefício 1 — Entrega</span>
+        </div>
+        <div class="card-body">
+          <div class="fg" style="margin-bottom:1rem"><label>Título</label><input type="text" id="bn1-title" placeholder="Entrega Rápida"></div>
+          <div class="fg" style="margin-bottom:0"><label>Descrição</label><input type="text" id="bn1-desc" placeholder="3 a 7 dias úteis para todo o Brasil"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><i class="ri-shield-check-line"></i> Benefício 2 — Segurança</span>
+        </div>
+        <div class="card-body">
+          <div class="fg" style="margin-bottom:1rem"><label>Título</label><input type="text" id="bn2-title" placeholder="Compra Segura"></div>
+          <div class="fg" style="margin-bottom:0"><label>Descrição</label><input type="text" id="bn2-desc" placeholder="Criptografia SSL 256-bit"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><i class="ri-exchange-line"></i> Benefício 3 — Troca</span>
+        </div>
+        <div class="card-body">
+          <div class="fg" style="margin-bottom:1rem"><label>Título</label><input type="text" id="bn3-title" placeholder="30 Dias Troca"></div>
+          <div class="fg" style="margin-bottom:0"><label>Descrição</label><input type="text" id="bn3-desc" placeholder="Garantia de satisfação sem burocracia"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><i class="ri-secure-payment-line"></i> Benefício 4 — Pagamento</span>
+        </div>
+        <div class="card-body">
+          <div class="fg" style="margin-bottom:1rem"><label>Título</label><input type="text" id="bn4-title" placeholder="Até 12x sem Juros"></div>
+          <div class="fg" style="margin-bottom:0"><label>Descrição</label><input type="text" id="bn4-desc" placeholder="No cartão ou 5% desconto no Pix"></div>
+        </div>
+      </div>
+      <div class="col-span-2" style="display:flex;gap:0.8rem">
+        <button class="btn btn-gold" onclick="saveBanners()"><i class="ri-save-line"></i> Salvar Benefícios</button>
+        <button class="btn btn-ghost" onclick="loadBanners()"><i class="ri-refresh-line"></i> Recarregar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CLIENTES ═══ -->
+  <div class="page" id="page-clientes">
+    <div class="page-header">
+      <h1>Gestão de <em>Clientes</em></h1>
+      <p>Visualize, adicione, edite e remova contas de clientes. Clientes criados aqui podem fazer login na loja.</p>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:1rem">
+      <div class="search-wrap">
+        <input type="text" id="cl-search" placeholder="Buscar por nome ou e-mail..." oninput="renderClients()">
+        <button><i class="ri-search-line"></i></button>
+      </div>
+      <button class="btn btn-gold" onclick="openClientModal()">
+        <i class="ri-user-add-line"></i> Novo Cliente
+      </button>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title"><i class="ri-group-line"></i> Lista de Clientes</span>
+        <span id="cl-count" style="font-size:0.68rem;color:var(--gray)"></span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Nome</th><th>E-mail</th><th>Cadastro</th><th>Status</th><th>Ações</th></tr>
+          </thead>
+          <tbody id="cl-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ADMINS ═══ -->
+  <div class="page" id="page-admins">
+    <div class="page-header">
+      <h1>Administradores do <em>Sistema</em></h1>
+      <p>Gerencie quem tem acesso ao painel administrativo.</p>
+    </div>
+    <div class="info-box" style="margin-bottom:1.5rem">
+      <i class="ri-shield-line"></i>
+      <span><strong>Segurança:</strong> as credenciais de administrador estão definidas diretamente no código-fonte. Para adicionar novos admins, entre em contato com o desenvolvedor.</span>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title"><i class="ri-shield-user-line"></i> Administradores Ativos</span></div>
+      <table>
+        <thead><tr><th>Usuário</th><th>Nível de Acesso</th><th>Status</th><th>Último Acesso</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong style="color:var(--white)">MTS</strong></td>
+            <td><span class="badge badge-gold">Super Administrador</span></td>
+            <td><span class="badge badge-green">Ativo</span></td>
+            <td style="color:var(--gray)" id="admin-last-access">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card" style="margin-top:1.2rem;padding:1.5rem">
+      <div style="font-size:0.72rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:1.2rem">Alterar Senha do Admin</div>
+      <div class="info-box alert-danger">
+        <i class="ri-alert-line"></i>
+        <span>A senha é definida no arquivo <code style="color:var(--gold)">admin/login.html</code>. Edite o arquivo diretamente para alterar as credenciais de acesso.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CONFIGURAÇÕES ═══ -->
+  <div class="page" id="page-config">
+    <div class="page-header">
+      <h1>Configurações do <em>Sistema</em></h1>
+      <p>Defina as informações de contato, frete e pagamento da sua loja. Essas configurações afetam o rodapé e o fluxo de compra.</p>
+    </div>
+
+    <div class="grid-2">
+      <!-- Informações -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><i class="ri-store-2-line"></i> Informações da Loja</span>
+        </div>
+        <div class="card-body">
+          <div class="fg" style="margin-bottom:1rem">
+            <label>Nome da Loja</label>
+            <input type="text" id="conf-name" placeholder="MTS Vendas">
+            <div class="fg-hint">Aparece no título do navegador e na navbar.</div>
+          </div>
+          <div class="fg" style="margin-bottom:1rem">
+            <label>WhatsApp Principal</label>
+            <input type="text" id="conf-wpp" placeholder="(11) 99999-9999">
+            <div class="fg-hint">Exibido no rodapé e na página de contato.</div>
+          </div>
+          <div class="fg" style="margin-bottom:1rem">
+            <label>E-mail</label>
+            <input type="text" id="conf-email" placeholder="mts@mtsvendas.com">
+          </div>
+          <div class="fg" style="margin-bottom:1rem">
+            <label>Instagram</label>
+            <input type="text" id="conf-ig" placeholder="@mtsvendas">
+          </div>
+          <div class="fg" style="margin-bottom:1.5rem">
+            <label>TikTok</label>
+            <input type="text" id="conf-tt" placeholder="@mtsvendas">
+          </div>
+          <button class="btn btn-gold" onclick="saveConf()"><i class="ri-save-line"></i> Salvar</button>
+        </div>
+      </div>
+
+      <!-- Frete & Pagamento -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><i class="ri-truck-line"></i> Frete & Pagamento</span>
+        </div>
+        <div class="card-body">
+          <div class="fg" style="margin-bottom:1rem">
+            <label>Frete grátis acima de (R$)</label>
+            <input type="number" id="conf-frete" placeholder="299">
+            <div class="fg-hint">Valor mínimo para frete grátis. Exibido no ticker e benefícios.</div>
+          </div>
+          <div class="fg" style="margin-bottom:1rem">
+            <label>Prazo de entrega</label>
+            <input type="text" id="conf-prazo" placeholder="3 a 7 dias úteis">
+          </div>
+          <div class="fg" style="margin-bottom:1rem">
+            <label>WhatsApp de Checkout</label>
+            <input type="text" id="conf-wpp2" placeholder="(11) 99999-9999">
+            <div class="fg-hint">Quando o cliente finaliza o pedido, será redirecionado para este número.</div>
+          </div>
+          <div class="fg" style="margin-bottom:1.5rem">
+            <label>Máx. parcelas sem juros</label>
+            <select id="conf-parcelas">
+              <option>Sem parcelamento</option>
+              <option>2x</option><option>3x</option>
+              <option>6x</option><option selected>12x</option>
+            </select>
+          </div>
+          <button class="btn btn-gold" onclick="saveConf()"><i class="ri-save-line"></i> Salvar</button>
+        </div>
+      </div>
+
+      <!-- Zona de perigo -->
+      <div class="card col-span-2">
+        <div class="card-head">
+          <span class="card-title" style="color:var(--red)"><i class="ri-alert-line"></i> Zona de Perigo</span>
+        </div>
+        <div class="card-body">
+          <div class="info-box alert-danger" style="margin-bottom:1.2rem">
+            <i class="ri-alert-line"></i>
+            <span><strong>Atenção:</strong> as ações abaixo são irreversíveis. Todos os dados salvos no navegador (produtos, clientes, configurações) serão apagados.</span>
+          </div>
+          <div style="display:flex;gap:0.8rem;flex-wrap:wrap">
+            <button class="btn btn-danger" onclick="clearProds()"><i class="ri-delete-bin-line"></i> Resetar Produtos</button>
+            <button class="btn btn-danger" onclick="clearClients()"><i class="ri-user-unfollow-line"></i> Apagar Clientes</button>
+            <button class="btn btn-danger" onclick="clearAll()"><i class="ri-error-warning-line"></i> Limpar Tudo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ APARÊNCIA ═══ -->
+  <div class="page" id="page-aparencia">
+    <div class="page-header">
+      <h1>Aparência & <em>Visual</em></h1>
+      <p>Personalize cores, efeitos de fundo e animações da loja. As mudanças são aplicadas ao recarregar a página inicial.</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><i class="ri-palette-line"></i> Cores Principais</span>
+        </div>
+        <div class="card-body">
+          <div class="color-row">
+            <div class="color-info">
+              <strong>Cor Dourada</strong>
+              <span>Bordas, ícones, botões e destaques</span>
+            </div>
+            <div class="color-pick">
+              <span class="color-swatch" id="sw-gold" style="background:#C9A84C"></span>
+              <input type="color" id="clr-gold" value="#C9A84C" oninput="document.getElementById('sw-gold').style.background=this.value">
+            </div>
+          </div>
+          <div class="color-row">
+            <div class="color-info">
+              <strong>Cor de Fundo</strong>
+              <span>Background principal do site</span>
+            </div>
+            <div class="color-pick">
+              <span class="color-swatch" id="sw-bg" style="background:#050505"></span>
+              <input type="color" id="clr-bg" value="#050505" oninput="document.getElementById('sw-bg').style.background=this.value">
+            </div>
+          </div>
+          <div class="color-row">
+            <div class="color-info">
+              <strong>Cor dos Cards</strong>
+              <span>Fundo dos cards de produto e seções</span>
+            </div>
+            <div class="color-pick">
+              <span class="color-swatch" id="sw-card" style="background:#0E0E0E"></span>
+              <input type="color" id="clr-card" value="#0E0E0E" oninput="document.getElementById('sw-card').style.background=this.value">
+            </div>
+          </div>
+          <div style="display:flex;gap:0.7rem;margin-top:1.5rem">
+            <button class="btn btn-gold" onclick="saveColors()"><i class="ri-palette-line"></i> Aplicar Cores</button>
+            <button class="btn btn-ghost" onclick="resetColors()"><i class="ri-refresh-line"></i> Resetar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title"><i class="ri-magic-line"></i> Efeitos de Fundo</span>
+        </div>
+        <div class="card-body">
+          <div class="info-box" style="margin-bottom:1.2rem">
+            <i class="ri-information-line"></i>
+            <span>Ative ou desative os efeitos visuais. Desativar pode melhorar a performance em dispositivos mais lentos.</span>
+          </div>
+          <div class="switch-row">
+            <div class="switch-info">
+              <strong>Partículas animadas</strong>
+              <span>Pontos dourados flutuantes no fundo</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="sw-particles" checked>
+              <span class="sw-track"></span>
+            </label>
+          </div>
+          <div class="switch-row">
+            <div class="switch-info">
+              <strong>Grid de fundo</strong>
+              <span>Grade sutil de linhas douradas</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="sw-grid" checked>
+              <span class="sw-track"></span>
+            </label>
+          </div>
+          <div class="switch-row">
+            <div class="switch-info">
+              <strong>Orbs de luz</strong>
+              <span>Manchas de luz dourada nos cantos</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="sw-orbs" checked>
+              <span class="sw-track"></span>
+            </label>
+          </div>
+          <div class="switch-row">
+            <div class="switch-info">
+              <strong>Ticker animado</strong>
+              <span>Faixa dourada com anúncios rolantes</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="sw-ticker" checked>
+              <span class="sw-track"></span>
+            </label>
+          </div>
+          <div class="switch-row">
+            <div class="switch-info">
+              <strong>Linhas sweep no hero</strong>
+              <span>Linhas que varrem o hero horizontalmente</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="sw-sweep" checked>
+              <span class="sw-track"></span>
+            </label>
+          </div>
+          <button class="btn btn-gold w-full" style="margin-top:1.5rem" onclick="saveAppearance()">
+            <i class="ri-save-line"></i> Salvar Preferências
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main><!-- /main -->
+
+<!-- ═══════════ MODAL PRODUTO ═══════════ -->
+<div id="modal-prod" class="modal-overlay" onclick="if(event.target===this)closeModal('modal-prod')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-prod')"><i class="ri-close-line"></i></button>
+    <div class="modal-title" id="mp-title">Novo Produto</div>
+    <div class="modal-subtitle" id="mp-subtitle">Preencha as informações do produto. Os campos com <span style="color:var(--gold)">*</span> são obrigatórios.</div>
+    <input type="hidden" id="mp-id">
+    <div class="form-grid">
+      <div class="form-sep">Informações Básicas</div>
+      <div class="fg full">
+        <label>Nome do Produto <span class="req">*</span></label>
+        <input type="text" id="mp-name" placeholder="Ex: Sauvage Dior EDP 100ml">
+      </div>
+      <div class="fg">
+        <label>Categoria <span class="req">*</span></label>
+        <select id="mp-cat">
+          <option value="perfumes">Perfumes</option>
+          <option value="roupas">Roupas</option>
+          <option value="relogios">Relógios</option>
+          <option value="joias">Joias</option>
+          <option value="bones">Bonés</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Badge <small style="color:var(--gray)">(opcional)</small></label>
+        <input type="text" id="mp-badge" placeholder="Ex: Novo, Oferta, Destaque...">
+        <div class="fg-hint">Aparece como etiqueta dourada no produto.</div>
+      </div>
+
+      <div class="form-sep">Preço & Estoque</div>
+      <div class="fg">
+        <label>Preço de Venda (R$) <span class="req">*</span></label>
+        <input type="number" id="mp-price" placeholder="0.00" step="0.01" min="0">
+      </div>
+      <div class="fg">
+        <label>Preço Antigo (R$) <small style="color:var(--gray)">(opcional)</small></label>
+        <input type="number" id="mp-old" placeholder="0.00" step="0.01" min="0">
+        <div class="fg-hint">Se preenchido, aparece riscado ao lado do preço.</div>
+      </div>
+      <div class="fg">
+        <label>Quantidade em Estoque <span class="req">*</span></label>
+        <input type="number" id="mp-stock" placeholder="0" min="0">
+        <div class="fg-hint">Estoque ≤ 0 = produto marcado como "Sem Estoque".</div>
+      </div>
+      <div class="fg">
+        <label>URL da Imagem <small style="color:var(--gray)">(opcional)</small></label>
+        <input type="url" id="mp-img" placeholder="https://exemplo.com/imagem.jpg">
+        <div class="fg-hint">Cole o link direto da imagem do produto.</div>
+      </div>
+
+      <div class="form-sep">Descrição</div>
+      <div class="fg full">
+        <label>Descrição do Produto</label>
+        <textarea id="mp-desc" rows="3" placeholder="Descreva o produto: características, material, tamanho..."></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-gold" onclick="saveProd()"><i class="ri-save-line"></i> Salvar Produto</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-prod')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL CLIENTE ═══════════ -->
+<div id="modal-cl" class="modal-overlay" onclick="if(event.target===this)closeModal('modal-cl')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-cl')"><i class="ri-close-line"></i></button>
+    <div class="modal-title" id="mcl-title">Novo Cliente</div>
+    <div class="modal-subtitle">O cliente poderá fazer login na loja com o e-mail e senha definidos aqui.</div>
+    <input type="hidden" id="mcl-id">
+    <div class="form-grid">
+      <div class="fg full">
+        <label>Nome Completo <span class="req">*</span></label>
+        <input type="text" id="mcl-name" placeholder="Nome do cliente">
+      </div>
+      <div class="fg">
+        <label>E-mail <span class="req">*</span></label>
+        <input type="email" id="mcl-email" placeholder="email@exemplo.com">
+      </div>
+      <div class="fg">
+        <label>Senha</label>
+        <input type="password" id="mcl-pass" placeholder="Mínimo 6 caracteres">
+        <div class="fg-hint">Deixe em branco ao editar para manter a senha atual.</div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-gold" onclick="saveClient()"><i class="ri-save-line"></i> Salvar Cliente</button>
+        <button class="btn btn-ghost" onclick="closeModal('modal-cl')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-el" class="toast"></div>
+
+<!-- ═══════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════ -->
+<script>
+// ── AUTH ──
+if (sessionStorage.getItem('mts_admin') !== 'true') location.href = 'login.html';
+
+// ── DATA ──
+const DEFAULT_PRODUCTS = [
+  {id:1,name:"Sauvage Dior EDP",category:"perfumes",price:389.90,oldPrice:520,badge:"Destaque",image:"",description:"Fragrância fresca e intensa com notas amadeiradas e de pimenta. Masculino e sofisticado.",stock:15},
+  {id:2,name:"Bleu de Chanel EDP",category:"perfumes",price:425,oldPrice:null,badge:"Importado",image:"",description:"Woody aromatic fragrance, sofisticado e elegante para o homem moderno.",stock:8},
+  {id:3,name:"Camiseta Premium Preta",category:"roupas",price:129.90,oldPrice:179.90,badge:"Sale",image:"",description:"Camiseta 100% algodão egípcio, corte slim, costura reforçada.",stock:30},
+  {id:4,name:"Camiseta Branca Logo",category:"roupas",price:119.90,oldPrice:null,badge:null,image:"",description:"Camiseta básica premium com bordado dourado exclusivo.",stock:25},
+  {id:5,name:"Relógio Clássico Gold",category:"relogios",price:689.90,oldPrice:899.90,badge:"Oferta",image:"",description:"Relógio analógico com caixa dourada e pulseira de couro legítimo.",stock:5},
+  {id:6,name:"Relógio Black Matte",category:"relogios",price:549.90,oldPrice:null,badge:"Novo",image:"",description:"Design minimalista preto fosco com mostrador clean e ponteiros dourados.",stock:7},
+  {id:7,name:"Corrente Ouro 18k",category:"joias",price:1299.90,oldPrice:1599.90,badge:"Premium",image:"",description:"Corrente banhada a ouro 18k, 50cm, acabamento impecável e duradouro.",stock:3},
+  {id:8,name:"Pulseira Luxo",category:"joias",price:389.90,oldPrice:null,badge:null,image:"",description:"Pulseira banhada a ouro com zircônias de alta qualidade.",stock:10},
+  {id:9,name:"Boné Dad Hat Gold",category:"bones",price:89.90,oldPrice:119.90,badge:null,image:"",description:"Dad hat premium com bordado dourado, aba curva regulável.",stock:20},
+  {id:10,name:"Boné Snapback Preto",category:"bones",price:79.90,oldPrice:null,badge:"Novo",image:"",description:"Snapback premium aba plana com detalhe metálico dourado.",stock:18},
+  {id:11,name:"La Nuit YSL",category:"perfumes",price:359.90,oldPrice:480,badge:null,image:"",description:"Yves Saint Laurent La Nuit. Sedutor, misterioso e elegante. Para noites especiais.",stock:12},
+  {id:12,name:"Bermuda Linho Premium",category:"roupas",price:189.90,oldPrice:249.90,badge:null,image:"",description:"Bermuda de linho italiano, caimento perfeito, conforto o dia todo.",stock:15},
+];
+const DEFAULT_TICKER = [
+  "FRETE GRÁTIS ACIMA DE R$ 299",
+  "PERFUMES IMPORTADOS ORIGINAIS",
+  "PARCELE EM ATÉ 12X SEM JUROS",
+  "30 DIAS PARA TROCA SEM BUROCRACIA",
+];
+const DEFAULT_CATS = [
+  {id:'perfumes',name:'Perfumes',icon:'ri-flask-line'},
+  {id:'roupas',name:'Roupas',icon:'ri-t-shirt-line'},
+  {id:'relogios',name:'Relógios',icon:'ri-time-line'},
+  {id:'joias',name:'Joias',icon:'ri-gem-line'},
+  {id:'bones',name:'Bonés',icon:'ri-shield-star-line'},
+];
+
+const getProds = () => JSON.parse(localStorage.getItem('mts_admin_products') || JSON.stringify(DEFAULT_PRODUCTS));
+const setProds = a => { localStorage.setItem('mts_admin_products', JSON.stringify(a)); localStorage.setItem('mts_products_sync', JSON.stringify(a)); };
+const getUsers = () => JSON.parse(localStorage.getItem('mts_users') || '[]');
+const setUsers = a => localStorage.setItem('mts_users', JSON.stringify(a));
+const getCats = () => JSON.parse(localStorage.getItem('mts_cats') || JSON.stringify(DEFAULT_CATS));
+const setCats = a => localStorage.setItem('mts_cats', JSON.stringify(a));
+const getTicker = () => JSON.parse(localStorage.getItem('mts_ticker') || JSON.stringify(DEFAULT_TICKER));
+const setTickerData = a => localStorage.setItem('mts_ticker', JSON.stringify(a));
+const getCfg = () => JSON.parse(localStorage.getItem('mts_site_config') || '{}');
+const setCfg = c => localStorage.setItem('mts_site_config', JSON.stringify(c));
+const catLabel = c => ({perfumes:'Perfumes',roupas:'Roupas',relogios:'Relógios',joias:'Joias',bones:'Bonés'}[c]||c);
+const catIcon = c => ({perfumes:'ri-flask-line',roupas:'ri-t-shirt-line',relogios:'ri-time-line',joias:'ri-gem-line',bones:'ri-shield-star-line'}[c]||'ri-shopping-bag-line');
+
+// ── TOAST ──
+function toast(msg, icon = 'ri-check-line') {
+  const el = document.getElementById('toast-el');
+  el.innerHTML = `<i class="${icon}"></i> ${msg}`;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ── MODAL ──
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ── NAV ──
+const PAGE_TITLES = {
+  dashboard: ['Dashboard', 'Visão Geral'],
+  produtos: ['Produtos', 'Catálogo'],
+  categorias: ['Categorias', 'Organização'],
+  pedidos: ['Pedidos', 'Gestão'],
+  hero: ['Hero & Textos', 'Página Inicial'],
+  anuncios: ['Anúncios', 'Ticker'],
+  banners: ['Banner Promo', 'Benefícios'],
+  clientes: ['Clientes', 'Usuários'],
+  admins: ['Administradores', 'Sistema'],
+  config: ['Configurações', 'Sistema'],
+  aparencia: ['Aparência', 'Visual'],
+};
+function nav(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+  else document.querySelectorAll('.sb-item').forEach(n => {
+    if (n.getAttribute('onclick')?.includes(`'${id}'`)) n.classList.add('active');
+  });
+  const [title, cur] = PAGE_TITLES[id] || [id, id];
+  document.getElementById('topbar-title').textContent = title;
+  document.getElementById('topbar-cur').textContent = cur;
+  // Render on demand
+  if (id === 'dashboard') renderDash();
+  if (id === 'produtos') renderProds();
+  if (id === 'clientes') renderClients();
+  if (id === 'categorias') renderCats();
+  if (id === 'hero') loadCfg();
+  if (id === 'anuncios') loadTicker();
+  if (id === 'banners') loadBanners();
+  if (id === 'config') loadConf();
+  if (id === 'aparencia') loadAppearance();
+}
+
+// ── ACTIVITY ──
+function addActivity(txt, icon = '') {
+  const list = document.getElementById('ds-activity');
+  if (!list) return;
+  const t = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+  list.insertAdjacentHTML('afterbegin', `
+    <div class="activity-item">
+      <div class="act-dot"></div>
+      <div><div class="act-text">${txt}</div><div class="act-time">${t}</div></div>
+    </div>`);
+}
+
+// ── DASHBOARD ──
+function renderDash() {
+  const prods = getProds(), users = getUsers(), ticker = getTicker();
+  document.getElementById('ds-prods').textContent = prods.length;
+  document.getElementById('ds-users').textContent = users.length;
+  document.getElementById('ds-anuncios').textContent = ticker.length;
+  document.getElementById('nb-prods').textContent = prods.length;
+  document.getElementById('nb-users').textContent = users.length;
+
+  // Produtos
+  const recentProds = prods.slice(-6).reverse();
+  document.getElementById('ds-prod-table').innerHTML = recentProds.length === 0
+    ? '<div class="empty-state"><i class="ri-shopping-bag-line"></i><p>Sem produtos</p><small>Vá em Produtos → Novo Produto</small></div>'
+    : `<table>
+        <thead><tr><th>Nome</th><th>Cat.</th><th>Preço</th><th>Estoque</th></tr></thead>
+        <tbody>${recentProds.map(p=>`<tr>
+          <td><strong style="color:var(--white-soft)">${p.name}</strong></td>
+          <td><span class="badge badge-gray">${catLabel(p.category)}</span></td>
+          <td style="color:var(--gold);font-weight:600">R$ ${p.price.toFixed(2).replace('.',',')}</td>
+          <td>${p.stock > 5 ? `<span style="color:var(--green)">${p.stock}</span>` : p.stock > 0 ? `<span style="color:var(--yellow)">${p.stock}</span>` : `<span style="color:var(--red)">0</span>`}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+
+  // Clientes
+  const recentUsers = users.slice(-5).reverse();
+  document.getElementById('ds-client-table').innerHTML = recentUsers.length === 0
+    ? '<div class="empty-state"><i class="ri-group-line"></i><p>Nenhum cliente ainda</p><small>Clientes se cadastram na loja ou via Admin → Clientes</small></div>'
+    : `<table>
+        <thead><tr><th>Nome</th><th>E-mail</th><th>Cadastro</th><th>Status</th></tr></thead>
+        <tbody>${recentUsers.map(u=>`<tr>
+          <td><strong style="color:var(--white-soft)">${u.name}</strong></td>
+          <td style="color:var(--gray)">${u.email}</td>
+          <td style="color:var(--gray)">${u.createdAt||'—'}</td>
+          <td><span class="badge badge-green">Ativo</span></td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+}
+
+// ── PRODUTOS ──
+function renderProds() {
+  const prods = getProds();
+  const search = document.getElementById('prod-search')?.value?.toLowerCase() || '';
+  const catF = document.getElementById('prod-cat-filter')?.value || '';
+  let list = prods;
+  if (catF) list = list.filter(p => p.category === catF);
+  if (search) list = list.filter(p => p.name.toLowerCase().includes(search));
+  document.getElementById('prod-count').textContent = `${list.length} produto(s)`;
+  const tbody = document.getElementById('prod-tbody');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2.5rem;color:var(--gray)">Nenhum produto encontrado.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(p => `
+    <tr>
+      <td><div class="thumb">${p.image ? `<img src="${p.image}" alt="">` : `<i class="${catIcon(p.category)}"></i>`}</div></td>
+      <td>
+        <strong style="color:var(--white-soft);display:block">${p.name}</strong>
+        ${p.badge ? `<span class="badge badge-gold" style="margin-top:3px">${p.badge}</span>` : ''}
+      </td>
+      <td><span class="badge badge-gray">${catLabel(p.category)}</span></td>
+      <td style="color:var(--gold);font-weight:600">R$ ${p.price.toFixed(2).replace('.',',')}</td>
+      <td style="color:var(--gray)">${p.oldPrice ? `R$ ${p.oldPrice.toFixed(2).replace('.',',')}` : '—'}</td>
+      <td>${p.stock > 5 ? `<span style="color:var(--green)">${p.stock}</span>` : p.stock > 0 ? `<span style="color:var(--yellow)">${p.stock}</span>` : `<span style="color:var(--red)">0</span>`}</td>
+      <td><span class="badge ${p.stock > 0 ? 'badge-green' : 'badge-red'}">${p.stock > 0 ? 'Ativo' : 'Sem Estoque'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-edit btn-xs" onclick="editProd(${p.id})" style="margin-right:4px"><i class="ri-pencil-line"></i></button>
+        <button class="btn btn-danger btn-xs" onclick="delProd(${p.id})"><i class="ri-delete-bin-line"></i></button>
+      </td>
+    </tr>`).join('');
+}
+
+function openProdModal() {
+  document.getElementById('mp-id').value = '';
+  document.getElementById('mp-title').textContent = 'Novo Produto';
+  document.getElementById('mp-subtitle').innerHTML = 'Preencha as informações do produto. Os campos com <span style="color:var(--gold)">*</span> são obrigatórios.';
+  ['mp-name','mp-badge','mp-price','mp-old','mp-stock','mp-img','mp-desc'].forEach(id => { const e = document.getElementById(id); if(e) e.value = ''; });
+  document.getElementById('mp-cat').value = 'perfumes';
+  document.getElementById('modal-prod').classList.add('open');
+}
+
+function editProd(id) {
+  const p = getProds().find(x => x.id === id); if (!p) return;
+  document.getElementById('mp-id').value = id;
+  document.getElementById('mp-title').textContent = 'Editar Produto';
+  document.getElementById('mp-subtitle').textContent = `Editando: ${p.name}`;
+  document.getElementById('mp-name').value = p.name;
+  document.getElementById('mp-cat').value = p.category;
+  document.getElementById('mp-badge').value = p.badge || '';
+  document.getElementById('mp-price').value = p.price;
+  document.getElementById('mp-old').value = p.oldPrice || '';
+  document.getElementById('mp-stock').value = p.stock;
+  document.getElementById('mp-img').value = p.image || '';
+  document.getElementById('mp-desc').value = p.description || '';
+  document.getElementById('modal-prod').classList.add('open');
+}
+
+function saveProd() {
+  const name = document.getElementById('mp-name').value.trim();
+  const price = parseFloat(document.getElementById('mp-price').value);
+  if (!name) { toast('Preencha o nome do produto!', 'ri-error-warning-line'); return; }
+  if (isNaN(price) || price <= 0) { toast('Preencha um preço válido!', 'ri-error-warning-line'); return; }
+  const prods = getProds();
+  const editId = parseInt(document.getElementById('mp-id').value);
+  const data = {
+    name, price,
+    category: document.getElementById('mp-cat').value,
+    badge: document.getElementById('mp-badge').value.trim() || null,
+    oldPrice: parseFloat(document.getElementById('mp-old').value) || null,
+    stock: parseInt(document.getElementById('mp-stock').value) || 0,
+    image: document.getElementById('mp-img').value.trim(),
+    description: document.getElementById('mp-desc').value.trim(),
+  };
+  if (editId) {
+    const i = prods.findIndex(p => p.id === editId);
+    if (i >= 0) prods[i] = { ...prods[i], ...data };
+    toast(`"${name}" atualizado com sucesso!`);
+  } else {
+    data.id = Date.now();
+    prods.push(data);
+    toast(`"${name}" adicionado ao catálogo!`);
+  }
+  setProds(prods);
+  closeModal('modal-prod');
+  renderProds();
+  renderDash();
+  addActivity(`Produto "${name}" ${editId ? 'atualizado' : 'criado'}`);
+}
+
+function delProd(id) {
+  const p = getProds().find(x => x.id === id);
+  if (!confirm(`Excluir "${p?.name}"? Esta ação não pode ser desfeita.`)) return;
+  setProds(getProds().filter(x => x.id !== id));
+  renderProds(); renderDash();
+  toast('Produto excluído.', 'ri-delete-bin-line');
+}
+
+// ── CATEGORIAS ──
+function renderCats() {
+  const cats = getCats();
+  document.getElementById('cat-list').innerHTML = cats.length === 0
+    ? '<div class="empty-state"><i class="ri-price-tag-3-line"></i><p>Nenhuma categoria</p></div>'
+    : cats.map(c => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 1.5rem;border-bottom:1px solid var(--border-soft)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:32px;height:32px;background:var(--gold-pale);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--gold)">
+            <i class="${c.icon}" style="font-size:0.9rem"></i>
+          </div>
+          <div>
+            <strong style="font-size:0.82rem;display:block">${c.name}</strong>
+            <span style="font-size:0.62rem;color:var(--gray)">${c.id}</span>
+          </div>
+        </div>
+        <button class="btn btn-danger btn-xs" onclick="delCat('${c.id}')"><i class="ri-delete-bin-line"></i></button>
+      </div>`).join('');
+}
+
+function addCat() {
+  const name = document.getElementById('cat-name').value.trim();
+  const icon = document.getElementById('cat-icon').value.trim();
+  if (!name) { toast('Digite o nome da categoria!', 'ri-error-warning-line'); return; }
+  const cats = getCats();
+  const id = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'_');
+  if (cats.find(c => c.id === id)) { toast('Essa categoria já existe!', 'ri-error-warning-line'); return; }
+  cats.push({ id, name, icon: icon || 'ri-shopping-bag-line' });
+  setCats(cats); renderCats();
+  document.getElementById('cat-name').value = '';
+  document.getElementById('cat-icon').value = '';
+  toast(`Categoria "${name}" criada!`);
+}
+
+function delCat(id) {
+  if (!confirm(`Excluir a categoria "${id}"?`)) return;
+  setCats(getCats().filter(c => c.id !== id)); renderCats();
+  toast('Categoria excluída.', 'ri-delete-bin-line');
+}
+
+// ── CLIENTES ──
+function renderClients() {
+  const users = getUsers();
+  const s = document.getElementById('cl-search')?.value?.toLowerCase() || '';
+  const list = s ? users.filter(u => u.name.toLowerCase().includes(s) || u.email.toLowerCase().includes(s)) : users;
+  document.getElementById('cl-count').textContent = `${list.length} cliente(s)`;
+  const tbody = document.getElementById('cl-tbody');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2.5rem;color:var(--gray)">Nenhum cliente encontrado.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map((u, i) => `
+    <tr>
+      <td style="color:var(--gold);font-weight:600">${i+1}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dark),var(--gold));display:flex;align-items:center;justify-content:center;color:var(--black);font-weight:700;font-size:0.75rem;flex-shrink:0">${u.name.charAt(0).toUpperCase()}</div>
+          <strong style="color:var(--white-soft)">${u.name}</strong>
+        </div>
+      </td>
+      <td style="color:var(--gray)">${u.email}</td>
+      <td style="color:var(--gray)">${u.createdAt || '—'}</td>
+      <td><span class="badge badge-green">Ativo</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-edit btn-xs" onclick="editClient(${u.id})" style="margin-right:4px"><i class="ri-pencil-line"></i></button>
+        <button class="btn btn-danger btn-xs" onclick="delClient(${u.id})"><i class="ri-delete-bin-line"></i></button>
+      </td>
+    </tr>`).join('');
+}
+
+function openClientModal() {
+  document.getElementById('mcl-id').value = '';
+  document.getElementById('mcl-title').textContent = 'Novo Cliente';
+  ['mcl-name','mcl-email','mcl-pass'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('modal-cl').classList.add('open');
+}
+
+function editClient(id) {
+  const u = getUsers().find(x => x.id === id); if (!u) return;
+  document.getElementById('mcl-id').value = id;
+  document.getElementById('mcl-title').textContent = `Editar: ${u.name}`;
+  document.getElementById('mcl-name').value = u.name;
+  document.getElementById('mcl-email').value = u.email;
+  document.getElementById('mcl-pass').value = '';
+  document.getElementById('modal-cl').classList.add('open');
+}
+
+function saveClient() {
+  const name = document.getElementById('mcl-name').value.trim();
+  const email = document.getElementById('mcl-email').value.trim();
+  const pass = document.getElementById('mcl-pass').value;
+  if (!name || !email) { toast('Preencha nome e e-mail!', 'ri-error-warning-line'); return; }
+  const users = getUsers();
+  const editId = parseInt(document.getElementById('mcl-id').value);
+  if (editId) {
+    const i = users.findIndex(u => u.id === editId);
+    if (i >= 0) { users[i].name = name; users[i].email = email; if (pass) users[i].password = pass; }
+    toast(`Cliente "${name}" atualizado!`);
+  } else {
+    if (users.find(u => u.email === email)) { toast('E-mail já cadastrado!', 'ri-error-warning-line'); return; }
+    users.push({ id: Date.now(), name, email, password: pass || '123456', createdAt: new Date().toLocaleDateString('pt-BR') });
+    toast(`Cliente "${name}" criado!`);
+  }
+  setUsers(users); closeModal('modal-cl'); renderClients(); renderDash();
+}
+
+function delClient(id) {
+  const u = getUsers().find(x => x.id === id);
+  if (!confirm(`Excluir o cliente "${u?.name}"?`)) return;
+  setUsers(getUsers().filter(x => x.id !== id));
+  renderClients(); renderDash();
+  toast('Cliente excluído.', 'ri-delete-bin-line');
+}
+
+// ── HERO CONFIG ──
+function loadCfg() {
+  const c = getCfg();
+  const f = (id, val) => { const e = document.getElementById(id); if (e) e.value = val || ''; };
+  f('cfg-heroTag', c.heroTag || 'Coleção 2026');
+  f('cfg-heroTitle1', c.heroTitle1 || 'O Luxo que');
+  f('cfg-heroTitle2', c.heroTitle2 || 'Você Merece');
+  f('cfg-heroSubtitle', c.heroSubtitle || 'Perfumes importados, roupas exclusivas, relógios, joias e bonés premium.');
+  f('cfg-heroBtn1', c.heroBtn1 || 'Ver Coleção');
+  f('cfg-heroBtn2', c.heroBtn2 || 'Perfumes');
+  f('cfg-siteName', c.siteName || 'MTS Vendas');
+}
+
+function saveCfg() {
+  const g = id => document.getElementById(id)?.value || '';
+  const cfg = getCfg();
+  cfg.heroTag = g('cfg-heroTag');
+  cfg.heroTitle1 = g('cfg-heroTitle1');
+  cfg.heroTitle2 = g('cfg-heroTitle2');
+  cfg.heroSubtitle = g('cfg-heroSubtitle');
+  cfg.heroBtn1 = g('cfg-heroBtn1');
+  cfg.heroBtn2 = g('cfg-heroBtn2');
+  cfg.siteName = g('cfg-siteName');
+  setCfg(cfg);
+  toast('Textos salvos! Recarregue a loja para ver.');
+  addActivity('Textos do hero atualizados');
+}
+
+// ── TICKER ──
+function loadTicker() {
+  const msgs = getTicker();
+  const container = document.getElementById('ticker-list');
+  container.innerHTML = '';
+  msgs.forEach((m, i) => addTickerRowWith(m));
+  updateTickerPreview();
+}
+
+function addTickerRow() {
+  addTickerRowWith('');
+  updateTickerPreview();
+}
+
+function addTickerRowWith(val) {
+  const container = document.getElementById('ticker-list');
+  const div = document.createElement('div');
+  div.className = 'ticker-item-row';
+  div.innerHTML = `
+    <i class="ri-drag-move-line ticker-drag-handle"></i>
+    <input type="text" value="${val}" placeholder="Ex: FRETE GRÁTIS ACIMA DE R$ 299"
+      oninput="updateTickerPreview()" style="text-transform:uppercase">
+    <button class="btn btn-danger btn-xs" onclick="this.parentNode.remove();updateTickerPreview()">
+      <i class="ri-delete-bin-line"></i>
+    </button>`;
+  container.appendChild(div);
+}
+
+function updateTickerPreview() {
+  const inputs = document.querySelectorAll('#ticker-list input');
+  const msgs = [...inputs].map(i => i.value.trim()).filter(Boolean);
+  const prev = document.getElementById('ticker-preview');
+  if (!msgs.length) { prev.textContent = '— sem mensagens —'; return; }
+  prev.textContent = msgs.map(m => '◆ ' + m).join('    ');
+}
+
+function saveTicker() {
+  const inputs = document.querySelectorAll('#ticker-list input');
+  const msgs = [...inputs].map(i => i.value.trim()).filter(Boolean);
+  if (!msgs.length) { toast('Adicione ao menos uma mensagem!', 'ri-error-warning-line'); return; }
+  setTickerData(msgs);
+  toast(`${msgs.length} mensagem(ns) salva(s)!`);
+  addActivity(`Ticker atualizado com ${msgs.length} mensagem(ns)`);
+  updateTickerPreview();
+}
+
+function resetTicker() {
+  if (!confirm('Limpar todas as mensagens do ticker?')) return;
+  document.getElementById('ticker-list').innerHTML = '';
+  updateTickerPreview();
+  toast('Ticker limpo.', 'ri-delete-bin-line');
+}
+
+// ── BANNERS ──
+function loadBanners() {
+  const c = getCfg();
+  const f = (id, val) => { const e = document.getElementById(id); if (e) e.value = val || ''; };
+  f('bn1-title', c.bn1Title || 'Entrega Rápida');
+  f('bn1-desc',  c.bn1Desc  || '3 a 7 dias úteis para todo o Brasil');
+  f('bn2-title', c.bn2Title || 'Compra Segura');
+  f('bn2-desc',  c.bn2Desc  || 'Criptografia SSL 256-bit em todos os pagamentos');
+  f('bn3-title', c.bn3Title || '30 Dias Troca');
+  f('bn3-desc',  c.bn3Desc  || 'Garantia de satisfação sem burocracia');
+  f('bn4-title', c.bn4Title || 'Até 12x sem Juros');
+  f('bn4-desc',  c.bn4Desc  || 'No cartão ou 5% de desconto no Pix');
+}
+
+function saveBanners() {
+  const g = id => document.getElementById(id)?.value || '';
+  const cfg = getCfg();
+  cfg.bn1Title = g('bn1-title'); cfg.bn1Desc = g('bn1-desc');
+  cfg.bn2Title = g('bn2-title'); cfg.bn2Desc = g('bn2-desc');
+  cfg.bn3Title = g('bn3-title'); cfg.bn3Desc = g('bn3-desc');
+  cfg.bn4Title = g('bn4-title'); cfg.bn4Desc = g('bn4-desc');
+  setCfg(cfg);
+  toast('Benefícios salvos! Recarregue a loja.');
+}
+
+// ── CONFIGURAÇÕES ──
+function loadConf() {
+  const c = getCfg();
+  const f = (id, val) => { const e = document.getElementById(id); if (e) e.value = val || ''; };
+  f('conf-name',     c.storeName     || 'MTS Vendas');
+  f('conf-wpp',      c.whatsapp      || '(11) 99999-9999');
+  f('conf-email',    c.storeEmail    || 'mts@mtsvendas.com');
+  f('conf-ig',       c.instagram     || '@mtsvendas');
+  f('conf-tt',       c.tiktok        || '@mtsvendas');
+  f('conf-frete',    c.freteGratis   || '299');
+  f('conf-prazo',    c.prazoEntrega  || '3 a 7 dias úteis');
+  f('conf-wpp2',     c.checkoutWpp   || '(11) 99999-9999');
+}
+
+function saveConf() {
+  const g = id => document.getElementById(id)?.value || '';
+  const cfg = getCfg();
+  cfg.storeName = g('conf-name'); cfg.siteName = g('conf-name');
+  cfg.whatsapp = g('conf-wpp'); cfg.storeEmail = g('conf-email');
+  cfg.instagram = g('conf-ig'); cfg.tiktok = g('conf-tt');
+  cfg.freteGratis = g('conf-frete'); cfg.prazoEntrega = g('conf-prazo');
+  cfg.checkoutWpp = g('conf-wpp2');
+  setCfg(cfg);
+  toast('Configurações salvas!');
+  addActivity('Configurações da loja atualizadas');
+}
+
+function clearProds() {
+  if (!confirm('Resetar TODOS os produtos para o padrão?')) return;
+  localStorage.removeItem('mts_admin_products');
+  localStorage.removeItem('mts_products_sync');
+  toast('Produtos resetados.'); renderDash();
+}
+function clearClients() {
+  if (!confirm('Apagar TODOS os clientes?')) return;
+  localStorage.removeItem('mts_users');
+  toast('Clientes apagados.'); renderDash();
+}
+function clearAll() {
+  if (!confirm('ATENÇÃO: Apagar TODOS os dados? Esta ação é irreversível!')) return;
+  localStorage.clear(); toast('Tudo limpo. Recarregando...');
+  setTimeout(() => location.reload(), 1500);
+}
+
+// ── APARÊNCIA ──
+function loadAppearance() {
+  const c = getCfg();
+  const sw = id => { const e = document.getElementById(id); if (e) e.checked = c[id] !== false; };
+  sw('sw-particles'); sw('sw-grid'); sw('sw-orbs'); sw('sw-ticker'); sw('sw-sweep');
+  if (c.colorGold) { document.getElementById('clr-gold').value = c.colorGold; document.getElementById('sw-gold').style.background = c.colorGold; }
+  if (c.colorBg)   { document.getElementById('clr-bg').value = c.colorBg; document.getElementById('sw-bg').style.background = c.colorBg; }
+  if (c.colorCard) { document.getElementById('clr-card').value = c.colorCard; document.getElementById('sw-card').style.background = c.colorCard; }
+}
+
+function saveColors() {
+  const cfg = getCfg();
+  cfg.colorGold = document.getElementById('clr-gold').value;
+  cfg.colorBg   = document.getElementById('clr-bg').value;
+  cfg.colorCard = document.getElementById('clr-card').value;
+  setCfg(cfg);
+  toast('Cores salvas! Recarregue a loja para aplicar.');
+}
+
+function resetColors() {
+  if (!confirm('Resetar todas as cores para o padrão?')) return;
+  const cfg = getCfg();
+  delete cfg.colorGold; delete cfg.colorBg; delete cfg.colorCard;
+  setCfg(cfg);
+  document.getElementById('clr-gold').value = '#C9A84C';
+  document.getElementById('clr-bg').value   = '#050505';
+  document.getElementById('clr-card').value = '#0E0E0E';
+  document.getElementById('sw-gold').style.background = '#C9A84C';
+  document.getElementById('sw-bg').style.background   = '#050505';
+  document.getElementById('sw-card').style.background = '#0E0E0E';
+  toast('Cores resetadas para o padrão.');
+}
+
+function saveAppearance() {
+  const cfg = getCfg();
+  cfg['sw-particles'] = document.getElementById('sw-particles').checked;
+  cfg['sw-grid']      = document.getElementById('sw-grid').checked;
+  cfg['sw-orbs']      = document.getElementById('sw-orbs').checked;
+  cfg['sw-ticker']    = document.getElementById('sw-ticker').checked;
+  cfg['sw-sweep']     = document.getElementById('sw-sweep').checked;
+  setCfg(cfg);
+  toast('Preferências de aparência salvas!');
+}
+
+// ── LOGOUT ──
+function adminLogout() {
+  sessionStorage.removeItem('mts_admin');
+  location.href = 'login.html';
+}
+
+// ── INIT ──
+document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('pt-BR', {
+  weekday:'short', day:'2-digit', month:'short', year:'numeric'
+});
+document.getElementById('admin-last-access').textContent = new Date().toLocaleString('pt-BR');
+renderDash();
+</script>
+</body>
+</html>

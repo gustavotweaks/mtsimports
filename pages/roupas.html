@@ -1,0 +1,196 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roupas Premium | MTS Vendas</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css">
+  <link rel="icon" type="image/png" href="../ee.png">
+  <style>
+    .size-table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+    .size-table th { background:var(--black-hover); padding:12px 16px; text-align:center; font-family:'Space Grotesk',sans-serif; font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; color:var(--gold); font-weight:600; }
+    .size-table th:first-child { text-align:left; }
+    .size-table td { padding:11px 16px; text-align:center; border-bottom:1px solid var(--border-soft); color:var(--gray-light); }
+    .size-table td:first-child { text-align:left; color:var(--gray); }
+    .size-table tr:last-child td { border-bottom:none; }
+    .size-table tr:hover td { background:rgba(255,255,255,0.02); }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+
+<nav class="navbar" id="navbar">
+  <a href="../index.html" class="navbar-brand">
+    <img src="../ee.png" alt="MTS Vendas">
+    <span class="navbar-brand-text">MTS Vendas</span>
+  </a>
+  <ul class="navbar-nav">
+    <li><a href="../index.html">Início</a></li>
+    <li><a href="produtos.html">Produtos</a></li>
+    <li><a href="perfumes.html">Perfumes</a></li>
+    <li><a href="roupas.html" class="active">Roupas</a></li>
+    <li><a href="contato.html">Contato</a></li>
+    <li><a href="minha-conta.html">Minha Conta</a></li>
+  </ul>
+  <div class="navbar-actions">
+    <a href="minha-conta.html" class="btn-icon"><i class="ri-user-line"></i></a>
+    <button class="btn-icon" onclick="toggleCart()"><i class="ri-shopping-bag-line"></i><span class="cart-count" style="display:none">0</span></button>
+    <button class="hamburger" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="../index.html">Início</a><a href="produtos.html">Produtos</a>
+  <a href="perfumes.html">Perfumes</a><a href="roupas.html">Roupas</a>
+  <a href="contato.html">Contato</a><a href="minha-conta.html">Minha Conta</a>
+</div>
+
+<!-- TICKER DINÂMICO -->
+<div id="ticker-wrap" style="background:var(--gold);color:var(--black);padding:10px 0;overflow:hidden;position:relative;z-index:1;display:none">
+  <div id="ticker-inner" style="display:flex;white-space:nowrap;width:max-content"></div>
+</div>
+<style>@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}</style>
+
+<div class="page-hero">
+  <div style="position:relative;z-index:1">
+    <div class="tag">◆ Coleção</div>
+    <h1 style="margin-top:1.5rem">Roupas <em>Premium</em></h1>
+    <div class="divider"></div>
+    <p>Peças exclusivas com materiais de alta qualidade e design sofisticado</p>
+  </div>
+</div>
+
+<!-- GUIA DE TAMANHOS -->
+<div style="max-width:1200px;margin:3.5rem auto;padding:0 2.5rem">
+  <div style="background:var(--black-card);border:1px solid var(--border-soft);overflow:hidden">
+    <div style="padding:1.5rem 2rem;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:10px">
+      <i class="ri-ruler-line" style="color:var(--gold)"></i>
+      <h3 style="font-family:'Space Grotesk',sans-serif;font-size:0.78rem;font-weight:600;letter-spacing:2.5px;text-transform:uppercase">Guia de Tamanhos</h3>
+    </div>
+    <div style="overflow-x:auto;padding:0 2rem 2rem">
+      <table class="size-table" style="margin-top:1.5rem">
+        <thead>
+          <tr>
+            <th>Medida</th><th>P</th><th>M</th><th>G</th><th>GG</th><th>XG</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Busto (cm)</td><td>88–92</td><td>92–96</td><td>96–100</td><td>100–106</td><td>106–112</td></tr>
+          <tr><td>Cintura (cm)</td><td>66–70</td><td>70–74</td><td>74–78</td><td>78–84</td><td>84–90</td></tr>
+          <tr><td>Comprimento (cm)</td><td>68</td><td>70</td><td>72</td><td>74</td><td>76</td></tr>
+          <tr><td>Ombro (cm)</td><td>40</td><td>42</td><td>44</td><td>46</td><td>48</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- GRID ROUPAS -->
+<section class="section">
+  <div class="section-header">
+    <div class="tag">Coleção</div>
+    <h2 style="margin-top:1.5rem">Nossas <em>Roupas</em></h2>
+    <div class="divider"></div>
+  </div>
+  <div class="products-grid" id="roupas-products"></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="../ee.png" alt="MTS Vendas">
+      <p>Sua loja premium de moda e estilo. Perfumes importados, roupas, relógios, joias e muito mais.</p>
+      <div class="social-links">
+        <a href="#" class="social-link"><i class="ri-instagram-line"></i></a>
+        <a href="#" class="social-link"><i class="ri-whatsapp-line"></i></a>
+        <a href="#" class="social-link"><i class="ri-facebook-line"></i></a>
+      </div>
+    </div>
+    <div class="footer-col"><h4>Produtos</h4><ul>
+      <li><a href="perfumes.html"><i class="ri-flask-line"></i> Perfumes</a></li>
+      <li><a href="roupas.html"><i class="ri-t-shirt-line"></i> Roupas</a></li>
+      <li><a href="produtos.html?cat=relogios"><i class="ri-time-line"></i> Relógios</a></li>
+      <li><a href="produtos.html?cat=joias"><i class="ri-gem-line"></i> Joias</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Informações</h4><ul>
+      <li><a href="contato.html">Contato</a></li>
+      <li><a href="#">Sobre Nós</a></li>
+      <li><a href="#">Política de Entrega</a></li>
+      <li><a href="#">Trocas e Devoluções</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Contato</h4><ul>
+      <li><a href="#"><i class="ri-whatsapp-line"></i> (11) 99999-9999</a></li>
+      <li><a href="#"><i class="ri-mail-line"></i> mts@mtsvendas.com</a></li>
+      <li><a href="#"><i class="ri-time-line"></i> Seg–Sex 9h–18h</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Links Rápidos</h4><ul>
+      <li><a href="minha-conta.html">Minha Conta</a></li>
+      <li><a href="produtos.html">Todos os Produtos</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 <span>MTS Vendas</span>. Todos os direitos reservados.</p>
+    <p>Pagamento seguro com <span>SSL</span></p>
+  </div>
+</footer>
+
+<div class="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-sidebar">
+  <div class="cart-header"><h3><i class="ri-shopping-bag-line"></i> &nbsp;Carrinho</h3><button class="cart-close" onclick="toggleCart()"><i class="ri-close-line"></i></button></div>
+  <div class="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-subtotal"><span>Subtotal</span><strong>R$ 0,00</strong></div>
+    <button class="btn btn-gold w-full" onclick="showToast('Entre em contato pelo WhatsApp! 📱')"><i class="ri-secure-payment-line"></i> Finalizar Pedido</button>
+    <button class="btn btn-dark w-full mt-1" onclick="toggleCart()">Continuar Comprando</button>
+  </div>
+</div>
+
+<button class="chatbot-toggle" onclick="toggleChatbot()"><i class="ri-customer-service-2-line"></i></button>
+<div class="chatbot-window">
+  <div class="chatbot-header"><div><h4>MTS Atendimento</h4><div class="chatbot-status">● Online agora</div></div><button onclick="toggleChatbot()"><i class="ri-close-line"></i></button></div>
+  <div class="chatbot-messages"><div class="chat-msg bot">Olá! 👋 Dúvidas sobre tamanhos? Pergunte!</div></div>
+  <div class="chatbot-suggestions">
+    <button class="suggest-btn" onclick="sendChatMessage('tamanho')">📏 Tamanhos</button>
+    <button class="suggest-btn" onclick="sendChatMessage('entrega')">📦 Entrega</button>
+    <button class="suggest-btn" onclick="sendChatMessage('troca')">🔄 Trocas</button>
+  </div>
+  <div class="chatbot-input"><input type="text" id="chat-input" placeholder="Digite sua dúvida..."><button onclick="sendChatMessage()"><i class="ri-send-plane-fill"></i></button></div>
+</div>
+
+<script src="../js/main.js"></script>
+<script>
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 50);
+  });
+  document.addEventListener('DOMContentLoaded', () => {
+    const adminProds = JSON.parse(localStorage.getItem('mts_admin_products') || 'null');
+    if (adminProds) MTS.products = adminProds;
+    renderProducts(MTS.products.filter(p => p.category === 'roupas'), 'roupas-products');
+  });
+</script>
+<script>
+// Ticker dinâmico
+(function(){
+  var cfg = JSON.parse(localStorage.getItem('mts_site_config')||'{}');
+  var def = ['FRETE GRÁTIS ACIMA DE R$ 299','PERFUMES IMPORTADOS ORIGINAIS','PARCELE EM ATÉ 12X SEM JUROS','30 DIAS PARA TROCA'];
+  var msgs = JSON.parse(localStorage.getItem('mts_ticker')||JSON.stringify(def));
+  var on = cfg['sw-ticker'] !== false;
+  var wrap = document.getElementById('ticker-wrap');
+  var inner = document.getElementById('ticker-inner');
+  if(on && msgs.length > 0 && wrap && inner){
+    var s = "font-family:'Space Grotesk',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;padding:0 3.5rem";
+    var html = msgs.map(function(m){return '<span style="'+s+'">◆ '+m+'</span>';}).join('');
+    inner.innerHTML = html + html;
+    var dur = Math.max(18, msgs.length * 7);
+    inner.style.animation = 'ticker '+dur+'s linear infinite';
+    wrap.style.display = 'block';
+  }
+})();
+</script>
+</body>
+</html>
+

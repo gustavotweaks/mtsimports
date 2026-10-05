@@ -1,0 +1,247 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contato | MTS Vendas</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css">
+  <link rel="icon" type="image/png" href="../ee.png">
+  <style>
+    .contact-layout {
+      display:grid; grid-template-columns:1fr 1.5fr;
+      gap:2rem; max-width:1100px; margin:4rem auto; padding:0 2.5rem;
+      align-items:start;
+    }
+    .contact-card {
+      background:var(--black-card); border:1px solid var(--border-soft);
+      padding:1.8rem; display:flex; align-items:flex-start;
+      gap:1.2rem; margin-bottom:1px; transition:all 0.3s;
+    }
+    .contact-card:hover { border-color:var(--border); background:var(--black-hover); }
+    .contact-icon {
+      width:44px; height:44px; flex-shrink:0;
+      background:var(--gold-pale); border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      color:var(--gold); font-size:1.1rem;
+    }
+    .contact-form-card {
+      background:var(--black-card); border:1px solid var(--border-soft);
+      padding:2.5rem; position:relative; overflow:hidden;
+    }
+    .contact-form-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:2px;
+      background:linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity:0.5;
+    }
+    @media(max-width:768px) { .contact-layout { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+
+<nav class="navbar" id="navbar">
+  <a href="../index.html" class="navbar-brand">
+    <img src="../ee.png" alt="MTS Vendas">
+    <span class="navbar-brand-text">MTS Vendas</span>
+  </a>
+  <ul class="navbar-nav">
+    <li><a href="../index.html">Início</a></li>
+    <li><a href="produtos.html">Produtos</a></li>
+    <li><a href="perfumes.html">Perfumes</a></li>
+    <li><a href="roupas.html">Roupas</a></li>
+    <li><a href="contato.html" class="active">Contato</a></li>
+    <li><a href="minha-conta.html">Minha Conta</a></li>
+  </ul>
+  <div class="navbar-actions">
+    <a href="minha-conta.html" class="btn-icon"><i class="ri-user-line"></i></a>
+    <button class="btn-icon" onclick="toggleCart()"><i class="ri-shopping-bag-line"></i><span class="cart-count" style="display:none">0</span></button>
+    <button class="hamburger" onclick="toggleMobileMenu()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="../index.html">Início</a><a href="produtos.html">Produtos</a>
+  <a href="perfumes.html">Perfumes</a><a href="roupas.html">Roupas</a>
+  <a href="contato.html">Contato</a><a href="minha-conta.html">Minha Conta</a>
+</div>
+
+<!-- TICKER DINÂMICO -->
+<div id="ticker-wrap" style="background:var(--gold);color:var(--black);padding:10px 0;overflow:hidden;position:relative;z-index:1;display:none">
+  <div id="ticker-inner" style="display:flex;white-space:nowrap;width:max-content"></div>
+</div>
+<style>@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}</style>
+
+<div class="page-hero">
+  <div style="position:relative;z-index:1">
+    <div class="tag">◆ Fale Conosco</div>
+    <h1 style="margin-top:1.5rem">Atendimento <em>Premium</em></h1>
+    <div class="divider"></div>
+    <p>Estamos prontos para te ajudar com qualquer dúvida</p>
+  </div>
+</div>
+
+<div class="contact-layout">
+  <!-- INFO -->
+  <div>
+    <div style="margin-bottom:2rem">
+      <div class="tag" style="margin-bottom:1.5rem">Canais</div>
+      <h2 style="font-size:1.8rem;font-weight:300;margin-bottom:0.5rem">Como nos <em>encontrar</em></h2>
+    </div>
+    <div class="contact-card">
+      <div class="contact-icon"><i class="ri-whatsapp-line"></i></div>
+      <div>
+        <strong style="display:block;margin-bottom:4px;font-family:'Space Grotesk',sans-serif;font-size:0.82rem;letter-spacing:1px">WhatsApp</strong>
+        <span style="color:var(--gray);font-size:0.85rem">(11) 99999-9999<br>Seg–Sex 9h–18h / Sáb 9h–14h</span>
+      </div>
+    </div>
+    <div class="contact-card">
+      <div class="contact-icon"><i class="ri-mail-line"></i></div>
+      <div>
+        <strong style="display:block;margin-bottom:4px;font-family:'Space Grotesk',sans-serif;font-size:0.82rem;letter-spacing:1px">E-mail</strong>
+        <span style="color:var(--gray);font-size:0.85rem">mts@mtsvendas.com<br>Resposta em até 24h</span>
+      </div>
+    </div>
+    <div class="contact-card">
+      <div class="contact-icon"><i class="ri-instagram-line"></i></div>
+      <div>
+        <strong style="display:block;margin-bottom:4px;font-family:'Space Grotesk',sans-serif;font-size:0.82rem;letter-spacing:1px">Instagram</strong>
+        <span style="color:var(--gray);font-size:0.85rem">@mtsvendas<br>DM aberto 24h</span>
+      </div>
+    </div>
+    <div class="contact-card">
+      <div class="contact-icon"><i class="ri-time-line"></i></div>
+      <div>
+        <strong style="display:block;margin-bottom:4px;font-family:'Space Grotesk',sans-serif;font-size:0.82rem;letter-spacing:1px">Horário</strong>
+        <span style="color:var(--gray);font-size:0.85rem">Segunda a Sexta: 9h – 18h<br>Sábado: 9h – 14h</span>
+      </div>
+    </div>
+    <div style="margin-top:1.5rem;background:var(--gold-pale);border:1px solid var(--border);padding:1.2rem">
+      <p style="font-size:0.82rem;color:var(--gray-light);line-height:1.7">
+        <i class="ri-information-line" style="color:var(--gold)"></i>
+        Para trocas e devoluções, entre em contato em até <strong style="color:var(--gold)">30 dias</strong> após o recebimento.
+      </p>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="contact-form-card">
+    <div class="tag" style="margin-bottom:1.5rem">Formulário</div>
+    <h3 style="font-size:1.6rem;font-weight:300;margin-bottom:2rem">Envie uma <em style="font-style:normal;color:var(--gold)">Mensagem</em></h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+      <div class="form-group"><label>Nome Completo</label><input type="text" id="c-name" placeholder="Seu nome"></div>
+      <div class="form-group"><label>E-mail</label><input type="email" id="c-email" placeholder="seu@email.com"></div>
+      <div class="form-group"><label>WhatsApp</label><input type="tel" id="c-phone" placeholder="(11) 99999-9999"></div>
+      <div class="form-group"><label>Assunto</label>
+        <select id="c-subject">
+          <option value="">Selecione...</option>
+          <option>Dúvida sobre produto</option>
+          <option>Status do pedido</option>
+          <option>Troca ou devolução</option>
+          <option>Pagamento</option>
+          <option>Outros</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:0.3rem"><label>Mensagem</label><textarea id="c-msg" rows="5" placeholder="Descreva sua dúvida ou solicitação..."></textarea></div>
+    <button class="btn btn-gold w-full" style="margin-top:0.5rem" onclick="sendContact()">
+      <i class="ri-send-plane-line"></i> Enviar Mensagem
+    </button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="../ee.png" alt="MTS Vendas">
+      <p>Sua loja premium de moda e estilo. Perfumes importados, roupas, relógios, joias e muito mais.</p>
+      <div class="social-links">
+        <a href="#" class="social-link"><i class="ri-instagram-line"></i></a>
+        <a href="#" class="social-link"><i class="ri-whatsapp-line"></i></a>
+        <a href="#" class="social-link"><i class="ri-facebook-line"></i></a>
+      </div>
+    </div>
+    <div class="footer-col"><h4>Produtos</h4><ul>
+      <li><a href="perfumes.html"><i class="ri-flask-line"></i> Perfumes</a></li>
+      <li><a href="roupas.html"><i class="ri-t-shirt-line"></i> Roupas</a></li>
+      <li><a href="produtos.html?cat=relogios"><i class="ri-time-line"></i> Relógios</a></li>
+      <li><a href="produtos.html?cat=joias"><i class="ri-gem-line"></i> Joias</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Informações</h4><ul>
+      <li><a href="contato.html">Contato</a></li>
+      <li><a href="#">Sobre Nós</a></li>
+      <li><a href="#">Política de Entrega</a></li>
+    </ul></div>
+    <div class="footer-col"><h4>Contato</h4><ul>
+      <li><a href="#"><i class="ri-whatsapp-line"></i> (11) 99999-9999</a></li>
+      <li><a href="#"><i class="ri-mail-line"></i> mts@mtsvendas.com</a></li>
+    </ul></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 <span>MTS Vendas</span>. Todos os direitos reservados.</p>
+    <p>Pagamento seguro com <span>SSL</span></p>
+  </div>
+</footer>
+
+<div class="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-sidebar">
+  <div class="cart-header"><h3><i class="ri-shopping-bag-line"></i> &nbsp;Carrinho</h3><button class="cart-close" onclick="toggleCart()"><i class="ri-close-line"></i></button></div>
+  <div class="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-subtotal"><span>Subtotal</span><strong>R$ 0,00</strong></div>
+    <button class="btn btn-gold w-full" onclick="showToast('Entre em contato pelo WhatsApp! 📱')"><i class="ri-secure-payment-line"></i> Finalizar Pedido</button>
+    <button class="btn btn-dark w-full mt-1" onclick="toggleCart()">Continuar Comprando</button>
+  </div>
+</div>
+
+<button class="chatbot-toggle" onclick="toggleChatbot()"><i class="ri-customer-service-2-line"></i></button>
+<div class="chatbot-window">
+  <div class="chatbot-header"><div><h4>MTS Atendimento</h4><div class="chatbot-status">● Online agora</div></div><button onclick="toggleChatbot()"><i class="ri-close-line"></i></button></div>
+  <div class="chatbot-messages"><div class="chat-msg bot">Olá! 👋 Como posso ajudar?</div></div>
+  <div class="chatbot-suggestions">
+    <button class="suggest-btn" onclick="sendChatMessage('entrega')">📦 Entrega</button>
+    <button class="suggest-btn" onclick="sendChatMessage('pagamento')">💳 Pagamento</button>
+    <button class="suggest-btn" onclick="sendChatMessage('whatsapp')">📱 Atendente</button>
+  </div>
+  <div class="chatbot-input"><input type="text" id="chat-input" placeholder="Digite sua dúvida..."><button onclick="sendChatMessage()"><i class="ri-send-plane-fill"></i></button></div>
+</div>
+
+<script src="../js/main.js"></script>
+<script>
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 50);
+  });
+  function sendContact() {
+    const name = document.getElementById('c-name').value.trim();
+    const email = document.getElementById('c-email').value.trim();
+    const msg = document.getElementById('c-msg').value.trim();
+    if (!name || !email || !msg) { showToast('Preencha nome, e-mail e mensagem!'); return; }
+    showToast('Mensagem enviada! Retornamos em breve 🎉');
+    ['c-name','c-email','c-phone','c-msg'].forEach(id => document.getElementById(id).value = '');
+  }
+</script>
+<script>
+// Ticker dinâmico
+(function(){
+  var cfg = JSON.parse(localStorage.getItem('mts_site_config')||'{}');
+  var def = ['FRETE GRÁTIS ACIMA DE R$ 299','PERFUMES IMPORTADOS ORIGINAIS','PARCELE EM ATÉ 12X SEM JUROS','30 DIAS PARA TROCA'];
+  var msgs = JSON.parse(localStorage.getItem('mts_ticker')||JSON.stringify(def));
+  var on = cfg['sw-ticker'] !== false;
+  var wrap = document.getElementById('ticker-wrap');
+  var inner = document.getElementById('ticker-inner');
+  if(on && msgs.length > 0 && wrap && inner){
+    var s = "font-family:'Space Grotesk',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;padding:0 3.5rem";
+    var html = msgs.map(function(m){return '<span style="'+s+'">◆ '+m+'</span>';}).join('');
+    inner.innerHTML = html + html;
+    var dur = Math.max(18, msgs.length * 7);
+    inner.style.animation = 'ticker '+dur+'s linear infinite';
+    wrap.style.display = 'block';
+  }
+})();
+</script>
+</body>
+</html>
+

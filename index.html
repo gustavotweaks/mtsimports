@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MTS Vendas | Moda & Estilo Premium</title>
+  <meta name="description" content="MTS Vendas — perfumes importados, roupas, relógios, joias e bonés premium.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css">
+  <link rel="icon" type="image/png" href="ee.png">
+  <style>
+    /* ── HERO REDESIGN ── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: 1fr;
+      align-items: center;
+      padding-top: 72px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Linha horizontal sweep */
+    .sweep-line {
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.5), transparent);
+      animation: sweep 5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .sweep-line:nth-child(2) { animation-delay: 2.5s; top: 60%; }
+    @keyframes sweep {
+      0% { left: -60%; opacity: 0; }
+      30% { opacity: 1; }
+      100% { left: 110%; opacity: 0; }
+    }
+
+    /* Vertical lines */
+    .vert-line {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(180deg, transparent, rgba(201,168,76,0.08), transparent);
+      pointer-events: none;
+    }
+    .vert-line:nth-child(1) { left: 20%; }
+    .vert-line:nth-child(2) { left: 50%; }
+    .vert-line:nth-child(3) { right: 20%; }
+
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 5rem 2.5rem;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 5rem;
+      align-items: center;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* LEFT SIDE */
+    .hero-left {}
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 2.2rem;
+    }
+    .hero-eyebrow-line {
+      width: 32px; height: 1px;
+      background: var(--gold);
+      opacity: 0.6;
+    }
+    .hero-eyebrow-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .hero-h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.2rem, 6vw, 5.8rem);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -1.5px;
+      margin-bottom: 1.8rem;
+      color: var(--white);
+    }
+    .hero-h1 strong {
+      font-weight: 600;
+      color: var(--gold);
+      display: block;
+    }
+    .hero-h1 em {
+      font-style: italic;
+      font-weight: 300;
+      color: rgba(255,255,255,0.55);
+      font-size: 0.7em;
+      display: block;
+      letter-spacing: 0;
+      margin-top: 0.3rem;
+    }
+
+    .hero-desc {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--gray);
+      line-height: 1.85;
+      max-width: 420px;
+      margin-bottom: 2.8rem;
+      font-weight: 300;
+    }
+
+    .hero-ctas {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .hero-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 3.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--border-soft);
+    }
+    .hero-divider-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gray);
+      white-space: nowrap;
+    }
+    .hero-cats {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .hero-cat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border: 1px solid var(--border-soft);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gray-light);
+      text-decoration: none;
+      transition: all 0.25s;
+    }
+    .hero-cat-pill:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: var(--gold-pale);
+    }
+    .hero-cat-pill i { font-size: 0.75rem; }
+
+    /* RIGHT SIDE */
+    .hero-right {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-img-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .hero-img-main {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: var(--black-card);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .hero-img-main::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(201,168,76,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.025) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .hero-img-main img {
+      width: 72%;
+      height: 72%;
+      object-fit: contain;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 0 50px rgba(201,168,76,0.55));
+      animation: logoFloat 5s ease-in-out infinite;
+    }
+    @keyframes logoFloat {
+      0%,100% { transform: translateY(0); filter: drop-shadow(0 0 50px rgba(201,168,76,0.55)); }
+      50% { transform: translateY(-14px); filter: drop-shadow(0 20px 60px rgba(201,168,76,0.75)); }
+    }
+
+    /* Moldura decorativa */
+    .hero-img-wrap::before {
+      content: '';
+      position: absolute;
+      top: -14px; left: -14px;
+      width: 55%; height: 55%;
+      border-top: 1px solid rgba(201,168,76,0.45);
+      border-left: 1px solid rgba(201,168,76,0.45);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .hero-img-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: -14px; right: -14px;
+      width: 55%; height: 55%;
+      border-bottom: 1px solid rgba(201,168,76,0.25);
+      border-right: 1px solid rgba(201,168,76,0.25);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Tags flutuantes nos cantos */
+    .hero-float-tag {
+      position: absolute;
+      background: rgba(10,10,10,0.92);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      padding: 0.7rem 1rem;
+      z-index: 3;
+    }
+    .hero-float-tag-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.58rem;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--gray);
+      display: block;
+      margin-bottom: 2px;
+    }
+    .hero-float-tag-val {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--gold);
+    }
+    .hft-1 { top: 18%; right: -5%; }
+    .hft-2 { bottom: 18%; left: -5%; }
+
+    /* Dot grid decorativo */
+    .hero-dot-grid {
+      position: absolute;
+      bottom: -20px; right: -20px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 7px;
+      z-index: 0;
+      opacity: 0.3;
+    }
+    .hero-dot-grid span {
+      width: 3px; height: 3px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: block;
+    }
+
+    /* ── SECTION REDESIGN ── */
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.2rem;
+    }
+    .section-label::before,
+    .section-label::after {
+      content: '';
+      width: 24px; height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+    }
+    .section-label span {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    /* ── CATEGORIES REDESIGN ── */
+    .cats-wrap {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      background: var(--border-soft);
+    }
+    .cat-item {
+      background: var(--black-card);
+      padding: 2.8rem 1rem;
+      text-align: center;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.35s;
+      position: relative;
+      overflow: hidden;
+    }
+    .cat-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 50%;
+      width: 0; height: 2px;
+      background: var(--gold);
+      transform: translateX(-50%);
+      transition: width 0.35s;
+    }
+    .cat-item:hover { background: var(--black-hover); }
+    .cat-item:hover::after { width: 60%; }
+    .cat-icon-wrap {
+      width: 52px; height: 52px;
+      border: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.35s;
+    }
+    .cat-item:hover .cat-icon-wrap {
+      border-color: var(--gold);
+      background: var(--gold-pale);
+    }
+    .cat-item i { font-size: 1.5rem; color: var(--gold); }
+    .cat-item span {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--gray-light);
+      transition: color 0.25s;
+    }
+    .cat-item:hover span { color: var(--gold); }
+
+    /* ── PROMO BANNER REDESIGN ── */
+    .promo-new {
+      background: var(--black-card);
+      border: 1px solid var(--border-soft);
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1px 1fr 1px 1fr 1px 1fr;
+      position: relative;
+      overflow: hidden;
+    }
+    .promo-new::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.3;
+    }
+    .promo-divider { background: var(--border-soft); }
+    .promo-item {
+      padding: 2.8rem 2rem;
+      text-align: center;
+      transition: background 0.25s;
+    }
+    .promo-item:hover { background: var(--black-hover); }
+    .promo-item i {
+      font-size: 1.6rem;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 1rem;
+    }
+    .promo-item strong {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white-soft);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .promo-item p {
+      font-size: 0.78rem;
+      color: var(--gray);
+    }
+
+    /* ── TESTIMONIALS REDESIGN ── */
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border-soft);
+    }
+    .testi-card {
+      background: var(--black-card);
+      padding: 2.5rem;
+      position: relative;
+      transition: background 0.3s;
+    }
+    .testi-card:hover { background: var(--black-hover); }
+    .testi-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 5rem;
+      color: rgba(201,168,76,0.08);
+      line-height: 1;
+      position: absolute;
+      top: 1.2rem; right: 1.5rem;
+    }
+    .testi-stars { display: flex; gap: 3px; margin-bottom: 1.2rem; }
+    .testi-stars i { color: var(--gold); font-size: 0.75rem; }
+    .testi-text {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      line-height: 1.85;
+      color: var(--gray-light);
+      font-style: italic;
+      font-weight: 300;
+      margin-bottom: 1.8rem;
+    }
+    .testi-author { display: flex; align-items: center; gap: 12px; }
+    .testi-av {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: var(--black);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem; flex-shrink: 0;
+    }
+    .testi-author strong {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.82rem;
+      display: block;
+    }
+    .testi-author span { font-size: 0.7rem; color: var(--gray); }
+
+    /* ── FOOTER YEAR FIX ── */
+    .footer-yr { color: var(--gold); }
+
+    @media (max-width: 992px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 3rem; text-align: center; }
+      .hero-h1 strong, .hero-h1 em { display: inline; }
+      .hero-desc { margin-left: auto; margin-right: auto; }
+      .hero-ctas { justify-content: center; }
+      .hero-divider { justify-content: center; flex-wrap: wrap; }
+      .hero-right { display: none; }
+      .cats-wrap { grid-template-columns: repeat(3, 1fr); }
+      .promo-new { grid-template-columns: 1fr 1fr; }
+      .promo-divider { display: none; }
+      .testi-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .cats-wrap { grid-template-columns: repeat(2, 1fr); }
+      .promo-new { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Fundo -->
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="bg-orb bg-orb-3"></div>
+<canvas id="bg-canvas"></canvas>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="navbar-brand">
+    <img src="ee.png" alt="MTS Vendas" id="site-logo">
+    <span class="navbar-brand-text" id="site-name">MTS Vendas</span>
+  </a>
+  <ul class="navbar-nav">
+    <li><a href="index.html" class="active">Início</a></li>
+    <li><a href="pages/produtos.html">Produtos</a></li>
+    <li><a href="pages/perfumes.html">Perfumes</a></li>
+    <li><a href="pages/roupas.html">Roupas</a></li>
+    <li><a href="pages/contato.html">Contato</a></li>
+    <li><a href="pages/minha-conta.html">Minha Conta</a></li>
+  </ul>
+  <div class="navbar-actions">
+    <a href="pages/minha-conta.html" class="btn-icon" title="Minha Conta"><i class="ri-user-line"></i></a>
+    <button class="btn-icon" onclick="toggleCart()" title="Carrinho">
+      <i class="ri-shopping-bag-line"></i>
+      <span class="cart-count" style="display:none">0</span>
+    </button>
+    <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html">Início</a>
+  <a href="pages/produtos.html">Produtos</a>
+  <a href="pages/perfumes.html">Perfumes</a>
+  <a href="pages/roupas.html">Roupas</a>
+  <a href="pages/contato.html">Contato</a>
+  <a href="pages/minha-conta.html">Minha Conta</a>
+</div>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="sweep-line"></div>
+  <div class="sweep-line"></div>
+  <div class="vert-line"></div>
+  <div class="vert-line"></div>
+  <div class="vert-line"></div>
+
+  <div class="hero-inner">
+    <!-- ESQUERDA -->
+    <div class="hero-left">
+      <div class="hero-eyebrow">
+        <div class="hero-eyebrow-line"></div>
+        <span class="hero-eyebrow-text" id="hero-tag">Coleção 2026</span>
+        <div class="hero-eyebrow-line"></div>
+      </div>
+
+      <h1 class="hero-h1">
+        <span id="hero-title-1">O Luxo que</span>
+        <strong id="hero-title-2">Você Merece</strong>
+        <em id="hero-subtitle-small">estilo sem limite</em>
+      </h1>
+
+      <p class="hero-desc" id="hero-subtitle">
+        Perfumes importados, roupas exclusivas, relógios, joias e bonés premium. Entrega para todo o Brasil.
+      </p>
+
+      <div class="hero-ctas">
+        <a href="pages/produtos.html" class="btn btn-gold" id="hero-btn1">
+          <i class="ri-shopping-bag-line"></i> Ver Coleção
+        </a>
+        <a href="pages/perfumes.html" class="btn btn-outline" id="hero-btn2">
+          <i class="ri-flask-line"></i> Perfumes
+        </a>
+      </div>
+
+      <div class="hero-divider">
+        <span class="hero-divider-label">Explorar</span>
+        <div class="hero-cats">
+          <a href="pages/perfumes.html" class="hero-cat-pill"><i class="ri-flask-line"></i>Perfumes</a>
+          <a href="pages/roupas.html" class="hero-cat-pill"><i class="ri-t-shirt-line"></i>Roupas</a>
+          <a href="pages/produtos.html?cat=relogios" class="hero-cat-pill"><i class="ri-time-line"></i>Relógios</a>
+          <a href="pages/produtos.html?cat=joias" class="hero-cat-pill"><i class="ri-gem-line"></i>Joias</a>
+          <a href="pages/produtos.html?cat=bones" class="hero-cat-pill"><i class="ri-shield-star-line"></i>Bonés</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIREITA -->
+    <div class="hero-right">
+      <div class="hero-img-wrap">
+        <!-- Tags flutuantes -->
+        <div class="hero-float-tag hft-1">
+          <span class="hero-float-tag-label">Entrega</span>
+          <span class="hero-float-tag-val">Todo Brasil</span>
+        </div>
+        <div class="hero-float-tag hft-2">
+          <span class="hero-float-tag-label">Parcelamento</span>
+          <span class="hero-float-tag-val">Até 12x</span>
+        </div>
+
+        <div class="hero-img-main">
+          <img src="ee.png" alt="MTS Vendas">
+        </div>
+
+        <!-- Dot grid -->
+        <div class="hero-dot-grid">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TICKER (100% dinâmico via Admin) ═══ -->
+<div id="ticker-wrap" style="background:var(--gold);color:var(--black);padding:11px 0;overflow:hidden;position:relative;z-index:1;display:none">
+  <div id="ticker-inner" style="display:flex;white-space:nowrap;width:max-content"></div>
+</div>
+<style>
+@keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+</style>
+
+<!-- ═══ CATEGORIAS ═══ -->
+<div style="background:var(--black-soft);padding:6rem 0;position:relative;z-index:1">
+  <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem">
+    <div style="text-align:center;margin-bottom:3rem">
+      <div class="section-label"><span>Explorar</span></div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.8rem);font-weight:300;color:var(--white)">
+        Nossas <em style="font-style:normal;color:var(--gold)">Categorias</em>
+      </h2>
+    </div>
+  </div>
+  <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem">
+    <div class="cats-wrap">
+      <a href="pages/perfumes.html" class="cat-item">
+        <div class="cat-icon-wrap"><i class="ri-flask-line"></i></div>
+        <span>Perfumes</span>
+      </a>
+      <a href="pages/roupas.html" class="cat-item">
+        <div class="cat-icon-wrap"><i class="ri-t-shirt-line"></i></div>
+        <span>Roupas</span>
+      </a>
+      <a href="pages/produtos.html?cat=relogios" class="cat-item">
+        <div class="cat-icon-wrap"><i class="ri-time-line"></i></div>
+        <span>Relógios</span>
+      </a>
+      <a href="pages/produtos.html?cat=joias" class="cat-item">
+        <div class="cat-icon-wrap"><i class="ri-gem-line"></i></div>
+        <span>Joias</span>
+      </a>
+      <a href="pages/produtos.html?cat=bones" class="cat-item">
+        <div class="cat-icon-wrap"><i class="ri-shield-star-line"></i></div>
+        <span>Bonés</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PRODUTOS DESTAQUE ═══ -->
+<section class="section">
+  <div style="text-align:center;margin-bottom:3.5rem">
+    <div class="section-label"><span>Destaques</span></div>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.8rem);font-weight:300;margin-top:0.8rem">
+      Mais <em style="font-style:normal;color:var(--gold)">Vendidos</em>
+    </h2>
+    <p style="color:var(--gray);font-size:0.88rem;margin-top:0.8rem;font-weight:300">Os produtos mais amados pelos nossos clientes</p>
+  </div>
+  <div class="products-grid" id="featured-products"></div>
+  <div style="text-align:center;margin-top:3rem">
+    <a href="pages/produtos.html" class="btn btn-outline">
+      Ver todos os produtos &nbsp;<i class="ri-arrow-right-line"></i>
+    </a>
+  </div>
+</section>
+
+<!-- ═══ BENEFÍCIOS ═══ -->
+<div style="background:var(--black-soft);padding:0;position:relative;z-index:1">
+  <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem">
+    <div class="promo-new">
+      <div class="promo-item">
+        <i class="ri-truck-line"></i>
+        <strong id="bn-1-title">Entrega Rápida</strong>
+        <p id="bn-1-desc">3 a 7 dias úteis para todo o Brasil</p>
+      </div>
+      <div class="promo-divider"></div>
+      <div class="promo-item">
+        <i class="ri-shield-check-line"></i>
+        <strong id="bn-2-title">Compra Segura</strong>
+        <p id="bn-2-desc">Criptografia SSL 256-bit em todos os pagamentos</p>
+      </div>
+      <div class="promo-divider"></div>
+      <div class="promo-item">
+        <i class="ri-exchange-line"></i>
+        <strong id="bn-3-title">30 Dias Troca</strong>
+        <p id="bn-3-desc">Garantia de satisfação sem burocracia</p>
+      </div>
+      <div class="promo-divider"></div>
+      <div class="promo-item">
+        <i class="ri-secure-payment-line"></i>
+        <strong id="bn-4-title">Até 12x sem Juros</strong>
+        <p id="bn-4-desc">No cartão ou 5% de desconto no Pix</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PERFUMES ═══ -->
+<section class="section">
+  <div style="text-align:center;margin-bottom:3.5rem">
+    <div class="section-label"><span>Exclusivo</span></div>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.8rem);font-weight:300;margin-top:0.8rem">
+      Perfumes <em style="font-style:normal;color:var(--gold)">Importados</em>
+    </h2>
+    <p style="color:var(--gray);font-size:0.88rem;margin-top:0.8rem;font-weight:300">Fragrâncias internacionais com procedência 100% garantida</p>
+  </div>
+  <div class="products-grid" id="perfumes-section"></div>
+  <div style="text-align:center;margin-top:3rem">
+    <a href="pages/perfumes.html" class="btn btn-outline">
+      Ver todos os perfumes &nbsp;<i class="ri-arrow-right-line"></i>
+    </a>
+  </div>
+</section>
+
+<!-- ═══ TESTEMUNHOS ═══ -->
+<div style="background:var(--black-soft);padding:6rem 2.5rem;position:relative;z-index:1">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:3.5rem">
+      <div class="section-label"><span>Reviews</span></div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.8rem);font-weight:300;margin-top:0.8rem">
+        O que dizem nossos <em style="font-style:normal;color:var(--gold)">Clientes</em>
+      </h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-quote">"</div>
+        <div class="testi-stars">
+          <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i>
+        </div>
+        <p class="testi-text">Perfume chegou super rápido e bem embalado. É original, o cheiro é incrível. Com certeza volto a comprar!</p>
+        <div class="testi-author">
+          <div class="testi-av">G</div>
+          <div><strong>Gabriel S.</strong><span>São Paulo — SP</span></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-quote">"</div>
+        <div class="testi-stars">
+          <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i>
+        </div>
+        <p class="testi-text">Comprei o relógio gold e fiquei apaixonada. Qualidade incrível, atendimento excelente. Recomendo demais!</p>
+        <div class="testi-author">
+          <div class="testi-av">A</div>
+          <div><strong>Amanda L.</strong><span>Rio de Janeiro — RJ</span></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-quote">"</div>
+        <div class="testi-stars">
+          <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i>
+        </div>
+        <p class="testi-text">As camisetas têm uma qualidade fora do normal. Algodão premium e acabamento impecável. Vale cada centavo!</p>
+        <div class="testi-author">
+          <div class="testi-av">R</div>
+          <div><strong>Ricardo M.</strong><span>Belo Horizonte — MG</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ NEWSLETTER ═══ -->
+<section style="padding:6rem 2.5rem;position:relative;z-index:1">
+  <div class="newsletter">
+    <div class="section-label" style="justify-content:center"><span>Newsletter</span></div>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;margin-top:1rem">
+      Ofertas <em style="font-style:normal;color:var(--gold)">Exclusivas</em>
+    </h2>
+    <p style="margin-top:0.8rem;color:var(--gray);font-size:0.88rem;font-weight:300">Receba em primeira mão nossas promoções e lançamentos.</p>
+    <div class="newsletter-form" style="margin-top:2.2rem">
+      <input type="email" placeholder="Seu melhor e-mail">
+      <button onclick="showToast('Obrigado! Você está na lista VIP 🎉')">Entrar</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="ee.png" alt="MTS Vendas">
+      <p>Sua loja de moda e estilo. Perfumes importados, roupas, relógios, joias e muito mais. Qualidade com elegância.</p>
+      <div class="social-links">
+        <a href="#" class="social-link" aria-label="Instagram"><i class="ri-instagram-line"></i></a>
+        <a href="#" class="social-link" aria-label="WhatsApp"><i class="ri-whatsapp-line"></i></a>
+        <a href="#" class="social-link" aria-label="Facebook"><i class="ri-facebook-line"></i></a>
+        <a href="#" class="social-link" aria-label="TikTok"><i class="ri-tiktok-line"></i></a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Produtos</h4>
+      <ul>
+        <li><a href="pages/perfumes.html"><i class="ri-flask-line"></i> Perfumes</a></li>
+        <li><a href="pages/roupas.html"><i class="ri-t-shirt-line"></i> Roupas</a></li>
+        <li><a href="pages/produtos.html?cat=relogios"><i class="ri-time-line"></i> Relógios</a></li>
+        <li><a href="pages/produtos.html?cat=joias"><i class="ri-gem-line"></i> Joias</a></li>
+        <li><a href="pages/produtos.html?cat=bones"><i class="ri-shield-star-line"></i> Bonés</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Informações</h4>
+      <ul>
+        <li><a href="pages/contato.html">Contato</a></li>
+        <li><a href="#">Sobre Nós</a></li>
+        <li><a href="#">Política de Entrega</a></li>
+        <li><a href="#">Trocas e Devoluções</a></li>
+        <li><a href="#">Privacidade</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contato</h4>
+      <ul>
+        <li><a href="#"><i class="ri-whatsapp-line"></i> (11) 99999-9999</a></li>
+        <li><a href="#"><i class="ri-mail-line"></i> mts@mtsvendas.com</a></li>
+        <li><a href="#"><i class="ri-map-pin-line"></i> Brasil</a></li>
+        <li><a href="#"><i class="ri-time-line"></i> Seg–Sex 9h–18h</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© <span class="footer-yr">2026</span> <span>MTS Vendas</span>. Todos os direitos reservados.</p>
+    <p style="display:flex;align-items:center;gap:1.5rem">
+      <span>Pagamento seguro com <span>SSL</span></span>
+      <a href="admin/login.html" style="font-size:0.7rem;color:var(--gray);transition:all 0.25s;display:flex;align-items:center;gap:4px"
+         onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--gray)'">
+        <i class="ri-settings-3-line"></i> Admin
+      </a>
+    </p>
+  </div>
+</footer>
+
+<!-- CARRINHO -->
+<div class="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-sidebar">
+  <div class="cart-header">
+    <h3><i class="ri-shopping-bag-line"></i> &nbsp;Carrinho</h3>
+    <button class="cart-close" onclick="toggleCart()"><i class="ri-close-line"></i></button>
+  </div>
+  <div class="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-subtotal"><span>Subtotal</span><strong>R$ 0,00</strong></div>
+    <button class="btn btn-gold w-full" onclick="showToast('Entre em contato pelo WhatsApp para finalizar! 📱')">
+      <i class="ri-secure-payment-line"></i> Finalizar Pedido
+    </button>
+    <button class="btn btn-dark w-full mt-1" onclick="toggleCart()">Continuar Comprando</button>
+  </div>
+</div>
+
+<!-- CHATBOT -->
+<button class="chatbot-toggle" onclick="toggleChatbot()" title="Atendimento">
+  <i class="ri-customer-service-2-line"></i>
+</button>
+<div class="chatbot-window">
+  <div class="chatbot-header">
+    <div><h4>MTS Atendimento</h4><div class="chatbot-status">● Online agora</div></div>
+    <button onclick="toggleChatbot()"><i class="ri-close-line"></i></button>
+  </div>
+  <div class="chatbot-messages">
+    <div class="chat-msg bot">Olá! 👋 Bem-vindo(a) à <strong>MTS Vendas</strong>. Como posso ajudar?</div>
+  </div>
+  <div class="chatbot-suggestions">
+    <button class="suggest-btn" onclick="sendChatMessage('entrega')">📦 Entrega</button>
+    <button class="suggest-btn" onclick="sendChatMessage('pagamento')">💳 Pagamento</button>
+    <button class="suggest-btn" onclick="sendChatMessage('troca')">🔄 Trocas</button>
+    <button class="suggest-btn" onclick="sendChatMessage('tamanho')">📏 Tamanhos</button>
+    <button class="suggest-btn" onclick="sendChatMessage('whatsapp')">📱 Atendente</button>
+  </div>
+  <div class="chatbot-input">
+    <input type="text" id="chat-input" placeholder="Digite sua dúvida...">
+    <button onclick="sendChatMessage()"><i class="ri-send-plane-fill"></i></button>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+// ── PARTÍCULAS ──
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let P = [], W, H;
+
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function mk() {
+    return {
+      x: Math.random()*W, y: Math.random()*H,
+      vx: (Math.random()-.5)*.25, vy: (Math.random()-.5)*.25,
+      r: Math.random()*1.4+.3,
+      pulse: Math.random()*Math.PI*2
+    };
+  }
+  for (let i = 0; i < 75; i++) P.push(mk());
+
+  function frame() {
+    ctx.clearRect(0,0,W,H);
+    P.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      p.pulse += 0.018;
+      const a = Math.sin(p.pulse) * 0.18 + 0.22;
+      if (p.x<0||p.x>W||p.y<0||p.y>H) { Object.assign(p, mk()); return; }
+      ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = '#C9A84C';
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+    });
+    // conexões
+    for (let i = 0; i < P.length; i++) {
+      for (let j = i+1; j < P.length; j++) {
+        const dx = P[i].x-P[j].x, dy = P[i].y-P[j].y;
+        const d = Math.sqrt(dx*dx+dy*dy);
+        if (d < 110) {
+          ctx.save(); ctx.globalAlpha = (1-d/110)*0.06;
+          ctx.strokeStyle = '#C9A84C'; ctx.lineWidth = .4;
+          ctx.beginPath(); ctx.moveTo(P[i].x,P[i].y); ctx.lineTo(P[j].x,P[j].y); ctx.stroke();
+          ctx.restore();
+        }
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+// ── NAVBAR SCROLL ──
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  const cfg = JSON.parse(localStorage.getItem('mts_site_config') || '{}');
+
+  // ── Textos do hero ──
+  if (cfg.siteName)    document.getElementById('site-name').textContent    = cfg.siteName;
+  if (cfg.heroTag)     document.getElementById('hero-tag').textContent     = cfg.heroTag;
+  if (cfg.heroTitle1)  document.getElementById('hero-title-1').textContent = cfg.heroTitle1;
+  if (cfg.heroTitle2)  document.getElementById('hero-title-2').textContent = cfg.heroTitle2;
+  if (cfg.heroSubtitle) document.getElementById('hero-subtitle').textContent = cfg.heroSubtitle;
+  if (cfg.heroBtn1) document.getElementById('hero-btn1').innerHTML = '<i class="ri-shopping-bag-line"></i> ' + cfg.heroBtn1;
+  if (cfg.heroBtn2) document.getElementById('hero-btn2').innerHTML = '<i class="ri-flask-line"></i> ' + cfg.heroBtn2;
+
+  // ── Ticker dinâmico via admin ──
+  const DEFAULT_TICKER = [
+    'FRETE GRÁTIS ACIMA DE R$ 299',
+    'PERFUMES IMPORTADOS ORIGINAIS',
+    'PARCELE EM ATÉ 12X SEM JUROS',
+    '30 DIAS PARA TROCA SEM BUROCRACIA',
+  ];
+  const tickerMsgs = JSON.parse(localStorage.getItem('mts_ticker') || JSON.stringify(DEFAULT_TICKER));
+  const tickerEnabled = cfg['sw-ticker'] !== false;
+  const tickerWrap  = document.getElementById('ticker-wrap');
+  const tickerInner = document.getElementById('ticker-inner');
+
+  if (tickerEnabled && tickerMsgs.length > 0) {
+    // Duplicar para loop contínuo
+    const spanStyle = `font-family:'Space Grotesk',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;padding:0 3.5rem`;
+    const html = tickerMsgs.map(m => `<span style="${spanStyle}">◆ ${m}</span>`).join('');
+    tickerInner.innerHTML = html + html; // duplicado = loop sem salto
+    const totalWidth = tickerMsgs.length * 2; // proporcional à qtd
+    const duration = Math.max(18, tickerMsgs.length * 7); // ~7s por mensagem
+    tickerInner.style.animation = `ticker ${duration}s linear infinite`;
+    tickerWrap.style.display = 'block';
+  }
+
+  // ── Efeitos de fundo via admin ──
+  if (cfg['sw-grid'] === false)      document.querySelector('.bg-grid')?.remove();
+  if (cfg['sw-orbs'] === false) {
+    document.querySelectorAll('.bg-orb').forEach(el => el.remove());
+  }
+  if (cfg['sw-sweep'] === false) {
+    document.querySelectorAll('.sweep-line').forEach(el => el.remove());
+  }
+
+  // ── Benefícios dinâmicos via admin ──
+  const bns = [
+    { titleId:'bn-1-title', descId:'bn-1-desc', cfgTitle:'bn1Title', cfgDesc:'bn1Desc' },
+    { titleId:'bn-2-title', descId:'bn-2-desc', cfgTitle:'bn2Title', cfgDesc:'bn2Desc' },
+    { titleId:'bn-3-title', descId:'bn-3-desc', cfgTitle:'bn3Title', cfgDesc:'bn3Desc' },
+    { titleId:'bn-4-title', descId:'bn-4-desc', cfgTitle:'bn4Title', cfgDesc:'bn4Desc' },
+  ];
+  bns.forEach(b => {
+    const tEl = document.getElementById(b.titleId);
+    const dEl = document.getElementById(b.descId);
+    if (tEl && cfg[b.cfgTitle]) tEl.textContent = cfg[b.cfgTitle];
+    if (dEl && cfg[b.cfgDesc])  dEl.textContent = cfg[b.cfgDesc];
+  });
+
+  // ── Cores personalizadas ──
+  if (cfg.colorGold || cfg.colorBg || cfg.colorCard) {
+    const style = document.createElement('style');
+    style.textContent = `:root {
+      ${cfg.colorGold ? `--gold:${cfg.colorGold};` : ''}
+      ${cfg.colorBg   ? `--black:${cfg.colorBg};`  : ''}
+      ${cfg.colorCard ? `--black-card:${cfg.colorCard};` : ''}
+    }`;
+    document.head.appendChild(style);
+  }
+
+  // ── Produtos ──
+  const adminProds = JSON.parse(localStorage.getItem('mts_admin_products') || 'null');
+  if (adminProds) MTS.products = adminProds;
+
+  renderProducts(MTS.products.slice(0, 4), 'featured-products');
+  renderProducts(MTS.products.filter(p => p.category === 'perfumes'), 'perfumes-section');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | MTS Vendas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css">
+  <link rel="icon" type="image/png" href="../ee.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Space+Grotesk:wght@400;500;600&display=swap');
+    :root {
+      --gold:#C9A84C; --gold-light:#E8C97A; --gold-dark:#A07830;
+      --black:#050505; --black-card:#0F0F0F; --black-hover:#141414;
+      --border:rgba(201,168,76,0.2); --border-soft:rgba(255,255,255,0.06);
+      --white:#fff; --gray:#666; --gray-light:#aaa;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family:'Space Grotesk',sans-serif;
+      background:var(--black);
+      color:var(--white);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      position:relative;
+    }
+
+    /* BG */
+    .bg-grid {
+      position:fixed; inset:0; pointer-events:none;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+      background-size:55px 55px;
+    }
+    .bg-orb {
+      position:fixed; border-radius:50%;
+      pointer-events:none; filter:blur(100px);
+    }
+    .orb1 {
+      width:600px; height:600px;
+      background:radial-gradient(circle,rgba(201,168,76,0.07) 0%,transparent 70%);
+      top:-20%; right:-15%;
+      animation:float 8s ease-in-out infinite;
+    }
+    .orb2 {
+      width:400px; height:400px;
+      background:radial-gradient(circle,rgba(201,168,76,0.05) 0%,transparent 70%);
+      bottom:-10%; left:-10%;
+      animation:float 10s ease-in-out infinite reverse;
+    }
+    @keyframes float {
+      0%,100% { transform:translateY(0); }
+      50% { transform:translateY(-25px); }
+    }
+    canvas#particles { position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0.4; }
+
+    /* CARD */
+    .login-wrap { position:relative; z-index:10; width:100%; max-width:420px; padding:2rem; }
+
+    .login-card {
+      background:rgba(15,15,15,0.92);
+      border:1px solid var(--border);
+      padding:3rem 2.5rem;
+      position:relative;
+      backdrop-filter:blur(20px);
+    }
+    .login-card::before {
+      content:'';
+      position:absolute; top:-1px; left:20px; right:20px; height:1px;
+      background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    .login-card::after {
+      content:'';
+      position:absolute; bottom:-1px; left:20px; right:20px; height:1px;
+      background:linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent);
+    }
+
+    /* Corner accents */
+    .corner { position:absolute; width:16px; height:16px; }
+    .corner-tl { top:-1px; left:-1px; border-top:2px solid var(--gold); border-left:2px solid var(--gold); }
+    .corner-tr { top:-1px; right:-1px; border-top:2px solid var(--gold); border-right:2px solid var(--gold); }
+    .corner-bl { bottom:-1px; left:-1px; border-bottom:2px solid var(--gold); border-left:2px solid var(--gold); }
+    .corner-br { bottom:-1px; right:-1px; border-bottom:2px solid var(--gold); border-right:2px solid var(--gold); }
+
+    /* Logo */
+    .login-logo {
+      text-align:center;
+      margin-bottom:2.5rem;
+    }
+    .logo-ring {
+      width:90px; height:90px;
+      border:1px solid var(--border);
+      border-radius:50%;
+      margin:0 auto 1.2rem;
+      display:flex; align-items:center; justify-content:center;
+      position:relative;
+      background:var(--black-card);
+    }
+    .logo-ring::before {
+      content:'';
+      position:absolute; inset:-4px;
+      border-radius:50%;
+      border:1px solid rgba(201,168,76,0.15);
+      animation:spinRing 6s linear infinite;
+    }
+    .logo-ring::after {
+      content:'';
+      position:absolute; inset:-4px;
+      border-radius:50%;
+      border-top:1px solid var(--gold);
+      border-right:1px solid transparent;
+      animation:spinRing 3s linear infinite;
+    }
+    @keyframes spinRing { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+    .logo-ring img { width:54px; height:54px; object-fit:contain; position:relative; z-index:1; filter:drop-shadow(0 0 8px rgba(201,168,76,0.4)); }
+
+    .login-logo h2 {
+      font-family:'Cormorant Garamond',serif;
+      font-size:1.6rem; font-weight:400;
+      color:var(--white); letter-spacing:1px;
+    }
+    .login-logo p {
+      font-size:0.65rem; letter-spacing:4px;
+      text-transform:uppercase; color:var(--gold);
+      margin-top:4px;
+    }
+
+    /* FORM */
+    .form-group { margin-bottom:1.4rem; }
+    .form-group label {
+      display:block;
+      font-size:0.62rem; font-weight:600;
+      letter-spacing:3px; text-transform:uppercase;
+      color:var(--gray); margin-bottom:8px;
+    }
+    .input-wrap { position:relative; }
+    .input-wrap i {
+      position:absolute; left:14px; top:50%;
+      transform:translateY(-50%); color:var(--gray);
+      font-size:0.95rem; pointer-events:none;
+    }
+    .input-wrap input {
+      width:100%;
+      padding:13px 16px 13px 42px;
+      background:rgba(255,255,255,0.03);
+      border:1px solid var(--border-soft);
+      color:var(--white);
+      font-family:'Space Grotesk',sans-serif;
+      font-size:0.9rem; outline:none;
+      transition:all 0.3s;
+    }
+    .input-wrap input:focus {
+      border-color:var(--gold);
+      background:rgba(201,168,76,0.04);
+    }
+    .input-wrap input::placeholder { color:var(--gray); }
+
+    /* Eye toggle */
+    .eye-toggle {
+      position:absolute; right:14px; top:50%;
+      transform:translateY(-50%);
+      background:none; border:none; color:var(--gray);
+      cursor:pointer; font-size:0.95rem;
+      transition:color 0.2s;
+    }
+    .eye-toggle:hover { color:var(--gold); }
+
+    /* BTN */
+    .btn-login {
+      width:100%; padding:14px;
+      background:linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+      background-size:200% 200%;
+      color:var(--black);
+      border:none;
+      font-family:'Space Grotesk',sans-serif;
+      font-size:0.72rem; font-weight:700;
+      letter-spacing:3px; text-transform:uppercase;
+      cursor:pointer;
+      transition:all 0.4s;
+      position:relative; overflow:hidden;
+      margin-top:0.5rem;
+    }
+    .btn-login::before {
+      content:'';
+      position:absolute; inset:0;
+      background:rgba(255,255,255,0.1);
+      transform:translateX(-100%);
+      transition:transform 0.5s ease;
+    }
+    .btn-login:hover::before { transform:translateX(0); }
+    .btn-login:hover { box-shadow:0 8px 30px rgba(201,168,76,0.5); transform:translateY(-1px); }
+    .btn-login:active { transform:translateY(0); }
+
+    /* ERROR */
+    .error-box {
+      display:none;
+      background:rgba(231,76,60,0.08);
+      border:1px solid rgba(231,76,60,0.25);
+      color:#e74c3c;
+      padding:10px 14px;
+      font-size:0.8rem; margin-bottom:1.2rem;
+      display:flex; align-items:center; gap:8px;
+    }
+    .error-box.hidden { display:none !important; }
+
+    /* BACK */
+    .back-link {
+      text-align:center; margin-top:2rem;
+      padding-top:1.5rem; border-top:1px solid var(--border-soft);
+    }
+    .back-link a {
+      color:var(--gray); font-size:0.78rem;
+      text-decoration:none; transition:color 0.3s;
+      display:inline-flex; align-items:center; gap:6px;
+    }
+    .back-link a:hover { color:var(--gold); }
+
+    /* STATUS */
+    .system-status {
+      display:flex; align-items:center; justify-content:center;
+      gap:8px; margin-top:1.5rem;
+      font-size:0.65rem; letter-spacing:2px;
+      text-transform:uppercase; color:var(--gray);
+    }
+    .status-dot {
+      width:6px; height:6px; border-radius:50%;
+      background:#2ecc71;
+      box-shadow:0 0 6px rgba(46,204,113,0.6);
+      animation:blink 2s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<canvas id="particles"></canvas>
+
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div>
+    <div class="corner corner-br"></div>
+
+    <div class="login-logo">
+      <div class="logo-ring">
+        <img src="../ee.png" alt="MTS Vendas">
+      </div>
+      <h2>MTS Vendas</h2>
+      <p>Painel Administrativo</p>
+    </div>
+
+    <div class="error-box hidden" id="error-box">
+      <i class="ri-error-warning-line"></i>
+      <span>Usuário ou senha incorretos.</span>
+    </div>
+
+    <div class="form-group">
+      <label>Usuário</label>
+      <div class="input-wrap">
+        <i class="ri-user-line"></i>
+        <input type="text" id="admin-user" placeholder="Digite o usuário" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Senha</label>
+      <div class="input-wrap">
+        <i class="ri-lock-line"></i>
+        <input type="password" id="admin-pass" placeholder="Digite a senha" id="pass-input">
+        <button class="eye-toggle" onclick="togglePass()" type="button" id="eye-btn">
+          <i class="ri-eye-off-line" id="eye-icon"></i>
+        </button>
+      </div>
+    </div>
+
+    <button class="btn-login" onclick="adminLogin()">
+      <i class="ri-login-circle-line"></i> &nbsp;Acessar Painel
+    </button>
+
+    <div class="system-status">
+      <div class="status-dot"></div>
+      Sistema Operacional
+    </div>
+
+    <div class="back-link">
+      <a href="../index.html">
+        <i class="ri-arrow-left-line"></i> Voltar à loja
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Redirecionar se já logado
+  if (sessionStorage.getItem('mts_admin') === 'true') window.location.href = 'painel.html';
+
+  function adminLogin() {
+    const user = document.getElementById('admin-user').value.trim();
+    const pass = document.getElementById('admin-pass').value;
+    const errEl = document.getElementById('error-box');
+    if (user === 'MTS' && pass === '09fwehj9dwfh-2341843#@') {
+      errEl.classList.add('hidden');
+      sessionStorage.setItem('mts_admin', 'true');
+      // Efeito de loading
+      const btn = document.querySelector('.btn-login');
+      btn.innerHTML = '<i class="ri-loader-4-line"></i> &nbsp;Carregando...';
+      btn.style.opacity = '0.8';
+      setTimeout(() => window.location.href = 'painel.html', 700);
+    } else {
+      errEl.classList.remove('hidden');
+      document.querySelector('.login-card').style.animation = 'shake 0.4s ease';
+      setTimeout(() => document.querySelector('.login-card').style.animation = '', 400);
+    }
+  }
+
+  function togglePass() {
+    const inp = document.getElementById('admin-pass');
+    const icon = document.getElementById('eye-icon');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      icon.className = 'ri-eye-line';
+    } else {
+      inp.type = 'password';
+      icon.className = 'ri-eye-off-line';
+    }
+  }
+
+  document.addEventListener('keypress', e => { if (e.key === 'Enter') adminLogin(); });
+
+  // Partículas leves
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, pts = [];
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+  for (let i = 0; i < 50; i++) pts.push({
+    x: Math.random()*1000, y: Math.random()*1000,
+    vx: (Math.random()-.5)*.4, vy: (Math.random()-.5)*.4,
+    r: Math.random()*1.2+.3, a: Math.random()*.4+.1
+  });
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p => {
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>W) p.vx*=-1;
+      if(p.y<0||p.y>H) p.vy*=-1;
+      ctx.save(); ctx.globalAlpha=p.a; ctx.fillStyle='#C9A84C';
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); ctx.restore();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+</script>
+<style>
+@keyframes shake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-6px)}
+  40%{transform:translateX(6px)}
+  60%{transform:translateX(-4px)}
+  80%{transform:translateX(4px)}
+}
+</style>
+</body>
+</html>
