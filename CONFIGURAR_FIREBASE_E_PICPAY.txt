@@ -1,0 +1,45 @@
+MTS SITE — CONFIGURAÇÃO FIREBASE + PICPAY
+
+1) FIREBASE
+- Entre no Firebase Console e crie/abra seu projeto.
+- Adicione um App Web (ícone </>).
+- Copie firebaseConfig para js/firebase-config.js.
+- Em Authentication > Sign-in method, habilite Email/Senha.
+- Em Authentication > Users, crie o usuário administrador.
+- Coloque o MESMO e-mail em window.MTS_ADMIN_EMAIL no js/firebase-config.js.
+- Troque COLE_SEU_EMAIL_ADMIN_AQUI em firestore.rules pelo mesmo e-mail.
+- Crie o Firestore Database.
+
+2) FIREBASE CLI / DEPLOY
+No terminal, dentro da pasta MTS SITE:
+  npm install -g firebase-tools
+  firebase login
+  firebase use --add
+  firebase deploy --only firestore:rules
+  cd functions
+  npm install
+  cd ..
+  firebase functions:secrets:set PICPAY_CLIENT_ID
+  firebase functions:secrets:set PICPAY_CLIENT_SECRET
+  firebase functions:secrets:set PICPAY_WEBHOOK_TOKEN
+  firebase deploy --only functions
+
+Depois do deploy, copie a base das URLs das functions para:
+  window.MTS_FUNCTIONS_BASE_URL = "https://REGIAO-SEU_PROJETO.cloudfunctions.net"
+no arquivo js/firebase-config.js.
+
+3) PICPAY
+- Painel Lojista > Integrações > Checkout > Gerar Token.
+- Guarde client_id e client_secret nos Firebase Secrets acima. NUNCA coloque client_secret no HTML/JS.
+- No Painel Lojista > Ajustes > Meu checkout, ative URL de notificação.
+- Use a URL HTTPS da function picpayWebhook, exibida após o deploy.
+- Guarde o token do webhook e informe no secret PICPAY_WEBHOOK_TOKEN.
+
+4) TESTE
+- Entre em /admin/login.html usando o e-mail/senha criados no Firebase Authentication.
+- Adicione/edite um produto. Ele será gravado no Firestore e atualizado para todos em tempo real.
+- Adicione produto ao carrinho > Pagar com Pix > preencha os dados > Gerar QR Code.
+- Após o PicPay notificar o webhook com status PAID, a tela muda para Pagamento aprovado.
+
+IMPORTANTE
+Antes de produção, teste todo o fluxo e confirme regras, domínio e credenciais. As credenciais PicPay ficam somente nas Cloud Functions.

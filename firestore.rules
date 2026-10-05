@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email == "mtsvendas@gmail.com";
+    }
+
+    // Catálogo público da MTS: todos podem visualizar; somente o admin altera.
+    match /store/catalog {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Pedidos: serão gravados somente pelo backend seguro do checkout.
+    match /orders/{id} {
+      allow read, write: if false;
+    }
+  }
+}

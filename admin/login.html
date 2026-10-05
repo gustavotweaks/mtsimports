@@ -233,6 +233,12 @@
     }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
   </style>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-config.js"></script>
+<script src="../js/firebase-sync.js"></script>
 </head>
 <body>
 
@@ -301,23 +307,18 @@
   // Redirecionar se já logado
   if (sessionStorage.getItem('mts_admin') === 'true') window.location.href = 'painel.html';
 
-  function adminLogin() {
+  async function adminLogin() {
     const user = document.getElementById('admin-user').value.trim();
     const pass = document.getElementById('admin-pass').value;
     const errEl = document.getElementById('error-box');
-    if (user === 'MTS' && pass === '09fwehj9dwfh-2341843#@') {
-      errEl.classList.add('hidden');
-      sessionStorage.setItem('mts_admin', 'true');
-      // Efeito de loading
-      const btn = document.querySelector('.btn-login');
-      btn.innerHTML = '<i class="ri-loader-4-line"></i> &nbsp;Carregando...';
-      btn.style.opacity = '0.8';
-      setTimeout(() => window.location.href = 'painel.html', 700);
-    } else {
-      errEl.classList.remove('hidden');
-      document.querySelector('.login-card').style.animation = 'shake 0.4s ease';
-      setTimeout(() => document.querySelector('.login-card').style.animation = '', 400);
-    }
+    try {
+      if(!window.MTS_FIREBASE_READY || !firebase.auth) throw new Error('Configure o Firebase primeiro.');
+      const cred = await firebase.auth().signInWithEmailAndPassword(user, pass);
+      if(window.MTS_ADMIN_EMAIL && window.MTS_ADMIN_EMAIL !== 'COLE_SEU_EMAIL_ADMIN_AQUI' && cred.user.email !== window.MTS_ADMIN_EMAIL){ await firebase.auth().signOut(); throw new Error('Sem permissão'); }
+      errEl.classList.add('hidden'); sessionStorage.setItem('mts_admin','true');
+      const btn=document.querySelector('.btn-login'); btn.innerHTML='<i class="ri-loader-4-line"></i> &nbsp;Carregando...'; btn.style.opacity='0.8';
+      setTimeout(()=>window.location.href='painel.html',500);
+    } catch(e) { console.error(e); errEl.classList.remove('hidden'); errEl.querySelector('span').textContent='Login inválido ou Firebase ainda não configurado.'; }
   }
 
   function togglePass() {

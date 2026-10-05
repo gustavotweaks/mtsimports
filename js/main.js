@@ -647,51 +647,37 @@ function initWelcomePopup() {
 //  3. produtos hardcoded no array MTS.products (último recurso)
 
 async function loadProducts() {
-  // 1) Firestore: fonte global para todos os visitantes
-  if (window.MTSCloud?.ready) {
+  // Firebase é a fonte principal: todos veem o mesmo catálogo.
+  if (window.MTSCloud) {
     try {
       const cloud = await window.MTSCloud.getProducts();
       if (Array.isArray(cloud)) {
         MTS.products = cloud;
         localStorage.setItem('mts_admin_products', JSON.stringify(cloud));
+      } else {
+        // Primeira execução: envia o catálogo atual ao Firestore.
+        await window.MTSCloud.setProducts(MTS.products);
       }
-      // Atualização em tempo real sem precisar limpar cache/recarregar
-      if (!window.__mtsProductsSubscribed) {
-        window.__mtsProductsSubscribed = true;
-        window.MTSCloud.subscribeProducts(products => {
-          MTS.products = products;
-          localStorage.setItem('mts_admin_products', JSON.stringify(products));
-          document.dispatchEvent(new CustomEvent('mts:products-loaded', { detail: products }));
-          // Re-renderizações comuns
-          try {
-            if (document.getElementById('featured-products')) renderProducts(MTS.products.slice(0, 4), 'featured-products');
-            if (document.getElementById('perfumes-section')) renderProducts(MTS.products.filter(p => p.category === 'perfumes'), 'perfumes-section');
-            if (document.getElementById('products-grid')) renderAllProducts?.();
-          } catch (_) {}
-        });
-      }
-      if (Array.isArray(cloud)) return;
-    } catch (e) { console.error('[MTS] Falha ao carregar Firestore:', e); }
+      window.MTSCloud.watchProducts(list => {
+        MTS.products = list;
+        localStorage.setItem('mts_admin_products', JSON.stringify(list));
+        document.dispatchEvent(new CustomEvent('mts:products-loaded'));
+      });
+      return;
+    } catch (e) { console.error('[MTS] Firestore indisponível:', e); }
   }
 
-  // 2) JSON publicado: fallback para instalações ainda sem Firebase
+  // Fallback para o JSON do servidor enquanto Firebase não estiver configurado.
   const isSubpage = window.location.pathname.includes('/pages/');
   const base = isSubpage ? '../' : './';
-  const jsonUrl = base + 'data/produtos.json';
   try {
-    const res = await fetch(jsonUrl + '?v=' + Date.now(), { cache: 'no-store' });
+    const res = await fetch(base + 'data/produtos.json?v=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) throw new Error('JSON não encontrado');
     const data = await res.json();
-    if (Array.isArray(data) && data.length > 0) {
-      MTS.products = data;
-      localStorage.setItem('mts_admin_products', JSON.stringify(data));
-      return;
-    }
-  } catch (e) {}
-
-  // 3) Cache local: último fallback
+    if (Array.isArray(data)) { MTS.products = data; return; }
+  } catch(e) {}
   const local = JSON.parse(localStorage.getItem('mts_admin_products') || 'null');
-  if (local && local.length > 0) MTS.products = local;
+  if (Array.isArray(local)) MTS.products = local;
 }
 
 // ─── INIT ─────────────────────────────────────────
@@ -717,3 +703,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Disparar evento para páginas que precisam re-renderizar após load
   document.dispatchEvent(new CustomEvent('mts:products-loaded'));
 });
+
+// ─── CHECKOUT PIX PICPAY ─────────────────────────
+async function startPixCheckout(){
+  if(!MTS.cart.length) return showToast('Seu carrinho está vazio.','warning');
+  const base=(window.MTS_FUNCTIONS_BASE_URL||'').replace(/\/$/,'');
+  if(!base) return showToast('Checkout Pix ainda não foi configurado pelo administrador.','warning');
+  let modal=document.getElementById('mts-pix-modal');
+  if(!modal){modal=document.createElement('div');modal.id='mts-pix-modal';modal.className='modal-overlay';document.body.appendChild(modal);}
+  modal.innerHTML=`<div class="modal" style="max-width:480px;padding:2rem;position:relative"><button class="modal-close" onclick="closeModal('mts-pix-modal')"><i class="ri-close-line"></i></button><h2 style="font-family:'Cormorant Garamond',serif;margin-bottom:.4rem">Pagamento via Pix</h2><p style="color:var(--gray);font-size:.82rem;margin-bottom:1.4rem">Preencha seus dados para gerar o QR Code PicPay de <strong style="color:var(--gold)">${fmtPrice(MTS.getTotal())}</strong>.</p><div style="display:grid;gap:.8rem"><input id="pix-name" placeholder="Nome completo" style="padding:12px;background:var(--black-card);border:1px solid var(--border);color:white"><input id="pix-email" type="email" placeholder="E-mail" style="padding:12px;background:var(--black-card);border:1px solid var(--border);color:white"><input id="pix-cpf" placeholder="CPF (somente números)" style="padding:12px;background:var(--black-card);border:1px solid var(--border);color:white"><input id="pix-phone" placeholder="Celular com DDD" style="padding:12px;background:var(--black-card);border:1px solid var(--border);color:white"><button class="btn btn-gold w-full" onclick="generatePicPayPix()"><i class="ri-qr-code-line"></i> Gerar QR Code</button></div><div id="pix-result"></div></div>`;
+  openModal('mts-pix-modal');
+}
+async function generatePicPayPix(){
+  const result=document.getElementById('pix-result'); const customer={name:document.getElementById('pix-name').value.trim(),email:document.getElementById('pix-email').value.trim(),document:document.getElementById('pix-cpf').value.replace(/\D/g,''),phone:document.getElementById('pix-phone').value.replace(/\D/g,'')};
+  if(!customer.name||!customer.email||customer.document.length!==11||customer.phone.length<10){return showToast('Preencha nome, e-mail, CPF e celular corretamente.','warning');}
+  result.innerHTML='<p style="text-align:center;padding:1rem;color:var(--gold)"><i class="ri-loader-4-line"></i> Gerando cobrança segura...</p>';
+  try{const r=await fetch(window.MTS_FUNCTIONS_BASE_URL.replace(/\/$/,'')+'/createPix',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:MTS.cart.map(x=>({id:x.id,qty:x.qty})),customer})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Falha ao gerar Pix');
+    const img=d.qrCodeBase64?(d.qrCodeBase64.startsWith('data:')?d.qrCodeBase64:'data:image/png;base64,'+d.qrCodeBase64):'';
+    result.innerHTML=`<div style="text-align:center;margin-top:1.3rem"><div style="font-size:.75rem;color:var(--gray);margin-bottom:.7rem">Escaneie o QR Code no app do seu banco</div>${img?`<img src="${img}" alt="QR Code Pix" style="width:220px;max-width:100%;background:white;padding:10px;border-radius:8px">`:''}<div style="margin-top:.8rem;font-size:.8rem;color:var(--gray)">Valor: <strong style="color:var(--gold)">${fmtPrice(d.amount/100)}</strong></div><textarea id="pix-copy" readonly style="width:100%;height:76px;margin-top:.8rem;padding:9px;background:var(--black-card);border:1px solid var(--border);color:var(--gray);font-size:.7rem">${d.qrCode||''}</textarea><button class="btn btn-outline w-full" onclick="navigator.clipboard.writeText(document.getElementById('pix-copy').value);showToast('Pix Copia e Cola copiado!','success')">Copiar código Pix</button><div id="pix-status" style="margin-top:1rem;color:#f1c40f;font-size:.8rem">Aguardando pagamento...</div></div>`;
+    if(window.MTSCloud){window.MTSCloud.watchOrder(d.merchantChargeId,o=>{if(o.status==='PAID'){document.getElementById('pix-status').innerHTML='<strong style="color:#27ae60">✓ Pagamento aprovado!</strong>';MTS.cart=[];MTS.saveCart();showToast('Pagamento aprovado! Obrigado pela compra.','success');}});}
+  }catch(e){console.error(e);result.innerHTML=`<p style="color:#e74c3c;padding:1rem 0">${e.message}</p>`;}
+}
