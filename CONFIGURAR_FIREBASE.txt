@@ -1,0 +1,15 @@
+MTS IMPORTS — SINCRONIZAÇÃO GLOBAL DE PRODUTOS
+
+O site foi alterado para usar Cloud Firestore como catálogo global.
+
+1. Crie/abra um projeto no Firebase Console.
+2. Adicione um app Web.
+3. Copie o objeto firebaseConfig.
+4. Abra js/firebase-config.js e substitua os campos COLE_... pelos dados do seu projeto.
+5. No Firebase, crie o banco Cloud Firestore.
+6. Publique novamente TODOS os arquivos do site.
+
+IMPORTANTE SOBRE SEGURANÇA:
+O painel atual usa autenticação local (sessionStorage), portanto NÃO é seguro liberar escrita pública no Firestore em produção. Para uma loja real, configure Firebase Authentication para administradores e regras do Firestore permitindo leitura pública do catálogo e escrita apenas a admins autenticados.
+
+Enquanto o Firebase não estiver configurado, o site mantém o comportamento antigo como fallback (JSON/localStorage).

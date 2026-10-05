@@ -1675,8 +1675,13 @@
 <!-- ═══════════════════════════════════════
      JAVASCRIPT
 ═══════════════════════════════════════ -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-config.js"></script>
+<script src="../js/firebase-sync.js"></script>
 <script>
 // ── AUTH ──
+// Firebase global
 if (sessionStorage.getItem('mts_admin') !== 'true') location.href = 'login.html';
 
 // ── DATA ──
@@ -1709,7 +1714,15 @@ const DEFAULT_CATS = [
 ];
 
 const getProds = () => JSON.parse(localStorage.getItem('mts_admin_products') || JSON.stringify(DEFAULT_PRODUCTS));
-const setProds = a => { localStorage.setItem('mts_admin_products', JSON.stringify(a)); localStorage.setItem('mts_products_sync', JSON.stringify(a)); };
+const setProds = a => {
+  localStorage.setItem('mts_admin_products', JSON.stringify(a));
+  localStorage.setItem('mts_products_sync', JSON.stringify(a));
+  if (window.MTSCloud?.ready) {
+    window.MTSCloud.setProducts(a).then(() => toast('Catálogo sincronizado para todos os clientes!')).catch(err => { console.error(err); toast('Erro ao sincronizar catálogo.', 'ri-error-warning-line'); });
+  } else {
+    console.warn('[MTS] Firebase não configurado: alteração salva apenas localmente.');
+  }
+};
 const getUsers = () => JSON.parse(localStorage.getItem('mts_users') || '[]');
 const setUsers = a => localStorage.setItem('mts_users', JSON.stringify(a));
 const getCats = () => JSON.parse(localStorage.getItem('mts_cats') || JSON.stringify(DEFAULT_CATS));
@@ -1720,6 +1733,15 @@ const getCfg = () => JSON.parse(localStorage.getItem('mts_site_config') || '{}')
 const setCfg = c => localStorage.setItem('mts_site_config', JSON.stringify(c));
 const catLabel = c => ({perfumes:'Perfumes',roupas:'Roupas',relogios:'Relógios',joias:'Joias',bones:'Bonés'}[c]||c);
 const catIcon = c => ({perfumes:'ri-flask-line',roupas:'ri-t-shirt-line',relogios:'ri-time-line',joias:'ri-gem-line',bones:'ri-shield-star-line'}[c]||'ri-shopping-bag-line');
+
+// Recebe alterações do catálogo em tempo real (inclusive de outro dispositivo)
+if (window.MTSCloud?.ready) {
+  window.MTSCloud.subscribeProducts(products => {
+    localStorage.setItem('mts_admin_products', JSON.stringify(products));
+    try { renderProds(); renderDash(); } catch (_) {}
+  });
+}
+
 
 // ── TOAST ──
 function toast(msg, icon = 'ri-check-line') {

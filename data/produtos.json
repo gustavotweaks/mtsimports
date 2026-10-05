@@ -1,0 +1,14 @@
+[
+  {"id":1,"name":"Sauvage Dior EDP","category":"perfumes","price":389.90,"oldPrice":520.00,"badge":"Destaque","image":"","description":"Fragrância fresca e intensa com notas amadeiradas e de pimenta. Masculino e sofisticado.","stock":15},
+  {"id":2,"name":"Bleu de Chanel EDP","category":"perfumes","price":425.00,"oldPrice":null,"badge":"Importado","image":"","description":"Woody aromatic fragrance, sofisticado e elegante para o homem moderno.","stock":8},
+  {"id":3,"name":"Camiseta Premium Preta","category":"roupas","price":129.90,"oldPrice":179.90,"badge":"Sale","image":"","description":"Camiseta 100% algodão egípcio, corte slim, costura reforçada.","stock":30},
+  {"id":4,"name":"Camiseta Branca Logo","category":"roupas","price":119.90,"oldPrice":null,"badge":null,"image":"","description":"Camiseta básica premium com bordado dourado exclusivo.","stock":25},
+  {"id":5,"name":"Relógio Clássico Gold","category":"relogios","price":689.90,"oldPrice":899.90,"badge":"Oferta","image":"","description":"Relógio analógico com caixa dourada e pulseira de couro legítimo.","stock":5},
+  {"id":6,"name":"Relógio Black Matte","category":"relogios","price":549.90,"oldPrice":null,"badge":"Novo","image":"","description":"Design minimalista preto fosco com mostrador clean e ponteiros dourados.","stock":7},
+  {"id":7,"name":"Corrente Ouro 18k","category":"joias","price":1299.90,"oldPrice":1599.90,"badge":"Premium","image":"","description":"Corrente banhada a ouro 18k, 50cm, acabamento impecável e duradouro.","stock":3},
+  {"id":8,"name":"Pulseira Luxo","category":"joias","price":389.90,"oldPrice":null,"badge":null,"image":"","description":"Pulseira banhada a ouro com zircônias de alta qualidade.","stock":10},
+  {"id":9,"name":"Boné Dad Hat Gold","category":"bones","price":89.90,"oldPrice":119.90,"badge":null,"image":"","description":"Dad hat premium com bordado dourado, aba curva regulável.","stock":20},
+  {"id":10,"name":"Boné Snapback Preto","category":"bones","price":79.90,"oldPrice":null,"badge":"Novo","image":"","description":"Snapback premium aba plana com detalhe metálico dourado.","stock":18},
+  {"id":11,"name":"La Nuit YSL","category":"perfumes","price":359.90,"oldPrice":480.00,"badge":null,"image":"","description":"Yves Saint Laurent La Nuit. Sedutor, misterioso e elegante.","stock":12},
+  {"id":12,"name":"Bermuda Linho Premium","category":"roupas","price":189.90,"oldPrice":249.90,"badge":null,"image":"","description":"Bermuda de linho italiano, caimento perfeito, conforto o dia todo.","stock":15}
+]

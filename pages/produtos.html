@@ -202,6 +202,11 @@
   <div class="chatbot-input"><input type="text" id="chat-input" placeholder="Digite sua dúvida..."><button onclick="sendChatMessage()"><i class="ri-send-plane-fill"></i></button></div>
 </div>
 
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-config.js"></script>
+<script src="../js/firebase-sync.js"></script>
 <script src="../js/main.js"></script>
 <script>
   let currentFilter = 'all';
@@ -239,16 +244,21 @@
   });
 
   document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
+    // Filtro por URL
     const params = new URLSearchParams(window.location.search);
     const cat = params.get('cat');
     if (cat) {
       currentFilter = cat;
       document.querySelectorAll('.filter-btn').forEach(b => {
-        const match = b.getAttribute('onclick')?.includes(`'${cat}'`);
-        b.classList.toggle('active', !!match);
+        b.classList.toggle('active', !!b.getAttribute('onclick')?.includes(`'${cat}'`));
       });
     }
+    // Renderizar quando produtos carregarem
+    document.addEventListener('mts:products-loaded', applyFilters);
+    // Render imediato com fallback local
     applyFilters();
+  });
   });
 </script>
 <script>
