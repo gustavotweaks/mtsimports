@@ -37,17 +37,14 @@ const MTS = {
   },
 
   addToCart(productId, qty = 1) {
-    // Sincronizar com produtos do admin
-    const adminProds = JSON.parse(localStorage.getItem('mts_admin_products') || 'null');
-    if (adminProds) this.products = adminProds;
-
-    const product = this.products.find(p => p.id === productId);
+    // Sempre usa o catálogo atualmente carregado (Firestore é a fonte principal).
+    const product = this.products.find(p => String(p.id) === String(productId));
     if (!product) return;
     if (product.stock <= 0) {
       showToast('Produto sem estoque no momento.', 'warning');
       return;
     }
-    const existing = this.cart.find(i => i.id === productId);
+    const existing = this.cart.find(i => String(i.id) === String(productId));
     if (existing) {
       existing.qty += qty;
     } else {
@@ -63,14 +60,14 @@ const MTS = {
   },
 
   removeFromCart(productId) {
-    const item = this.cart.find(i => i.id === productId);
-    this.cart = this.cart.filter(i => i.id !== productId);
+    const item = this.cart.find(i => String(i.id) === String(productId));
+    this.cart = this.cart.filter(i => String(i.id) !== String(productId));
     this.saveCart();
     if (item) showToast(`"${item.name}" removido do carrinho.`, 'info');
   },
 
   updateQty(productId, delta) {
-    const item = this.cart.find(i => i.id === productId);
+    const item = this.cart.find(i => String(i.id) === String(productId));
     if (!item) return;
     item.qty = Math.max(1, item.qty + delta);
     this.saveCart();
@@ -322,7 +319,7 @@ function renderProducts(products, containerId) {
       </div>
       <div class="product-actions-hover">
         <button class="btn btn-gold" style="flex:1;padding:10px;font-size:0.7rem"
-          onclick="event.stopPropagation();${p.stock > 0 ? `MTS.addToCart(${p.id})` : `showToast('Produto sem estoque.','warning')`}">
+          onclick="event.stopPropagation();${p.stock > 0 ? `MTS.addToCart(${JSON.stringify(p.id)})` : `showToast('Produto sem estoque.','warning')`}">
           <i class="ri-shopping-bag-line"></i> ${p.stock > 0 ? 'Adicionar' : 'Esgotado'}
         </button>
         <button class="btn btn-dark" style="padding:10px 14px"
@@ -436,11 +433,11 @@ function openProductModal(id) {
       <!-- Botões -->
       <div style="display:flex;gap:0.8rem">
         <button class="btn btn-gold" style="flex:1"
-          onclick="${inStock ? `addToCartFromModal(${product.id})` : `showToast('Produto sem estoque.','warning')`}"
+          onclick="${inStock ? `addToCartFromModal(${JSON.stringify(product.id)})` : `showToast('Produto sem estoque.','warning')`}"
           ${inStock ? '' : 'disabled style="opacity:0.5;cursor:not-allowed"'}>
           <i class="ri-shopping-bag-line"></i> ${inStock ? 'Adicionar ao Carrinho' : 'Produto Esgotado'}
         </button>
-        <button class="btn btn-outline" onclick="buyNow(${product.id})" title="Comprar agora via WhatsApp"
+        <button class="btn btn-outline" onclick="buyNow(${JSON.stringify(product.id)})" title="Comprar agora via WhatsApp"
           ${inStock ? '' : 'disabled style="opacity:0.5;cursor:not-allowed"'}>
           <i class="ri-whatsapp-line"></i>
         </button>
@@ -647,37 +644,35 @@ function initWelcomePopup() {
 //  3. produtos hardcoded no array MTS.products (último recurso)
 
 async function loadProducts() {
-  // Firebase é a fonte principal: todos veem o mesmo catálogo.
+  // Firestore é a fonte oficial do catálogo para TODOS os visitantes.
+  // Nunca usa localStorage como fonte de produtos, pois ele é diferente em cada aparelho.
   if (window.MTSCloud) {
     try {
       const cloud = await window.MTSCloud.getProducts();
-      if (Array.isArray(cloud)) {
-        MTS.products = cloud;
-        localStorage.setItem('mts_admin_products', JSON.stringify(cloud));
-      } else {
-        // Primeira execução: envia o catálogo atual ao Firestore.
-        await window.MTSCloud.setProducts(MTS.products);
-      }
+      if (Array.isArray(cloud)) MTS.products = cloud;
+
+      // Snapshot em tempo real: qualquer alteração do painel aparece nos clientes abertos.
       window.MTSCloud.watchProducts(list => {
+        if (!Array.isArray(list)) return;
         MTS.products = list;
-        localStorage.setItem('mts_admin_products', JSON.stringify(list));
-        document.dispatchEvent(new CustomEvent('mts:products-loaded'));
+        document.dispatchEvent(new CustomEvent('mts:products-loaded', { detail: list }));
       });
       return;
-    } catch (e) { console.error('[MTS] Firestore indisponível:', e); }
+    } catch (e) {
+      console.error('[MTS] Erro ao carregar Firestore:', e);
+      // Se o Firebase estiver configurado mas falhar, não usa catálogo privado/local.
+      // Mantém apenas o JSON público como fallback de disponibilidade.
+    }
   }
 
-  // Fallback para o JSON do servidor enquanto Firebase não estiver configurado.
   const isSubpage = window.location.pathname.includes('/pages/');
   const base = isSubpage ? '../' : './';
   try {
     const res = await fetch(base + 'data/produtos.json?v=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) throw new Error('JSON não encontrado');
     const data = await res.json();
-    if (Array.isArray(data)) { MTS.products = data; return; }
-  } catch(e) {}
-  const local = JSON.parse(localStorage.getItem('mts_admin_products') || 'null');
-  if (Array.isArray(local)) MTS.products = local;
+    if (Array.isArray(data)) MTS.products = data;
+  } catch(e) { console.error('[MTS] Fallback JSON:', e); }
 }
 
 // ─── INIT ─────────────────────────────────────────

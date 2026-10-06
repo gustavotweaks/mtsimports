@@ -57,7 +57,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="../js/firebase-config.js"></script>
-<script src="../js/firebase-sync.js"></script>
+<script src="../js/firebase-sync.js?v=20261006-2"></script>
 </head>
 <body>
 
@@ -171,7 +171,7 @@
       <li><a href="#">Trocas e Devoluções</a></li>
     </ul></div>
     <div class="footer-col"><h4>Contato</h4><ul>
-      <li><a href="#"><i class="ri-whatsapp-line"></i> (11) 99999-9999</a></li>
+      <li><a href="https://wa.me/5524988700312" target="_blank" rel="noopener"><i class="ri-whatsapp-line"></i> +55 24 98870-0312</a></li>
       <li><a href="#"><i class="ri-mail-line"></i> mts@mtsvendas.com</a></li>
       <li><a href="#"><i class="ri-time-line"></i> Seg–Sex 9h–18h</a></li>
     </ul></div>
@@ -207,14 +207,12 @@
   <div class="chatbot-input"><input type="text" id="chat-input" placeholder="Digite sua dúvida..."><button onclick="sendChatMessage()"><i class="ri-send-plane-fill"></i></button></div>
 </div>
 
-<script src="../js/main.js"></script>
+<script src="../js/main.js?v=20261006-2"></script>
 <script>
   let currentFilter = 'all';
   let currentSort = 'default';
 
   function applyFilters() {
-    const adminProds = JSON.parse(localStorage.getItem('mts_admin_products') || 'null');
-    if (adminProds) MTS.products = adminProds;
 
     let filtered = [...MTS.products];
     if (currentFilter !== 'all') filtered = filtered.filter(p => p.category === currentFilter);

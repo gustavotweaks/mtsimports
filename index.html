@@ -480,7 +480,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js"></script>
-<script src="js/firebase-sync.js"></script>
+<script src="js/firebase-sync.js?v=20261006-2"></script>
 </head>
 <body>
 
@@ -871,7 +871,7 @@
   </div>
 </div>
 
-<script src="js/main.js"></script>
+<script src="js/main.js?v=20261006-2"></script>
 <script>
 // ── PARTÍCULAS ──
 (function() {
@@ -998,8 +998,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ── Produtos ──
-  const adminProds = JSON.parse(localStorage.getItem('mts_admin_products') || 'null');
-  if (adminProds) MTS.products = adminProds;
 
   // ── Produtos (carregados após fetch do JSON) ──
   document.addEventListener('mts:products-loaded', () => {
