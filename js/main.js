@@ -694,23 +694,93 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.dispatchEvent(new CustomEvent('mts:products-loaded'));
 });
 
-// ─── CHECKOUT PIX PICPAY ─────────────────────────
+// ─── CHECKOUT PIX MERCADO PAGO ───────────────────
+// O Access Token NUNCA fica neste arquivo. O frontend conversa apenas com o backend seguro.
 async function startPixCheckout(){
-  if(!MTS.cart.length) return showToast('Seu carrinho está vazio.','warning');
-  const base=(window.MTS_FUNCTIONS_BASE_URL||'').replace(/\/$/,'');
-  if(!base) return showToast('Checkout Pix ainda não foi configurado pelo administrador.','warning');
+  if(MTS.cart.length===0) return showToast('Seu carrinho está vazio!','warning');
+  const base=(window.MTS_API_BASE_URL||'').replace(/\/$/,'');
+  if(!base) return showToast('Checkout Pix ainda não foi conectado ao servidor de pagamentos.','warning');
+
   let modal=document.getElementById('mts-pix-modal');
-  if(!modal){modal=document.createElement('div');modal.id='mts-pix-modal';modal.className='modal-overlay';document.body.appendChild(modal);}
-  modal.innerHTML=`<div class="modal" style="max-width:480px;padding:2rem;position:relative"><button class="modal-close" onclick="closeModal('mts-pix-modal')"><i class="ri-close-line"></i></button><h2 style="font-family:'Cormorant Garamond',serif;margin-bottom:.4rem">Pagamento via Pix</h2><p style="color:var(--gray);font-size:.82rem;margin-bottom:1.4rem">Preencha seus dados para gerar o QR Code PicPay de <strong style="color:var(--gold)">${fmtPrice(MTS.getTotal())}</strong>.</p><div style="display:grid;gap:.8rem"><input id="pix-name" placeholder="Nome completo" style="padding:12px;background:var(--black-card);border:1px solid var(--border);color:white"><input id="pix-email" type="email" placeholder="E-mail" style="padding:12px;background:var(--black-card);border:1px solid var(--border);color:white"><input id="pix-cpf" placeholder="CPF (somente números)" style="padding:12px;background:var(--black-card);border:1px solid var(--border);color:white"><input id="pix-phone" placeholder="Celular com DDD" style="padding:12px;background:var(--black-card);border:1px solid var(--border);color:white"><button class="btn btn-gold w-full" onclick="generatePicPayPix()"><i class="ri-qr-code-line"></i> Gerar QR Code</button></div><div id="pix-result"></div></div>`;
+  if(!modal){
+    modal=document.createElement('div'); modal.id='mts-pix-modal'; modal.className='modal-overlay';
+    modal.addEventListener('click',e=>{if(e.target===modal) closeModal('mts-pix-modal');});
+    document.body.appendChild(modal);
+  }
+  const saved=JSON.parse(localStorage.getItem('mts_user')||'null')||{};
+  modal.innerHTML=`<div class="modal mts-checkout-modal" style="max-width:520px;padding:0;overflow:hidden;position:relative">
+    <button class="modal-close" onclick="closeModal('mts-pix-modal')" style="z-index:3"><i class="ri-close-line"></i></button>
+    <div style="padding:1.7rem 1.8rem;border-bottom:1px solid var(--border-soft);background:linear-gradient(135deg,rgba(201,168,76,.10),transparent)">
+      <div style="font-size:.62rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:.35rem">MTS Imports • Checkout seguro</div>
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:500;margin:0">Pagamento via Pix</h2>
+      <p style="color:var(--gray);font-size:.8rem;margin:.45rem 0 0">Total do carrinho: <strong style="color:var(--gold);font-size:1rem">${fmtPrice(MTS.getTotal())}</strong></p>
+    </div>
+    <div style="padding:1.6rem 1.8rem" id="pix-checkout-body">
+      <div style="display:grid;gap:.85rem">
+        <input id="pix-name" value="${escapeHtml(saved.name||'')}" placeholder="Nome completo" class="mts-checkout-input">
+        <input id="pix-email" value="${escapeHtml(saved.email||'')}" type="email" placeholder="E-mail" class="mts-checkout-input">
+        <input id="pix-cpf" inputmode="numeric" placeholder="CPF (somente números)" class="mts-checkout-input">
+        <button id="pix-generate-btn" class="btn btn-gold w-full" onclick="generateMercadoPagoPix()"><i class="ri-qr-code-line"></i> Gerar QR Code Pix</button>
+      </div>
+      <p style="font-size:.67rem;color:var(--gray);text-align:center;margin:1rem 0 0"><i class="ri-shield-check-line" style="color:var(--gold)"></i> Pagamento processado pelo Mercado Pago. A MTS não recebe sua senha bancária.</p>
+      <div id="pix-result"></div>
+    </div>
+  </div>`;
   openModal('mts-pix-modal');
 }
-async function generatePicPayPix(){
-  const result=document.getElementById('pix-result'); const customer={name:document.getElementById('pix-name').value.trim(),email:document.getElementById('pix-email').value.trim(),document:document.getElementById('pix-cpf').value.replace(/\D/g,''),phone:document.getElementById('pix-phone').value.replace(/\D/g,'')};
-  if(!customer.name||!customer.email||customer.document.length!==11||customer.phone.length<10){return showToast('Preencha nome, e-mail, CPF e celular corretamente.','warning');}
-  result.innerHTML='<p style="text-align:center;padding:1rem;color:var(--gold)"><i class="ri-loader-4-line"></i> Gerando cobrança segura...</p>';
-  try{const r=await fetch(window.MTS_FUNCTIONS_BASE_URL.replace(/\/$/,'')+'/createPix',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:MTS.cart.map(x=>({id:x.id,qty:x.qty})),customer})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Falha ao gerar Pix');
-    const img=d.qrCodeBase64?(d.qrCodeBase64.startsWith('data:')?d.qrCodeBase64:'data:image/png;base64,'+d.qrCodeBase64):'';
-    result.innerHTML=`<div style="text-align:center;margin-top:1.3rem"><div style="font-size:.75rem;color:var(--gray);margin-bottom:.7rem">Escaneie o QR Code no app do seu banco</div>${img?`<img src="${img}" alt="QR Code Pix" style="width:220px;max-width:100%;background:white;padding:10px;border-radius:8px">`:''}<div style="margin-top:.8rem;font-size:.8rem;color:var(--gray)">Valor: <strong style="color:var(--gold)">${fmtPrice(d.amount/100)}</strong></div><textarea id="pix-copy" readonly style="width:100%;height:76px;margin-top:.8rem;padding:9px;background:var(--black-card);border:1px solid var(--border);color:var(--gray);font-size:.7rem">${d.qrCode||''}</textarea><button class="btn btn-outline w-full" onclick="navigator.clipboard.writeText(document.getElementById('pix-copy').value);showToast('Pix Copia e Cola copiado!','success')">Copiar código Pix</button><div id="pix-status" style="margin-top:1rem;color:#f1c40f;font-size:.8rem">Aguardando pagamento...</div></div>`;
-    if(window.MTSCloud){window.MTSCloud.watchOrder(d.merchantChargeId,o=>{if(o.status==='PAID'){document.getElementById('pix-status').innerHTML='<strong style="color:#27ae60">✓ Pagamento aprovado!</strong>';MTS.cart=[];MTS.saveCart();showToast('Pagamento aprovado! Obrigado pela compra.','success');}});}
-  }catch(e){console.error(e);result.innerHTML=`<p style="color:#e74c3c;padding:1rem 0">${e.message}</p>`;}
+
+function escapeHtml(v){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+
+async function generateMercadoPagoPix(){
+  const base=(window.MTS_API_BASE_URL||'').replace(/\/$/,'');
+  const result=document.getElementById('pix-result');
+  const btn=document.getElementById('pix-generate-btn');
+  const customer={
+    name:document.getElementById('pix-name').value.trim(),
+    email:document.getElementById('pix-email').value.trim(),
+    document:document.getElementById('pix-cpf').value.replace(/\D/g,'')
+  };
+  if(!customer.name || !/^\S+@\S+\.\S+$/.test(customer.email) || customer.document.length!==11)
+    return showToast('Preencha nome, e-mail e CPF corretamente.','warning');
+  btn.disabled=true; btn.style.opacity='.65';
+  result.innerHTML='<p style="text-align:center;padding:1.2rem;color:var(--gold)"><i class="ri-loader-4-line"></i> Criando seu Pix no Mercado Pago...</p>';
+  try{
+    const r=await fetch(base+'/api/create-pix',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items:MTS.cart.map(x=>({id:x.id,qty:x.qty})),customer})});
+    const d=await r.json(); if(!r.ok) throw new Error(d.error||'Não foi possível gerar o Pix.');
+    const img=d.qrCodeBase64 ? (d.qrCodeBase64.startsWith('data:')?d.qrCodeBase64:'data:image/png;base64,'+d.qrCodeBase64) : '';
+    result.innerHTML=`<div style="text-align:center;margin-top:1.4rem;border-top:1px solid var(--border-soft);padding-top:1.4rem">
+      <div style="font-size:.67rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:.8rem">Escaneie pelo aplicativo do seu banco</div>
+      ${img?`<div style="display:inline-block;background:#fff;padding:10px;border-radius:10px"><img src="${img}" alt="QR Code Pix" style="display:block;width:220px;max-width:65vw"></div>`:''}
+      <div style="margin-top:1rem;font-size:.78rem;color:var(--gray)">Valor <strong style="color:var(--gold);font-size:1.05rem">${fmtPrice(Number(d.amount))}</strong></div>
+      <textarea id="pix-copy" readonly style="width:100%;height:78px;margin-top:.9rem;padding:10px;background:var(--black-card);border:1px solid var(--border);color:var(--gray-light);font-size:.68rem;resize:none">${escapeHtml(d.qrCode||'')}</textarea>
+      <button class="btn btn-outline w-full" onclick="copyPixCode()"><i class="ri-file-copy-line"></i> Copiar Pix Copia e Cola</button>
+      ${d.ticketUrl?`<a href="${d.ticketUrl}" target="_blank" rel="noopener" style="display:block;margin-top:.8rem;color:var(--gray);font-size:.7rem;text-decoration:underline">Abrir instruções do Mercado Pago</a>`:''}
+      <div id="pix-status" style="margin-top:1.1rem;padding:.85rem;border:1px solid rgba(201,168,76,.25);background:rgba(201,168,76,.05);color:#f1c40f;font-size:.78rem"><i class="ri-time-line"></i> Aguardando pagamento...</div>
+    </div>`;
+    pollMercadoPagoOrder(d.orderId);
+  }catch(e){console.error(e);result.innerHTML=`<p style="color:#e74c3c;padding:1rem 0;text-align:center">${escapeHtml(e.message)}</p>`;btn.disabled=false;btn.style.opacity='';}
 }
+
+async function copyPixCode(){
+  const el=document.getElementById('pix-copy'); if(!el) return;
+  try{await navigator.clipboard.writeText(el.value);showToast('Pix Copia e Cola copiado!','success');}
+  catch(_){el.select();document.execCommand('copy');showToast('Pix Copia e Cola copiado!','success');}
+}
+
+function pollMercadoPagoOrder(orderId){
+  const base=(window.MTS_API_BASE_URL||'').replace(/\/$/,''); let tries=0;
+  const timer=setInterval(async()=>{
+    if(++tries>120 || !document.getElementById('pix-status')) return clearInterval(timer);
+    try{
+      const r=await fetch(base+'/api/order-status?id='+encodeURIComponent(orderId),{cache:'no-store'}); if(!r.ok)return;
+      const d=await r.json(); const el=document.getElementById('pix-status'); if(!el)return clearInterval(timer);
+      if(d.paid){
+        clearInterval(timer); el.innerHTML='<strong style="color:#27ae60"><i class="ri-checkbox-circle-line"></i> Pagamento aprovado!</strong>';
+        MTS.cart=[];MTS.saveCart();showToast('Pagamento aprovado! Obrigado pela compra.','success');
+      }else if(d.failed){
+        clearInterval(timer);el.innerHTML='<strong style="color:#e74c3c">Pagamento cancelado ou recusado.</strong>';
+      }
+    }catch(_){ }
+  },5000);
+}
+

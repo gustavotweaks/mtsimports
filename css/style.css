@@ -1477,3 +1477,9 @@ footer {
 .bg-dark { background:var(--black-soft); }
 .bg-card { background:var(--black-card); }
 .bg-transparent { background:transparent; }
+
+/* ===== CHECKOUT PIX MTS / MERCADO PAGO ===== */
+.mts-checkout-input{width:100%;padding:13px 14px;background:var(--black-card);border:1px solid var(--border-soft);color:var(--white);font-family:var(--font-ui);outline:none;transition:.2s}
+.mts-checkout-input:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,168,76,.08)}
+.mts-checkout-input::placeholder{color:var(--gray)}
+@media(max-width:600px){.mts-checkout-modal{width:calc(100% - 24px)!important;max-height:92vh;overflow:auto}}

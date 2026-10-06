@@ -1,0 +1,14 @@
+MTS IMPORTS — CHECKOUT PIX MERCADO PAGO
+
+O checkout visual já está integrado ao site. Falta publicar o backend seguro e informar a URL ao frontend.
+
+1. Crie uma conta/projeto na Vercel e importe SOMENTE a pasta backend-vercel.
+2. Em Environment Variables, crie: MP_ACCESS_TOKEN
+3. Cole como valor o Access Token do Mercado Pago (teste primeiro; produção depois). NUNCA coloque esse token no HTML/JS público.
+4. Faça Deploy. A Vercel fornecerá uma URL parecida com https://mts-checkout.vercel.app
+5. Abra js/firebase-config.js e preencha:
+   window.MTS_API_BASE_URL = "https://mts-checkout.vercel.app";
+6. Publique novamente os arquivos do site.
+7. Teste um Pix com credenciais de teste antes de trocar para produção.
+
+O backend recalcula o total usando o catálogo público do Firestore store/catalog; ele não confia no preço enviado pelo navegador.

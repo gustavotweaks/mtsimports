@@ -9,8 +9,9 @@ window.MTS_FIREBASE_CONFIG = {
   measurementId: "G-109H549HPG"
 };
 
-// Será preenchida quando fizermos o deploy das Cloud Functions do checkout.
-window.MTS_FUNCTIONS_BASE_URL = "";
+// URL do backend seguro do checkout Mercado Pago.
+// Depois de publicar a pasta backend-vercel, cole aqui a URL recebida (sem barra no final).
+window.MTS_API_BASE_URL = "";
 
 // Único e-mail autorizado no painel administrativo.
 window.MTS_ADMIN_EMAIL = "mtsvendas@gmail.com";
