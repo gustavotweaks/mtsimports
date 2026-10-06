@@ -817,7 +817,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="../js/firebase-config.js"></script>
-<script src="../js/firebase-sync.js?v=20261006-2"></script>
+<script src="../js/firebase-sync.js"></script>
 </head>
 <body>
 
@@ -1715,25 +1715,48 @@ const DEFAULT_CATS = [
 ];
 
 // Recebe alterações globais do catálogo em tempo real
-function startAdminCloudSync(){
-  if(!window.MTSCloud) return;
-  if(window.firebase && firebase.auth){
-    firebase.auth().onAuthStateChanged(user=>{
-      if(!user){ window.location.href='login.html'; return; }
-      if(window.MTS_ADMIN_EMAIL && user.email !== window.MTS_ADMIN_EMAIL){ firebase.auth().signOut(); window.location.href='login.html'; return; }
+let adminCloudStarted = false;
+async function startAdminCloudSync(){
+  if (adminCloudStarted || !window.MTSCloud || !window.firebase || !firebase.auth) return;
+  adminCloudStarted = true;
+
+  try {
+    const user = await new Promise((resolve, reject) => {
+      let off = null;
+      off = firebase.auth().onAuthStateChanged(u => { if (off) off(); resolve(u); }, reject);
     });
+    if (!user) { window.location.href='login.html'; return; }
+    if (window.MTS_ADMIN_EMAIL && String(user.email||'').toLowerCase() !== String(window.MTS_ADMIN_EMAIL).toLowerCase()) {
+      await firebase.auth().signOut(); window.location.href='login.html'; return;
+    }
+
+    const cloud = await window.MTSCloud.getProducts();
+    if (Array.isArray(cloud)) {
+      localStorage.setItem('mts_admin_products', JSON.stringify(cloud));
+      renderProds(); renderDash();
+    } else {
+      // Só o painel autenticado pode criar o catálogo inicial.
+      const initial = JSON.parse(localStorage.getItem('mts_admin_products') || JSON.stringify(DEFAULT_PRODUCTS));
+      const confirmed = await window.MTSCloud.setProducts(initial);
+      localStorage.setItem('mts_admin_products', JSON.stringify(confirmed));
+      renderProds(); renderDash();
+    }
+
+    window.MTSCloud.watchProducts(list => {
+      localStorage.setItem('mts_admin_products', JSON.stringify(list));
+      renderProds(); renderDash();
+    }, err => toast('Erro ao receber atualizações do Firebase: ' + err.message, 'ri-error-warning-line'));
+  } catch (e) {
+    adminCloudStarted = false;
+    console.error('[MTS Admin] Firebase:', e);
+    toast('Firebase: ' + (e.message || 'erro de conexão'), 'ri-error-warning-line');
   }
-  window.MTSCloud.getProducts().then(cloud=>{
-    if(Array.isArray(cloud)){ localStorage.setItem('mts_admin_products',JSON.stringify(cloud)); renderProds(); renderDash(); }
-    else { window.MTSCloud.setProducts(JSON.parse(localStorage.getItem('mts_admin_products')||JSON.stringify(DEFAULT_PRODUCTS))); }
-  }).catch(console.error);
-  window.MTSCloud.watchProducts(list=>{ localStorage.setItem('mts_admin_products',JSON.stringify(list)); renderProds(); renderDash(); });
 }
-window.addEventListener('mts:firebase-ready',startAdminCloudSync);
-setTimeout(startAdminCloudSync,500);
+window.addEventListener('mts:firebase-ready', startAdminCloudSync);
+setTimeout(startAdminCloudSync, 300);
 
 const getProds = () => JSON.parse(localStorage.getItem('mts_admin_products') || JSON.stringify(DEFAULT_PRODUCTS));
-const setProds = async a => { if(window.MTSCloud){ try { await window.MTSCloud.setProducts(a); const check=await window.MTSCloud.getProducts(); if(!Array.isArray(check) || check.length!==a.length) throw new Error('Verificação do catálogo falhou'); localStorage.setItem('mts_admin_products', JSON.stringify(a)); toast('Catálogo publicado no Firebase para todos.','ri-cloud-line'); return true; } catch(e){ console.error(e); toast('ERRO: produto não foi publicado no Firebase. Veja o console.','ri-error-warning-line'); return false; } } toast('Firebase não carregou. Recarregue o painel.','ri-error-warning-line'); return false; };
+const setProds = async a => { if(!window.MTSCloud){ toast('Firebase não carregou. Recarregue o painel.','ri-error-warning-line'); return false; } try { const confirmed = await window.MTSCloud.setProducts(a); localStorage.setItem('mts_admin_products', JSON.stringify(confirmed)); toast('Produto publicado no Firebase para todos.','ri-cloud-line'); return true; } catch(e){ console.error(e); toast('Não foi possível publicar: ' + (e.message || 'erro no Firebase'),'ri-error-warning-line'); return false; } };
 const getUsers = () => JSON.parse(localStorage.getItem('mts_users') || '[]');
 const setUsers = a => localStorage.setItem('mts_users', JSON.stringify(a));
 const getCats = () => JSON.parse(localStorage.getItem('mts_cats') || JSON.stringify(DEFAULT_CATS));
@@ -1934,10 +1957,11 @@ async function saveProd() {
   addActivity(`Produto "${name}" ${editId ? 'atualizado' : 'criado'}`);
 }
 
-function delProd(id) {
+async function delProd(id) {
   const p = getProds().find(x => x.id === id);
   if (!confirm(`Excluir "${p?.name}"? Esta ação não pode ser desfeita.`)) return;
-  await setProds(getProds().filter(x => x.id !== id));
+  const ok = await setProds(getProds().filter(x => x.id !== id));
+  if (!ok) return;
   renderProds(); renderDash();
   toast('Produto excluído.', 'ri-delete-bin-line');
 }

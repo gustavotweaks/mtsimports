@@ -343,8 +343,6 @@ function renderProducts(products, containerId) {
 
 // ─── MODAL PRODUTO COM QUANTIDADE ────────────────
 function openProductModal(id) {
-  const adminProds = JSON.parse(localStorage.getItem('mts_admin_products') || 'null');
-  if (adminProds) MTS.products = adminProds;
 
   const product = MTS.products.find(p => p.id === id);
   if (!product) return;
@@ -485,8 +483,6 @@ function addToCartFromModal(id) {
 
 // Comprar agora direto no WhatsApp (1 item)
 function buyNow(id) {
-  const adminProds = JSON.parse(localStorage.getItem('mts_admin_products') || 'null');
-  if (adminProds) MTS.products = adminProds;
   const product = MTS.products.find(p => p.id === id);
   if (!product) return;
 
@@ -644,27 +640,24 @@ function initWelcomePopup() {
 //  3. produtos hardcoded no array MTS.products (último recurso)
 
 async function loadProducts() {
-  // Firestore é a fonte oficial do catálogo para TODOS os visitantes.
-  // Nunca usa localStorage como fonte de produtos, pois ele é diferente em cada aparelho.
+  // Firestore é a única fonte global quando estiver disponível.
   if (window.MTSCloud) {
     try {
       const cloud = await window.MTSCloud.getProducts();
       if (Array.isArray(cloud)) MTS.products = cloud;
 
-      // Snapshot em tempo real: qualquer alteração do painel aparece nos clientes abertos.
       window.MTSCloud.watchProducts(list => {
-        if (!Array.isArray(list)) return;
         MTS.products = list;
-        document.dispatchEvent(new CustomEvent('mts:products-loaded', { detail: list }));
+        document.dispatchEvent(new CustomEvent('mts:products-loaded', { detail: { source: 'firestore' } }));
       });
       return;
     } catch (e) {
-      console.error('[MTS] Erro ao carregar Firestore:', e);
-      // Se o Firebase estiver configurado mas falhar, não usa catálogo privado/local.
-      // Mantém apenas o JSON público como fallback de disponibilidade.
+      console.error('[MTS] Não foi possível ler o Firestore:', e);
+      showToast('Não foi possível atualizar o catálogo online. Recarregue a página.', 'warning');
     }
   }
 
+  // Fallback somente de leitura para o catálogo publicado junto do site.
   const isSubpage = window.location.pathname.includes('/pages/');
   const base = isSubpage ? '../' : './';
   try {
@@ -672,7 +665,9 @@ async function loadProducts() {
     if (!res.ok) throw new Error('JSON não encontrado');
     const data = await res.json();
     if (Array.isArray(data)) MTS.products = data;
-  } catch(e) { console.error('[MTS] Fallback JSON:', e); }
+  } catch (e) {
+    console.error('[MTS] Fallback de produtos indisponível:', e);
+  }
 }
 
 // ─── INIT ─────────────────────────────────────────
