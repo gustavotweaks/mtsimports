@@ -1,4 +1,4 @@
-/* ===== MTS VENDAS - DESIGN SYSTEM v3 ===== */
+D/* ===== MTS VENDAS - DESIGN SYSTEM v3 ===== */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=DM+Sans:wght@300;400;500&family=Cormorant+Garamond:wght@400;600&display=swap');
 
 :root {
@@ -32,18 +32,48 @@
 /* ===== RESET ===== */
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior:smooth; font-size:16px; }
-body {
-  font-family: var(--font-body);
-  background: var(--black);
-  color: var(--white);
-  line-height: 1.6;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
 h1,h2,h3,h4,h5 { font-family: var(--font-display); font-weight:800; line-height:1.1; }
+
+/* ── Títulos com gradiente dourado metálico ── */
+h1, h2 {
+  background: linear-gradient(135deg,
+    var(--gold-dark)  0%,
+    var(--gold-light) 35%,
+    #fff8e1           50%,
+    var(--gold-light) 65%,
+    var(--gold-dark)  100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% auto;
+  animation: goldShimmer 4s linear infinite;
+}
+/* Exceções onde o texto branco/neutro faz mais sentido */
+h3, h4, h5 {
+  color: var(--white);
+}
+@keyframes goldShimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
 a { text-decoration:none; color:inherit; transition:var(--transition); }
 img { max-width:100%; display:block; }
 button { font-family:var(--font-ui); cursor:pointer; }
+
+/* ── Classe utilitária para gradiente dourado em qualquer elemento ── */
+.gold-text, .text-gold {
+  background: linear-gradient(135deg,
+    var(--gold-dark)  0%,
+    var(--gold-light) 40%,
+    #fffbe8           55%,
+    var(--gold-light) 70%,
+    var(--gold-dark)  100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 250% auto;
+  animation: goldShimmer 5s linear infinite;
+}
 
 /* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar { width:4px; }
@@ -51,7 +81,23 @@ button { font-family:var(--font-ui); cursor:pointer; }
 ::-webkit-scrollbar-thumb { background:var(--gold-dark); border-radius:2px; }
 ::-webkit-scrollbar-thumb:hover { background:var(--gold); }
 
-/* ===== CANVAS DE FUNDO (partículas e grid) ===== */
+/* ===== FUNDO PREMIUM ===== */
+
+/* Base do body — gradiente sépia profundo */
+body {
+  font-family: var(--font-body);
+  background:
+    radial-gradient(ellipse 120% 60% at 75% 0%,   rgba(201,168,76,0.09) 0%, transparent 55%),
+    radial-gradient(ellipse 80%  80% at 20% 100%, rgba(160,120,48,0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 60%  40% at 50% 50%,  rgba(201,168,76,0.03) 0%, transparent 60%),
+    #050505;
+  color: var(--white);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Padrão geométrico de losangos dourados ── */
 #bg-canvas {
   position:fixed;
   top:0; left:0;
@@ -61,49 +107,78 @@ button { font-family:var(--font-ui); cursor:pointer; }
   opacity:0.5;
 }
 
-/* Grid lines de fundo */
 .bg-grid {
   position:fixed;
   inset:0;
   z-index:0;
   pointer-events:none;
+  /* Losangos: dois diagonais cruzados formam o padrão */
   background-image:
-    linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+    linear-gradient(45deg,  rgba(201,168,76,0.055) 1px, transparent 1px),
+    linear-gradient(-45deg, rgba(201,168,76,0.055) 1px, transparent 1px),
+    linear-gradient(0deg,   rgba(201,168,76,0.02)  1px, transparent 1px),
+    linear-gradient(90deg,  rgba(201,168,76,0.02)  1px, transparent 1px);
+  background-size: 48px 48px, 48px 48px, 48px 48px, 48px 48px;
+  mask-image:
+    radial-gradient(ellipse 90% 90% at 50% 30%, black 20%, transparent 85%);
 }
 
-/* Glow orbs */
+/* Linha de borda dourada no topo da página */
+body::before {
+  content:'';
+  position:fixed;
+  top:0; left:0; right:0; height:2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--gold-dark) 25%,
+    var(--gold-light) 50%,
+    var(--gold-dark) 75%,
+    transparent 100%);
+  z-index:2000;
+  pointer-events:none;
+}
+
+/* Noise texture — leve granulado para sensação premium */
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  opacity:0.03;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+}
+
+/* Glow orbs — mais intensos e coloridos */
 .bg-orb {
   position:fixed;
   border-radius:50%;
   pointer-events:none;
   z-index:0;
-  filter:blur(80px);
-  animation: orbFloat 8s ease-in-out infinite;
+  filter:blur(90px);
+  animation: orbFloat 10s ease-in-out infinite;
 }
 .bg-orb-1 {
-  width:500px; height:500px;
-  background:radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%);
-  top:-15%; right:-10%;
+  width:600px; height:600px;
+  background:radial-gradient(circle, rgba(201,168,76,0.12) 0%, rgba(160,120,48,0.05) 40%, transparent 70%);
+  top:-15%; right:-8%;
   animation-delay:0s;
 }
 .bg-orb-2 {
-  width:350px; height:350px;
-  background:radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%);
-  bottom:10%; left:-8%;
-  animation-delay:-4s;
+  width:400px; height:400px;
+  background:radial-gradient(circle, rgba(232,201,122,0.09) 0%, rgba(201,168,76,0.04) 40%, transparent 70%);
+  bottom:5%; left:-6%;
+  animation-delay:-5s;
 }
 .bg-orb-3 {
-  width:250px; height:250px;
-  background:radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%);
-  top:40%; left:35%;
-  animation-delay:-2s;
+  width:300px; height:300px;
+  background:radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%);
+  top:45%; left:38%;
+  animation-delay:-2.5s;
 }
 @keyframes orbFloat {
-  0%,100% { transform:translateY(0px) scale(1); }
-  50% { transform:translateY(-30px) scale(1.05); }
+  0%,100% { transform:translateY(0px) scale(1);    opacity:1;   }
+  50%      { transform:translateY(-40px) scale(1.06); opacity:0.8; }
 }
 
 /* Tudo que não é fixed fica acima do fundo */
@@ -111,17 +186,6 @@ button { font-family:var(--font-ui); cursor:pointer; }
 .cart-overlay, .cart-sidebar, .modal-overlay,
 .chatbot-toggle, .chatbot-window, .toast,
 .section, .section-full, main { position:relative; z-index:1; }
-
-/* ===== NOISE TEXTURE ===== */
-body::after {
-  content:'';
-  position:fixed;
-  inset:0;
-  z-index:0;
-  pointer-events:none;
-  opacity:0.025;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-}
 
 /* ===== NAVBAR ===== */
 .navbar {
@@ -134,14 +198,30 @@ body::after {
   grid-template-columns: auto 1fr auto;
   align-items:center;
   gap:1.5rem;
-  background:rgba(5,5,5,0.92);
-  backdrop-filter:blur(24px) saturate(1.5);
-  border-bottom:1px solid var(--border-soft);
+  background: linear-gradient(180deg,
+    rgba(8,6,2,0.96) 0%,
+    rgba(12,9,3,0.92) 100%);
+  backdrop-filter:blur(28px) saturate(1.8);
+  border-bottom:1px solid rgba(201,168,76,0.2);
+  box-shadow: 0 1px 0 rgba(201,168,76,0.1), 0 4px 24px rgba(0,0,0,0.6);
   transition:var(--transition);
 }
+.navbar::after {
+  content:'';
+  position:absolute;
+  bottom:0; left:5%; right:5%; height:1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(201,168,76,0.5) 30%,
+    rgba(232,201,122,0.8) 50%,
+    rgba(201,168,76,0.5) 70%,
+    transparent);
+  pointer-events:none;
+}
 .navbar.scrolled {
-  background:rgba(5,5,5,0.98);
-  border-bottom-color:var(--border);
+  background: rgba(5,4,1,0.98);
+  border-bottom-color:rgba(201,168,76,0.3);
+  box-shadow: 0 2px 32px rgba(0,0,0,0.8), 0 0 80px rgba(201,168,76,0.04);
 }
 
 .navbar-brand {
@@ -703,24 +783,24 @@ body::after {
   gap:16px;
 }
 .product-card {
-  background:var(--black-card);
+  background: linear-gradient(160deg, rgba(15,12,4,0.98) 0%, rgba(10,8,2,0.99) 100%);
   border-radius:var(--radius-card);
   overflow:hidden;
   transition:var(--transition);
   cursor:pointer;
   position:relative;
-  border:1px solid var(--border-soft);
+  border:1px solid rgba(201,168,76,0.1);
 }
 .product-card:hover {
   transform:translateY(-4px);
-  border-color:rgba(201,168,76,0.25);
-  box-shadow:0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,0.1);
+  border-color:rgba(201,168,76,0.3);
+  box-shadow:0 20px 50px rgba(0,0,0,0.6), 0 0 30px rgba(201,168,76,0.05);
 }
 .product-badge {
   position:absolute;
   top:12px; left:12px;
   z-index:3;
-  background:var(--gold);
+  background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-light) 100%);
   color:var(--black);
   font-family:var(--font-ui);
   font-size:0.55rem;
@@ -729,6 +809,7 @@ body::after {
   text-transform:uppercase;
   padding:4px 10px;
   border-radius:var(--radius-pill);
+  box-shadow: 0 2px 8px rgba(201,168,76,0.4);
 }
 /* Botão de favorito (coração) */
 .product-fav {
@@ -823,7 +904,10 @@ body::after {
   font-family:var(--font-ui);
   font-size:1.05rem;
   font-weight:800;
-  color:var(--gold);
+  background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-light) 50%, var(--gold-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 .price-old {
   font-size:0.78rem;
@@ -979,8 +1063,12 @@ body::after {
   margin:0 auto;
   text-align:center;
   padding:4rem 3rem;
-  background:var(--black-card);
-  border:1px solid var(--border);
+  background: linear-gradient(135deg,
+    rgba(20,16,5,0.98) 0%,
+    rgba(15,12,3,0.99) 50%,
+    rgba(20,16,5,0.98) 100%);
+  border:1px solid rgba(201,168,76,0.2);
+  border-radius:var(--radius-card);
   position:relative;
   overflow:hidden;
 }
@@ -991,56 +1079,71 @@ body::after {
   width:200%; height:200%;
   background:conic-gradient(from 0deg at 50% 50%,
     transparent 0deg,
-    rgba(201,168,76,0.03) 60deg,
+    rgba(201,168,76,0.04) 60deg,
     transparent 120deg,
-    rgba(201,168,76,0.02) 180deg,
+    rgba(201,168,76,0.03) 180deg,
     transparent 240deg,
-    rgba(201,168,76,0.03) 300deg,
+    rgba(201,168,76,0.04) 300deg,
     transparent 360deg
   );
   animation:rotateNewsletter 20s linear infinite;
 }
+/* Linha dourada topo */
+.newsletter::after {
+  content:'';
+  position:absolute;
+  top:0; left:10%; right:10%; height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold-light), transparent);
+  opacity:0.5;
+}
 @keyframes rotateNewsletter { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
 .newsletter > * { position:relative; z-index:1; }
-.newsletter h2 { font-size:2rem; font-weight:400; margin-bottom:0.8rem; }
+.newsletter h2 { font-size:2rem; font-weight:900; margin-bottom:0.8rem; text-transform:uppercase; }
 .newsletter p { color:var(--gray); margin-bottom:2.5rem; font-size:0.9rem; font-weight:300; }
-.newsletter-form { display:flex; }
+.newsletter-form { display:flex; border-radius:var(--radius-pill); overflow:hidden; border:1px solid rgba(201,168,76,0.25); }
 .newsletter-form input {
   flex:1;
-  padding:14px 18px;
-  background:var(--black);
-  border:1px solid var(--border);
-  border-right:none;
+  padding:14px 20px;
+  background:rgba(0,0,0,0.5);
+  border:none;
   color:var(--white);
   font-family:var(--font-body);
   font-size:0.88rem;
   outline:none;
-  transition:var(--transition-fast);
 }
-.newsletter-form input:focus { border-color:var(--gold); }
 .newsletter-form input::placeholder { color:var(--gray); }
 .newsletter-form button {
-  padding:14px 22px;
-  background:var(--gold);
+  padding:14px 24px;
+  background:linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
   color:var(--black);
   border:none;
   font-family:var(--font-ui);
   font-size:0.72rem;
-  font-weight:700;
-  letter-spacing:2px;
+  font-weight:800;
+  letter-spacing:1.5px;
   text-transform:uppercase;
   cursor:pointer;
   transition:var(--transition-fast);
+  white-space:nowrap;
 }
-.newsletter-form button:hover { background:var(--gold-light); }
+.newsletter-form button:hover { filter:brightness(1.1); }
 
 /* ===== FOOTER ===== */
 footer {
-  background:var(--black-soft);
-  border-top:1px solid var(--border-soft);
+  background: linear-gradient(180deg,
+    rgba(8,6,2,0.99) 0%,
+    rgba(5,4,1,1) 100%);
+  border-top:1px solid rgba(201,168,76,0.15);
   padding:5rem 2.5rem 2.5rem;
   position:relative;
   z-index:1;
+}
+footer::before {
+  content:'';
+  position:absolute;
+  top:0; left:5%; right:5%; height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold-dark), var(--gold-light), var(--gold-dark), transparent);
+  opacity:0.5;
 }
 .footer-grid {
   display:grid;
@@ -1054,7 +1157,8 @@ footer {
 .social-links { display:flex; gap:8px; }
 .social-link {
   width:36px; height:36px;
-  border:1px solid var(--border-soft);
+  border:1px solid rgba(201,168,76,0.15);
+  border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -1066,10 +1170,13 @@ footer {
 .footer-col h4 {
   font-family:var(--font-ui);
   font-size:0.65rem;
-  font-weight:700;
+  font-weight:800;
   letter-spacing:3px;
   text-transform:uppercase;
-  color:var(--gold);
+  background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-light) 50%, var(--gold-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom:1.5rem;
 }
 .footer-col ul { list-style:none; }
@@ -1083,9 +1190,9 @@ footer {
   align-items:center;
   gap:6px;
 }
-.footer-col ul li a:hover { color:var(--white); padding-left:4px; }
+.footer-col ul li a:hover { color:var(--gold); padding-left:4px; }
 .footer-bottom {
-  border-top:1px solid var(--border-soft);
+  border-top:1px solid rgba(201,168,76,0.1);
   padding-top:2rem;
   max-width:1200px;
   margin:0 auto;

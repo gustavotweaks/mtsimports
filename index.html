@@ -97,8 +97,24 @@
     }
     .hero-h1 strong {
       font-weight: 900;
-      color: var(--gold);
       display: block;
+      background: linear-gradient(135deg,
+        #A07830 0%,
+        #C9A84C 20%,
+        #E8C97A 40%,
+        #fff8e1 50%,
+        #E8C97A 60%,
+        #C9A84C 80%,
+        #A07830 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% auto;
+      animation: goldShimmerHero 3s linear infinite;
+    }
+    @keyframes goldShimmerHero {
+      0%   { background-position: 200% center; }
+      100% { background-position: -200% center; }
     }
 
     .hero-desc {
@@ -358,8 +374,9 @@
 
     /* ── PROMO BANNER ── */
     .promo-new {
-      background: var(--black-card);
-      border: 1px solid var(--border-soft);
+      background: linear-gradient(180deg, rgba(12,10,3,0.95) 0%, rgba(8,6,2,0.98) 100%);
+      border: 1px solid rgba(201,168,76,0.15);
+      border-radius: var(--radius-card);
       max-width: 1200px;
       margin: 0 auto;
       display: grid;
@@ -371,24 +388,27 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      opacity: 0.3;
+      background: linear-gradient(90deg, transparent, var(--gold-light), var(--gold), var(--gold-light), transparent);
+      opacity: 0.5;
     }
-    .promo-divider { background: var(--border-soft); }
+    .promo-divider { background: rgba(201,168,76,0.08); }
     .promo-item {
       padding: 2.8rem 2rem;
       text-align: center;
       transition: background 0.25s;
     }
-    .promo-item:hover { background: var(--black-hover); }
+    .promo-item:hover { background: rgba(201,168,76,0.04); }
     .promo-item i { font-size: 1.6rem; color: var(--gold); display: block; margin-bottom: 1rem; }
     .promo-item strong {
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Montserrat', sans-serif;
       font-size: 0.72rem;
-      font-weight: 600;
+      font-weight: 800;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: var(--white-soft);
+      background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-light) 50%, var(--gold-dark) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
       display: block;
       margin-bottom: 4px;
     }
@@ -398,20 +418,29 @@
     .testi-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      background: var(--border-soft);
+      gap: 16px;
     }
     .testi-card {
-      background: var(--black-card);
-      padding: 2.5rem;
+      background: linear-gradient(135deg, rgba(15,12,4,0.98) 0%, rgba(20,16,5,0.95) 100%);
+      border: 1px solid rgba(201,168,76,0.12);
+      border-radius: var(--radius-card);
+      padding: 2.2rem;
       position: relative;
-      transition: background 0.3s;
+      transition: all 0.3s;
     }
-    .testi-card:hover { background: var(--black-hover); }
+    .testi-card:hover {
+      border-color: rgba(201,168,76,0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,0.08);
+    }
     .testi-quote {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Montserrat', sans-serif;
       font-size: 5rem;
-      color: rgba(201,168,76,0.08);
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0.2;
       line-height: 1;
       position: absolute;
       top: 1.2rem; right: 1.5rem;
@@ -434,10 +463,10 @@
       background: linear-gradient(135deg, var(--gold-dark), var(--gold));
       display: flex; align-items: center; justify-content: center;
       font-weight: 700; color: var(--black);
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Montserrat', sans-serif;
       font-size: 0.85rem; flex-shrink: 0;
     }
-    .testi-author strong { font-family: 'Space Grotesk', sans-serif; font-size: 0.82rem; display: block; }
+    .testi-author strong { font-family: 'Montserrat', sans-serif; font-size: 0.82rem; display: block; color: var(--white); }
     .testi-author span { font-size: 0.7rem; color: var(--gray); }
 
     .footer-yr { color: var(--gold); }
@@ -606,8 +635,8 @@
 <div style="background:var(--black-soft);padding:4rem 0;position:relative;z-index:1">
   <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem">
-      <h2 style="font-family:'Montserrat',sans-serif;font-size:clamp(1.1rem,2vw,1.4rem);font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--white)">
-        Nossas <span style="color:var(--gold)">Categorias</span>
+      <h2 style="font-family:'Montserrat',sans-serif;font-size:clamp(1.1rem,2vw,1.4rem);font-weight:800;text-transform:uppercase;letter-spacing:1px">
+        Nossas <span style="background:linear-gradient(135deg,#A07830,#E8C97A,#fff8e1,#E8C97A,#A07830);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Categorias</span>
       </h2>
     </div>
     <div class="cats-wrap">
@@ -651,7 +680,7 @@
     <div style="display:flex;align-items:center;gap:12px">
       <i class="ri-vip-crown-fill" style="color:var(--gold);font-size:1.4rem"></i>
       <div>
-        <h2 style="font-family:'Montserrat',sans-serif;font-size:clamp(1.2rem,2.5vw,1.6rem);font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--gold);line-height:1">Mais Vendidos</h2>
+        <h2 style="font-family:'Montserrat',sans-serif;font-size:clamp(1.2rem,2.5vw,1.6rem);font-weight:800;text-transform:uppercase;letter-spacing:1px;line-height:1">Mais Vendidos</h2>
         <p style="font-family:'DM Sans',sans-serif;color:var(--gray);font-size:0.78rem;margin-top:3px">Os produtos que estão fazendo sucesso</p>
       </div>
     </div>
@@ -699,7 +728,7 @@
     <div style="display:flex;align-items:center;gap:12px">
       <i class="ri-flask-fill" style="color:var(--gold);font-size:1.4rem"></i>
       <div>
-        <h2 style="font-family:'Montserrat',sans-serif;font-size:clamp(1.2rem,2.5vw,1.6rem);font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--white);line-height:1">Perfumes <span style="color:var(--gold)">Importados</span></h2>
+        <h2 style="font-family:'Montserrat',sans-serif;font-size:clamp(1.2rem,2.5vw,1.6rem);font-weight:800;text-transform:uppercase;letter-spacing:1px;line-height:1">Perfumes <span style="background:linear-gradient(135deg,#A07830,#E8C97A,#fff8e1,#E8C97A,#A07830);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Importados</span></h2>
         <p style="font-family:'DM Sans',sans-serif;color:var(--gray);font-size:0.78rem;margin-top:3px">Fragrâncias internacionais com procedência garantida</p>
       </div>
     </div>
@@ -711,12 +740,11 @@
 </section>
 
 <!-- ═══ TESTEMUNHOS ═══ -->
-<div style="background:var(--black-soft);padding:6rem 2.5rem;position:relative;z-index:1">
+<div style="background:linear-gradient(180deg,rgba(10,8,2,0.98) 0%,rgba(6,5,1,0.99) 100%);padding:6rem 2.5rem;position:relative;z-index:1">
   <div style="max-width:1200px;margin:0 auto">
     <div style="text-align:center;margin-bottom:3.5rem">
-      <div class="section-label"><span>Reviews</span></div>
-      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.8rem);font-weight:300;margin-top:0.8rem">
-        O que dizem nossos <em style="font-style:normal;color:var(--gold)">Clientes</em>
+      <h2 style="font-family:'Montserrat',sans-serif;font-size:clamp(1.4rem,3vw,2rem);font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-top:0.8rem">
+        O que dizem nossos <span style="background:linear-gradient(135deg,#A07830,#E8C97A,#fff8e1,#E8C97A,#A07830);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200% auto">Clientes</span>
       </h2>
     </div>
     <div class="testi-grid">
@@ -760,9 +788,8 @@
 <!-- ═══ NEWSLETTER ═══ -->
 <section style="padding:6rem 2.5rem;position:relative;z-index:1">
   <div class="newsletter">
-    <div class="section-label" style="justify-content:center"><span>Newsletter</span></div>
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;margin-top:1rem">
-      Ofertas <em style="font-style:normal;color:var(--gold)">Exclusivas</em>
+    <h2 style="font-family:'Montserrat',sans-serif;font-size:1.8rem;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-top:0.5rem">
+      Ofertas <span style="background:linear-gradient(135deg,#A07830,#E8C97A,#fff8e1,#E8C97A,#A07830);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200% auto">Exclusivas</span>
     </h2>
     <p style="margin-top:0.8rem;color:var(--gray);font-size:0.88rem;font-weight:300">Receba em primeira mão nossas promoções e lançamentos.</p>
     <div class="newsletter-form" style="margin-top:2.2rem">
