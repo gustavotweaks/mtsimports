@@ -308,7 +308,10 @@ function renderProducts(products, containerId) {
   container.innerHTML = products.map(p => `
     <div class="product-card" onclick="openProductModal(${p.id})">
       ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
-      ${p.stock <= 0 ? `<div class="product-badge" style="background:var(--black-hover);color:var(--gray);border:1px solid var(--border-soft)">Esgotado</div>` : ''}
+      ${p.stock <= 0 ? `<div class="product-badge" style="background:rgba(0,0,0,0.8);color:var(--gray);border:1px solid var(--border-soft)">Esgotado</div>` : ''}
+      <button class="product-fav" onclick="event.stopPropagation();toggleFav(${p.id},this)" title="Favoritar">
+        <i class="ri-heart-line"></i>
+      </button>
       <div class="product-img">
         ${p.image
           ? `<img src="${p.image}" alt="${p.name}" loading="lazy">`
@@ -317,26 +320,18 @@ function renderProducts(products, containerId) {
                <span>${categoryLabel(p.category)}</span>
              </div>`}
       </div>
-      <div class="product-actions-hover">
-        <button class="btn btn-gold" style="flex:1;padding:10px;font-size:0.7rem"
-          onclick="event.stopPropagation();${p.stock > 0 ? `MTS.addToCart(${JSON.stringify(p.id)})` : `showToast('Produto sem estoque.','warning')`}">
-          <i class="ri-shopping-bag-line"></i> ${p.stock > 0 ? 'Adicionar' : 'Esgotado'}
-        </button>
-        <button class="btn btn-dark" style="padding:10px 14px"
-          onclick="event.stopPropagation();openProductModal(${p.id})" title="Ver detalhes">
-          <i class="ri-eye-line"></i>
-        </button>
-      </div>
       <div class="product-info">
-        <div class="product-category">${categoryLabel(p.category)}</div>
         <div class="product-name">${p.name}</div>
+        <div style="font-size:0.7rem;color:var(--gray);margin-bottom:4px;font-family:var(--font-body)">${p.description ? p.description.split('.')[0] : categoryLabel(p.category)}</div>
         <div class="product-price">
           <span class="price">${fmtPrice(p.price)}</span>
           ${p.oldPrice ? `<span class="price-old">${fmtPrice(p.oldPrice)}</span>` : ''}
         </div>
-        ${p.oldPrice ? `<div style="font-size:0.62rem;color:var(--green);margin-top:4px">
-          economia de ${fmtPrice(p.oldPrice - p.price)}
-        </div>` : ''}
+        <div class="product-installment">12x de ${fmtPrice(p.price / 12)}</div>
+        <button class="product-buy-btn"
+          onclick="event.stopPropagation();${p.stock > 0 ? `MTS.addToCart(${JSON.stringify(p.id)})` : `showToast('Produto sem estoque.','warning')`}">
+          <i class="ri-shopping-cart-line"></i> ${p.stock > 0 ? 'Comprar' : 'Esgotado'}
+        </button>
       </div>
     </div>`).join('');
 }
@@ -784,3 +779,47 @@ function pollMercadoPagoOrder(orderId){
   },5000);
 }
 
+
+// ─── CHECKOUT PAGE REDIRECT ──────────────────────
+function goToCheckout() {
+  if (MTS.cart.length === 0) {
+    showToast('Seu carrinho está vazio!', 'warning');
+    return;
+  }
+  // Determina caminho relativo correto
+  const isRoot = window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('mtsimports-main/');
+  const path = isRoot ? 'pages/checkout.html' : 'checkout.html';
+  window.location.href = path;
+}
+
+// ─── FAVORITOS ───────────────────────────────────
+function toggleFav(id, btn) {
+  const favs = JSON.parse(localStorage.getItem('mts_favs') || '[]');
+  const idx = favs.indexOf(id);
+  const icon = btn.querySelector('i');
+  if (idx === -1) {
+    favs.push(id);
+    icon.className = 'ri-heart-fill';
+    icon.style.color = '#e74c3c';
+    showToast('Adicionado aos favoritos ❤️', 'success');
+  } else {
+    favs.splice(idx, 1);
+    icon.className = 'ri-heart-line';
+    icon.style.color = '';
+    showToast('Removido dos favoritos', 'info');
+  }
+  localStorage.setItem('mts_favs', JSON.stringify(favs));
+}
+
+// ─── BUSCA NA NAVBAR ─────────────────────────────
+function handleNavSearch(val) {
+  // Opcional: live search — pode expandir futuramente
+}
+function goToSearch(val) {
+  if (!val.trim()) return;
+  const isRoot = window.location.pathname.endsWith('index.html')
+    || window.location.pathname === '/'
+    || window.location.pathname.endsWith('mtsimports-main/');
+  const base = isRoot ? 'pages/produtos.html' : 'produtos.html';
+  window.location.href = `${base}?search=${encodeURIComponent(val.trim())}`;
+}

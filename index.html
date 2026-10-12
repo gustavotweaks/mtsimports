@@ -9,113 +9,106 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css">
   <link rel="icon" type="image/png" href="ee.png">
   <style>
-    /* ── HERO REDESIGN ── */
+    /* ── HERO REDESIGN (banner estilo referência) ── */
     .hero {
-      min-height: 100vh;
-      display: grid;
-      grid-template-rows: 1fr;
+      min-height: 90vh;
+      display: flex;
       align-items: center;
       padding-top: 72px;
       position: relative;
       overflow: hidden;
+      background: linear-gradient(135deg, #050505 0%, #0a0800 40%, #100d00 100%);
     }
 
-    /* Linha horizontal sweep */
+    /* Efeito de luz dourada no fundo */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -20%; right: -5%;
+      width: 55%; height: 140%;
+      background: radial-gradient(ellipse at center, rgba(201,168,76,0.13) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    /* Linha decorativa topo dourada */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--gold) 40%, transparent 100%);
+      opacity: 0.5;
+    }
+
+    /* Sweep lines */
     .sweep-line {
       position: absolute;
       top: 0; left: -100%;
       width: 60%; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.5), transparent);
-      animation: sweep 5s ease-in-out infinite;
+      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.35), transparent);
+      animation: sweep 6s ease-in-out infinite;
       pointer-events: none;
     }
-    .sweep-line:nth-child(2) { animation-delay: 2.5s; top: 60%; }
+    .sweep-line:nth-child(2) { animation-delay: 3s; top: 65%; }
     @keyframes sweep {
       0% { left: -60%; opacity: 0; }
       30% { opacity: 1; }
       100% { left: 110%; opacity: 0; }
     }
 
-    /* Vertical lines */
-    .vert-line {
-      position: absolute;
-      top: 0; bottom: 0;
-      width: 1px;
-      background: linear-gradient(180deg, transparent, rgba(201,168,76,0.08), transparent);
-      pointer-events: none;
-    }
-    .vert-line:nth-child(1) { left: 20%; }
-    .vert-line:nth-child(2) { left: 50%; }
-    .vert-line:nth-child(3) { right: 20%; }
-
     .hero-inner {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 5rem 2.5rem;
+      padding: 4rem 2.5rem;
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 5rem;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
       align-items: center;
       width: 100%;
       position: relative;
       z-index: 1;
     }
 
-    /* LEFT SIDE */
-    .hero-left {}
-
+    /* LEFT */
     .hero-eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 2.2rem;
+      margin-bottom: 1.8rem;
     }
-    .hero-eyebrow-line {
-      width: 32px; height: 1px;
-      background: var(--gold);
-      opacity: 0.6;
-    }
+    .hero-eyebrow-line { width: 28px; height: 1px; background: var(--gold); opacity: 0.7; }
     .hero-eyebrow-text {
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Montserrat', sans-serif;
       font-size: 0.65rem;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 4px;
       text-transform: uppercase;
       color: var(--gold);
     }
 
     .hero-h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(3.2rem, 6vw, 5.8rem);
-      font-weight: 300;
-      line-height: 1.05;
-      letter-spacing: -1.5px;
-      margin-bottom: 1.8rem;
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -1px;
+      text-transform: uppercase;
+      margin-bottom: 1.6rem;
       color: var(--white);
     }
     .hero-h1 strong {
-      font-weight: 600;
+      font-weight: 900;
       color: var(--gold);
       display: block;
-    }
-    .hero-h1 em {
-      font-style: italic;
-      font-weight: 300;
-      color: rgba(255,255,255,0.55);
-      font-size: 0.7em;
-      display: block;
-      letter-spacing: 0;
-      margin-top: 0.3rem;
     }
 
     .hero-desc {
       font-family: 'DM Sans', sans-serif;
       font-size: 0.95rem;
-      color: var(--gray);
-      line-height: 1.85;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.8;
       max-width: 420px;
-      margin-bottom: 2.8rem;
-      font-weight: 300;
+      margin-bottom: 2.5rem;
+      font-weight: 400;
     }
 
     .hero-ctas {
@@ -129,31 +122,28 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-top: 3.5rem;
-      padding-top: 2.5rem;
-      border-top: 1px solid var(--border-soft);
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      flex-wrap: wrap;
     }
     .hero-divider-label {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.62rem;
+      font-size: 0.6rem;
       letter-spacing: 3px;
       text-transform: uppercase;
       color: var(--gray);
       white-space: nowrap;
     }
-    .hero-cats {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
+    .hero-cats { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .hero-cat-pill {
       display: inline-flex;
       align-items: center;
       gap: 5px;
       padding: 5px 12px;
-      border: 1px solid var(--border-soft);
+      border: 1px solid rgba(201,168,76,0.2);
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.62rem;
+      font-size: 0.6rem;
       font-weight: 500;
       letter-spacing: 1.5px;
       text-transform: uppercase;
@@ -161,128 +151,139 @@
       text-decoration: none;
       transition: all 0.25s;
     }
-    .hero-cat-pill:hover {
-      border-color: var(--gold);
-      color: var(--gold);
-      background: var(--gold-pale);
-    }
-    .hero-cat-pill i { font-size: 0.75rem; }
+    .hero-cat-pill:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.06); }
+    .hero-cat-pill i { font-size: 0.72rem; }
 
-    /* RIGHT SIDE */
+    /* RIGHT — grade de categorias estilo referência */
     .hero-right {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 1px;
+      background: rgba(201,168,76,0.1);
+      border: 1px solid rgba(201,168,76,0.15);
       position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .hero-img-wrap {
-      position: relative;
-      width: 100%;
-      max-width: 420px;
-    }
-
-    .hero-img-main {
-      width: 100%;
-      aspect-ratio: 3/4;
-      background: var(--black-card);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      position: relative;
-    }
-    .hero-img-main::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(rgba(201,168,76,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(201,168,76,0.025) 1px, transparent 1px);
-      background-size: 28px 28px;
-    }
-    .hero-img-main img {
-      width: 72%;
-      height: 72%;
-      object-fit: contain;
-      position: relative;
-      z-index: 1;
-      filter: drop-shadow(0 0 50px rgba(201,168,76,0.55));
-      animation: logoFloat 5s ease-in-out infinite;
-    }
-    @keyframes logoFloat {
-      0%,100% { transform: translateY(0); filter: drop-shadow(0 0 50px rgba(201,168,76,0.55)); }
-      50% { transform: translateY(-14px); filter: drop-shadow(0 20px 60px rgba(201,168,76,0.75)); }
     }
 
     /* Moldura decorativa */
-    .hero-img-wrap::before {
+    .hero-right::before {
       content: '';
       position: absolute;
-      top: -14px; left: -14px;
-      width: 55%; height: 55%;
-      border-top: 1px solid rgba(201,168,76,0.45);
-      border-left: 1px solid rgba(201,168,76,0.45);
+      top: -12px; left: -12px;
+      width: 42%; height: 42%;
+      border-top: 1px solid rgba(201,168,76,0.5);
+      border-left: 1px solid rgba(201,168,76,0.5);
       pointer-events: none;
       z-index: 2;
     }
-    .hero-img-wrap::after {
+    .hero-right::after {
       content: '';
       position: absolute;
-      bottom: -14px; right: -14px;
-      width: 55%; height: 55%;
+      bottom: -12px; right: -12px;
+      width: 42%; height: 42%;
       border-bottom: 1px solid rgba(201,168,76,0.25);
       border-right: 1px solid rgba(201,168,76,0.25);
       pointer-events: none;
       z-index: 2;
     }
 
-    /* Tags flutuantes nos cantos */
-    .hero-float-tag {
-      position: absolute;
-      background: rgba(10,10,10,0.92);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(12px);
-      padding: 0.7rem 1rem;
-      z-index: 3;
+    .hero-cat-card {
+      background: #0c0b07;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-end;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      min-height: 160px;
+      transition: background 0.3s;
     }
-    .hero-float-tag-label {
+    .hero-cat-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%);
+    }
+    .hero-cat-card:hover { background: #111009; }
+    .hero-cat-card:hover .hcc-arrow { transform: translateX(4px); color: var(--gold); }
+    .hero-cat-card i {
+      font-size: 2rem;
+      color: var(--gold);
+      position: relative;
+      z-index: 1;
+      margin-bottom: 0.8rem;
+      opacity: 0.85;
+    }
+    .hcc-name {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.58rem;
-      letter-spacing: 2.5px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      color: var(--gray);
-      display: block;
+      color: var(--white);
+      position: relative;
+      z-index: 1;
       margin-bottom: 2px;
     }
-    .hero-float-tag-val {
+    .hcc-sub {
+      font-size: 0.68rem;
+      color: var(--gray);
+      position: relative;
+      z-index: 1;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .hcc-arrow {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      font-size: 0.85rem;
+      color: rgba(201,168,76,0.4);
+      z-index: 1;
+      transition: all 0.25s;
+    }
+
+    /* Chip "Rolex" / destaque no canto */
+    .hero-brand-chip {
+      position: absolute;
+      top: -1px; right: 0;
+      background: var(--gold);
+      color: var(--black);
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.78rem;
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      z-index: 3;
+    }
+
+    /* Badge flutuante */
+    .hero-badge {
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--black-card);
+      border: 1px solid rgba(201,168,76,0.25);
+      padding: 0.6rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 5;
+      white-space: nowrap;
+    }
+    .hero-badge span {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.6rem;
       font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
       color: var(--gold);
     }
-    .hft-1 { top: 18%; right: -5%; }
-    .hft-2 { bottom: 18%; left: -5%; }
+    .hero-badge-sep { width: 1px; height: 16px; background: rgba(201,168,76,0.2); }
 
-    /* Dot grid decorativo */
-    .hero-dot-grid {
-      position: absolute;
-      bottom: -20px; right: -20px;
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 7px;
-      z-index: 0;
-      opacity: 0.3;
-    }
-    .hero-dot-grid span {
-      width: 3px; height: 3px;
-      background: var(--gold);
-      border-radius: 50%;
-      display: block;
-    }
-
-    /* ── SECTION REDESIGN ── */
+    /* ── SECTION LABEL ── */
     .section-label {
       display: inline-flex;
       align-items: center;
@@ -305,62 +306,57 @@
       color: var(--gold);
     }
 
-    /* ── CATEGORIES REDESIGN ── */
+    /* ── CATEGORIES ROW ── */
     .cats-wrap {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 1px;
-      background: var(--border-soft);
+      gap: 12px;
     }
     .cat-item {
       background: var(--black-card);
-      padding: 2.8rem 1rem;
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-card);
+      padding: 2rem 1rem;
       text-align: center;
       text-decoration: none;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1rem;
-      transition: all 0.35s;
+      gap: 0.5rem;
+      transition: all 0.3s;
       position: relative;
       overflow: hidden;
     }
-    .cat-item::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 50%;
-      width: 0; height: 2px;
-      background: var(--gold);
-      transform: translateX(-50%);
-      transition: width 0.35s;
+    .cat-item:hover {
+      background: var(--black-hover);
+      border-color: rgba(201,168,76,0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
     }
-    .cat-item:hover { background: var(--black-hover); }
-    .cat-item:hover::after { width: 60%; }
     .cat-icon-wrap {
       width: 52px; height: 52px;
       border: 1px solid var(--border-soft);
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.35s;
+      transition: all 0.3s;
+      margin-bottom: 0.3rem;
     }
-    .cat-item:hover .cat-icon-wrap {
-      border-color: var(--gold);
-      background: var(--gold-pale);
-    }
-    .cat-item i { font-size: 1.5rem; color: var(--gold); }
+    .cat-item:hover .cat-icon-wrap { border-color: var(--gold); background: var(--gold-pale); }
+    .cat-item i { font-size: 1.4rem; color: var(--gold); }
     .cat-item span {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 2.5px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: var(--gray-light);
+      color: var(--white);
       transition: color 0.25s;
     }
     .cat-item:hover span { color: var(--gold); }
 
-    /* ── PROMO BANNER REDESIGN ── */
+    /* ── PROMO BANNER ── */
     .promo-new {
       background: var(--black-card);
       border: 1px solid var(--border-soft);
@@ -385,12 +381,7 @@
       transition: background 0.25s;
     }
     .promo-item:hover { background: var(--black-hover); }
-    .promo-item i {
-      font-size: 1.6rem;
-      color: var(--gold);
-      display: block;
-      margin-bottom: 1rem;
-    }
+    .promo-item i { font-size: 1.6rem; color: var(--gold); display: block; margin-bottom: 1rem; }
     .promo-item strong {
       font-family: 'Space Grotesk', sans-serif;
       font-size: 0.72rem;
@@ -401,12 +392,9 @@
       display: block;
       margin-bottom: 4px;
     }
-    .promo-item p {
-      font-size: 0.78rem;
-      color: var(--gray);
-    }
+    .promo-item p { font-size: 0.78rem; color: var(--gray); }
 
-    /* ── TESTIMONIALS REDESIGN ── */
+    /* ── TESTIMONIALS ── */
     .testi-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -449,22 +437,17 @@
       font-family: 'Space Grotesk', sans-serif;
       font-size: 0.85rem; flex-shrink: 0;
     }
-    .testi-author strong {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.82rem;
-      display: block;
-    }
+    .testi-author strong { font-family: 'Space Grotesk', sans-serif; font-size: 0.82rem; display: block; }
     .testi-author span { font-size: 0.7rem; color: var(--gray); }
 
-    /* ── FOOTER YEAR FIX ── */
     .footer-yr { color: var(--gold); }
 
     @media (max-width: 992px) {
       .hero-inner { grid-template-columns: 1fr; gap: 3rem; text-align: center; }
-      .hero-h1 strong, .hero-h1 em { display: inline; }
+      .hero-h1 strong { display: inline; }
       .hero-desc { margin-left: auto; margin-right: auto; }
       .hero-ctas { justify-content: center; }
-      .hero-divider { justify-content: center; flex-wrap: wrap; }
+      .hero-divider { justify-content: center; }
       .hero-right { display: none; }
       .cats-wrap { grid-template-columns: repeat(3, 1fr); }
       .promo-new { grid-template-columns: 1fr 1fr; }
@@ -497,17 +480,19 @@
     <img src="ee.png" alt="MTS Vendas" id="site-logo">
     <span class="navbar-brand-text" id="site-name">MTS Vendas</span>
   </a>
-  <ul class="navbar-nav">
-    <li><a href="index.html" class="active">Início</a></li>
-    <li><a href="pages/produtos.html">Produtos</a></li>
-    <li><a href="pages/perfumes.html">Perfumes</a></li>
-    <li><a href="pages/roupas.html">Roupas</a></li>
-    <li><a href="pages/contato.html">Contato</a></li>
-    <li><a href="pages/minha-conta.html">Minha Conta</a></li>
-  </ul>
+
+  <!-- BARRA DE PESQUISA CENTRAL -->
+  <div class="navbar-search">
+    <div class="navbar-search-inner">
+      <i class="ri-search-line"></i>
+      <input type="text" placeholder="O que você procura?" id="navbar-search-input"
+        oninput="handleNavSearch(this.value)" onkeydown="if(event.key==='Enter')goToSearch(this.value)">
+    </div>
+  </div>
+
   <div class="navbar-actions">
     <a href="pages/minha-conta.html" class="btn-icon" title="Minha Conta"><i class="ri-user-line"></i></a>
-    <button class="btn-icon" onclick="toggleCart()" title="Carrinho">
+    <button class="btn-icon" onclick="toggleCart()" title="Carrinho" style="position:relative">
       <i class="ri-shopping-bag-line"></i>
       <span class="cart-count" style="display:none">0</span>
     </button>
@@ -530,35 +515,28 @@
 <section class="hero">
   <div class="sweep-line"></div>
   <div class="sweep-line"></div>
-  <div class="vert-line"></div>
-  <div class="vert-line"></div>
-  <div class="vert-line"></div>
 
   <div class="hero-inner">
     <!-- ESQUERDA -->
     <div class="hero-left">
       <div class="hero-eyebrow">
         <div class="hero-eyebrow-line"></div>
-        <span class="hero-eyebrow-text" id="hero-tag">Coleção 2026</span>
+        <span class="hero-eyebrow-text" id="hero-tag">Produtos Importados</span>
         <div class="hero-eyebrow-line"></div>
       </div>
 
       <h1 class="hero-h1">
-        <span id="hero-title-1">O Luxo que</span>
+        <span id="hero-title-1">O Luxo Que</span>
         <strong id="hero-title-2">Você Merece</strong>
-        <em id="hero-subtitle-small">estilo sem limite</em>
       </h1>
 
       <p class="hero-desc" id="hero-subtitle">
-        Perfumes importados, roupas exclusivas, relógios, joias e bonés premium. Entrega para todo o Brasil.
+        Relógios, perfumes, roupas, joias e muito mais. Tudo o que você precisa em um só lugar.
       </p>
 
       <div class="hero-ctas">
-        <a href="pages/produtos.html" class="btn btn-gold" id="hero-btn1">
-          <i class="ri-shopping-bag-line"></i> Ver Coleção
-        </a>
-        <a href="pages/perfumes.html" class="btn btn-outline" id="hero-btn2">
-          <i class="ri-flask-line"></i> Perfumes
+        <a href="pages/produtos.html" class="btn btn-gold" id="hero-btn1" style="font-size:0.75rem;font-weight:800;padding:14px 32px">
+          Ver Coleção &nbsp;<i class="ri-arrow-right-line"></i>
         </a>
       </div>
 
@@ -569,35 +547,48 @@
           <a href="pages/roupas.html" class="hero-cat-pill"><i class="ri-t-shirt-line"></i>Roupas</a>
           <a href="pages/produtos.html?cat=relogios" class="hero-cat-pill"><i class="ri-time-line"></i>Relógios</a>
           <a href="pages/produtos.html?cat=joias" class="hero-cat-pill"><i class="ri-gem-line"></i>Joias</a>
-          <a href="pages/produtos.html?cat=bones" class="hero-cat-pill"><i class="ri-shield-star-line"></i>Bonés</a>
         </div>
       </div>
     </div>
 
-    <!-- DIREITA -->
+    <!-- DIREITA — grade de categorias -->
     <div class="hero-right">
-      <div class="hero-img-wrap">
-        <!-- Tags flutuantes -->
-        <div class="hero-float-tag hft-1">
-          <span class="hero-float-tag-label">Entrega</span>
-          <span class="hero-float-tag-val">Todo Brasil</span>
-        </div>
-        <div class="hero-float-tag hft-2">
-          <span class="hero-float-tag-label">Parcelamento</span>
-          <span class="hero-float-tag-val">Até 12x</span>
-        </div>
+      <a href="pages/perfumes.html" class="hero-cat-card">
+        <i class="ri-flask-line"></i>
+        <span class="hcc-name">Perfumes</span>
+        <span class="hcc-sub">Fragrâncias exclusivas</span>
+        <i class="ri-arrow-right-line hcc-arrow"></i>
+      </a>
 
-        <div class="hero-img-main">
-          <img src="ee.png" alt="MTS Vendas">
-        </div>
+      <a href="pages/produtos.html?cat=relogios" class="hero-cat-card">
+        <span class="hero-brand-chip">Premium</span>
+        <i class="ri-time-line"></i>
+        <span class="hcc-name">Relógios</span>
+        <span class="hcc-sub">Sofisticação no pulso</span>
+        <i class="ri-arrow-right-line hcc-arrow"></i>
+      </a>
 
-        <!-- Dot grid -->
-        <div class="hero-dot-grid">
-          <span></span><span></span><span></span><span></span><span></span><span></span>
-          <span></span><span></span><span></span><span></span><span></span><span></span>
-          <span></span><span></span><span></span><span></span><span></span><span></span>
-          <span></span><span></span><span></span><span></span><span></span><span></span>
-        </div>
+      <a href="pages/roupas.html" class="hero-cat-card">
+        <i class="ri-t-shirt-line"></i>
+        <span class="hcc-name">Roupas</span>
+        <span class="hcc-sub">Estilo em todos os momentos</span>
+        <i class="ri-arrow-right-line hcc-arrow"></i>
+      </a>
+
+      <a href="pages/produtos.html?cat=joias" class="hero-cat-card">
+        <i class="ri-gem-line"></i>
+        <span class="hcc-name">Joias</span>
+        <span class="hcc-sub">Brilho e elegância</span>
+        <i class="ri-arrow-right-line hcc-arrow"></i>
+      </a>
+
+      <!-- Badge centralizado embaixo -->
+      <div class="hero-badge">
+        <span>Qualidade</span>
+        <div class="hero-badge-sep"></div>
+        <span>Prestígio</span>
+        <div class="hero-badge-sep"></div>
+        <span>Exclusividade</span>
       </div>
     </div>
   </div>
@@ -612,36 +603,43 @@
 </style>
 
 <!-- ═══ CATEGORIAS ═══ -->
-<div style="background:var(--black-soft);padding:6rem 0;position:relative;z-index:1">
+<div style="background:var(--black-soft);padding:4rem 0;position:relative;z-index:1">
   <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem">
-    <div style="text-align:center;margin-bottom:3rem">
-      <div class="section-label"><span>Explorar</span></div>
-      <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.8rem);font-weight:300;color:var(--white)">
-        Nossas <em style="font-style:normal;color:var(--gold)">Categorias</em>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem">
+      <h2 style="font-family:'Montserrat',sans-serif;font-size:clamp(1.1rem,2vw,1.4rem);font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--white)">
+        Nossas <span style="color:var(--gold)">Categorias</span>
       </h2>
     </div>
-  </div>
-  <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem">
     <div class="cats-wrap">
       <a href="pages/perfumes.html" class="cat-item">
         <div class="cat-icon-wrap"><i class="ri-flask-line"></i></div>
         <span>Perfumes</span>
-      </a>
-      <a href="pages/roupas.html" class="cat-item">
-        <div class="cat-icon-wrap"><i class="ri-t-shirt-line"></i></div>
-        <span>Roupas</span>
+        <small style="font-size:0.6rem;color:var(--gray);letter-spacing:1px;text-transform:uppercase;font-family:var(--font-ui)">Fragrâncias exclusivas</small>
+        <i class="ri-arrow-right-line" style="font-size:0.8rem;color:var(--gold);margin-top:4px"></i>
       </a>
       <a href="pages/produtos.html?cat=relogios" class="cat-item">
         <div class="cat-icon-wrap"><i class="ri-time-line"></i></div>
         <span>Relógios</span>
+        <small style="font-size:0.6rem;color:var(--gray);letter-spacing:1px;text-transform:uppercase;font-family:var(--font-ui)">Sofisticação no pulso</small>
+        <i class="ri-arrow-right-line" style="font-size:0.8rem;color:var(--gold);margin-top:4px"></i>
+      </a>
+      <a href="pages/roupas.html" class="cat-item">
+        <div class="cat-icon-wrap"><i class="ri-t-shirt-line"></i></div>
+        <span>Roupas</span>
+        <small style="font-size:0.6rem;color:var(--gray);letter-spacing:1px;text-transform:uppercase;font-family:var(--font-ui)">Estilo em todos os momentos</small>
+        <i class="ri-arrow-right-line" style="font-size:0.8rem;color:var(--gold);margin-top:4px"></i>
       </a>
       <a href="pages/produtos.html?cat=joias" class="cat-item">
         <div class="cat-icon-wrap"><i class="ri-gem-line"></i></div>
         <span>Joias</span>
+        <small style="font-size:0.6rem;color:var(--gray);letter-spacing:1px;text-transform:uppercase;font-family:var(--font-ui)">Brilho e elegância</small>
+        <i class="ri-arrow-right-line" style="font-size:0.8rem;color:var(--gold);margin-top:4px"></i>
       </a>
       <a href="pages/produtos.html?cat=bones" class="cat-item">
         <div class="cat-icon-wrap"><i class="ri-shield-star-line"></i></div>
         <span>Bonés</span>
+        <small style="font-size:0.6rem;color:var(--gray);letter-spacing:1px;text-transform:uppercase;font-family:var(--font-ui)">Premium &amp; exclusivo</small>
+        <i class="ri-arrow-right-line" style="font-size:0.8rem;color:var(--gold);margin-top:4px"></i>
       </a>
     </div>
   </div>
@@ -649,19 +647,19 @@
 
 <!-- ═══ PRODUTOS DESTAQUE ═══ -->
 <section class="section">
-  <div style="text-align:center;margin-bottom:3.5rem">
-    <div class="section-label"><span>Destaques</span></div>
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.8rem);font-weight:300;margin-top:0.8rem">
-      Mais <em style="font-style:normal;color:var(--gold)">Vendidos</em>
-    </h2>
-    <p style="color:var(--gray);font-size:0.88rem;margin-top:0.8rem;font-weight:300">Os produtos mais amados pelos nossos clientes</p>
-  </div>
-  <div class="products-grid" id="featured-products"></div>
-  <div style="text-align:center;margin-top:3rem">
-    <a href="pages/produtos.html" class="btn btn-outline">
-      Ver todos os produtos &nbsp;<i class="ri-arrow-right-line"></i>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem">
+    <div style="display:flex;align-items:center;gap:12px">
+      <i class="ri-vip-crown-fill" style="color:var(--gold);font-size:1.4rem"></i>
+      <div>
+        <h2 style="font-family:'Montserrat',sans-serif;font-size:clamp(1.2rem,2.5vw,1.6rem);font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--gold);line-height:1">Mais Vendidos</h2>
+        <p style="font-family:'DM Sans',sans-serif;color:var(--gray);font-size:0.78rem;margin-top:3px">Os produtos que estão fazendo sucesso</p>
+      </div>
+    </div>
+    <a href="pages/produtos.html" class="btn btn-outline" style="font-size:0.65rem;padding:9px 20px">
+      Ver Todos &nbsp;<i class="ri-arrow-right-line"></i>
     </a>
   </div>
+  <div class="products-grid" id="featured-products"></div>
 </section>
 
 <!-- ═══ BENEFÍCIOS ═══ -->
@@ -697,19 +695,19 @@
 
 <!-- ═══ PERFUMES ═══ -->
 <section class="section">
-  <div style="text-align:center;margin-bottom:3.5rem">
-    <div class="section-label"><span>Exclusivo</span></div>
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.8rem);font-weight:300;margin-top:0.8rem">
-      Perfumes <em style="font-style:normal;color:var(--gold)">Importados</em>
-    </h2>
-    <p style="color:var(--gray);font-size:0.88rem;margin-top:0.8rem;font-weight:300">Fragrâncias internacionais com procedência 100% garantida</p>
-  </div>
-  <div class="products-grid" id="perfumes-section"></div>
-  <div style="text-align:center;margin-top:3rem">
-    <a href="pages/perfumes.html" class="btn btn-outline">
-      Ver todos os perfumes &nbsp;<i class="ri-arrow-right-line"></i>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem">
+    <div style="display:flex;align-items:center;gap:12px">
+      <i class="ri-flask-fill" style="color:var(--gold);font-size:1.4rem"></i>
+      <div>
+        <h2 style="font-family:'Montserrat',sans-serif;font-size:clamp(1.2rem,2.5vw,1.6rem);font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--white);line-height:1">Perfumes <span style="color:var(--gold)">Importados</span></h2>
+        <p style="font-family:'DM Sans',sans-serif;color:var(--gray);font-size:0.78rem;margin-top:3px">Fragrâncias internacionais com procedência garantida</p>
+      </div>
+    </div>
+    <a href="pages/perfumes.html" class="btn btn-outline" style="font-size:0.65rem;padding:9px 20px">
+      Ver Todos &nbsp;<i class="ri-arrow-right-line"></i>
     </a>
   </div>
+  <div class="products-grid" id="perfumes-section"></div>
 </section>
 
 <!-- ═══ TESTEMUNHOS ═══ -->
@@ -839,8 +837,8 @@
   <div class="cart-items"></div>
   <div class="cart-footer">
     <div class="cart-subtotal"><span>Subtotal</span><strong>R$ 0,00</strong></div>
-    <button class="btn btn-gold w-full" onclick="startPixCheckout()">
-      <i class="ri-qr-code-line"></i> Pagar com Pix
+    <button class="btn btn-gold w-full" onclick="goToCheckout()">
+      <i class="ri-secure-payment-line"></i> Finalizar Pedido
     </button>
     <button class="btn btn-dark w-full mt-1" onclick="toggleCart()">Continuar Comprando</button>
   </div>

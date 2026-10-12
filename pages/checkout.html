@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | MTS Vendas</title>
+  <meta name="description" content="Finalize seu pedido na MTS Vendas — pagamento via Pix ou Cartão de Crédito.">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css">
+  <link rel="icon" type="image/png" href="../ee.png">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/firebase-sync.js"></script>
+  <style>
+    /* ── CHECKOUT PAGE ── */
+    .checkout-page {
+      min-height: 100vh;
+      padding: 100px 2.5rem 5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .checkout-header {
+      margin-bottom: 3rem;
+    }
+    .checkout-header .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-ui);
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 1.2rem;
+    }
+    .checkout-header .breadcrumb a { color: var(--gray); transition: color 0.2s; }
+    .checkout-header .breadcrumb a:hover { color: var(--gold); }
+    .checkout-header .breadcrumb i { font-size: 0.6rem; color: var(--gold); }
+    .checkout-header h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 300;
+      color: var(--white);
+    }
+    .checkout-header h1 em { font-style: normal; color: var(--gold); }
+
+    /* ── LAYOUT ── */
+    .checkout-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* ── PAYMENT BOX ── */
+    .payment-box {
+      background: var(--black-card);
+      border: 1px solid var(--border-soft);
+      position: relative;
+      overflow: hidden;
+    }
+    .payment-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.5;
+    }
+
+    /* ── TABS ── */
+    .pay-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .pay-tab {
+      padding: 1.4rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: var(--gray);
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: all 0.25s;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      position: relative;
+      justify-content: center;
+    }
+    .pay-tab i { font-size: 1.1rem; }
+    .pay-tab:hover { color: var(--white); background: var(--black-hover); }
+    .pay-tab.active {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+      background: rgba(201,168,76,0.04);
+    }
+
+    /* ── TAB PANELS ── */
+    .pay-panel { display: none; padding: 2rem; }
+    .pay-panel.active { display: block; }
+
+    /* ── PIX PANEL ── */
+    .pix-amount-display {
+      background: var(--black);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 1.8rem;
+      position: relative;
+    }
+    .pix-amount-label {
+      font-family: var(--font-ui);
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gray);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .pix-amount-value {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: var(--gold);
+      display: block;
+      line-height: 1;
+    }
+    .pix-discount-badge {
+      display: inline-block;
+      margin-top: 8px;
+      background: rgba(39,174,96,0.12);
+      border: 1px solid rgba(39,174,96,0.3);
+      color: #27ae60;
+      font-family: var(--font-ui);
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      padding: 3px 10px;
+    }
+
+    .pix-info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: rgba(201,168,76,0.04);
+      border: 1px solid rgba(201,168,76,0.15);
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.8rem;
+    }
+    .pix-info-row i { color: var(--gold); font-size: 1rem; margin-top: 1px; flex-shrink: 0; }
+    .pix-info-row p {
+      font-size: 0.8rem;
+      color: var(--gray-light);
+      line-height: 1.7;
+    }
+
+    /* QR Code área */
+    .qr-area {
+      border: 1px dashed rgba(201,168,76,0.3);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      margin-bottom: 1.8rem;
+      background: rgba(201,168,76,0.02);
+      position: relative;
+    }
+    .qr-area-label {
+      font-family: var(--font-ui);
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 1.5rem;
+    }
+    .qr-placeholder {
+      width: 180px;
+      height: 180px;
+      border: 1px solid rgba(201,168,76,0.2);
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--black);
+      position: relative;
+      overflow: hidden;
+    }
+    /* Cantos decorativos do QR */
+    .qr-placeholder::before, .qr-placeholder::after {
+      content: '';
+      position: absolute;
+      width: 24px; height: 24px;
+    }
+    .qr-placeholder::before {
+      top: 0; left: 0;
+      border-top: 2px solid var(--gold);
+      border-left: 2px solid var(--gold);
+    }
+    .qr-placeholder::after {
+      bottom: 0; right: 0;
+      border-bottom: 2px solid var(--gold);
+      border-right: 2px solid var(--gold);
+    }
+    /* Cantos extras via span */
+    .qr-corner-tr, .qr-corner-bl {
+      position: absolute;
+      width: 24px; height: 24px;
+    }
+    .qr-corner-tr { top: 0; right: 0; border-top: 2px solid var(--gold); border-right: 2px solid var(--gold); }
+    .qr-corner-bl { bottom: 0; left: 0; border-bottom: 2px solid var(--gold); border-left: 2px solid var(--gold); }
+
+    .qr-placeholder i {
+      font-size: 3.5rem;
+      color: rgba(201,168,76,0.15);
+    }
+    .qr-placeholder span {
+      font-family: var(--font-ui);
+      font-size: 0.58rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gray);
+    }
+    .qr-instruction {
+      font-size: 0.8rem;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+    .qr-instruction strong { color: var(--white); }
+
+    /* Chave Pix copiável */
+    .pix-key-row {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border-soft);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .pix-key-value {
+      flex: 1;
+      padding: 12px 14px;
+      font-family: var(--font-ui);
+      font-size: 0.78rem;
+      color: var(--white-soft);
+      background: var(--black);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pix-key-copy {
+      padding: 12px 16px;
+      background: var(--gold-pale);
+      border: none;
+      border-left: 1px solid var(--border-soft);
+      color: var(--gold);
+      font-family: var(--font-ui);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .pix-key-copy:hover { background: rgba(201,168,76,0.2); color: var(--white); }
+
+    .pix-steps {
+      list-style: none;
+      counter-reset: step;
+      margin-bottom: 1.8rem;
+    }
+    .pix-step {
+      counter-increment: step;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .pix-step:last-child { border-bottom: none; }
+    .pix-step::before {
+      content: counter(step);
+      width: 24px; height: 24px;
+      background: var(--gold-pale);
+      border: 1px solid rgba(201,168,76,0.3);
+      color: var(--gold);
+      font-family: var(--font-ui);
+      font-size: 0.62rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .pix-step p { font-size: 0.82rem; color: var(--gray-light); line-height: 1.6; }
+    .pix-step p strong { color: var(--white); }
+
+    /* ── CARD PANEL ── */
+    .card-amount-display {
+      background: var(--black);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 1.8rem;
+    }
+    .card-amount-label {
+      font-family: var(--font-ui);
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gray);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .card-amount-value {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: var(--white);
+      display: block;
+      line-height: 1;
+    }
+    .card-amount-installment {
+      font-size: 0.75rem;
+      color: var(--gray);
+      margin-top: 6px;
+      display: block;
+    }
+
+    .card-info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: rgba(52,152,219,0.04);
+      border: 1px solid rgba(52,152,219,0.15);
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.8rem;
+    }
+    .card-info-row i { color: #3498db; font-size: 1rem; margin-top: 1px; flex-shrink: 0; }
+    .card-info-row p { font-size: 0.8rem; color: var(--gray-light); line-height: 1.7; }
+
+    /* Área QR cartão / espaço livre */
+    .card-qr-area {
+      border: 1px dashed rgba(255,255,255,0.08);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      margin-bottom: 1.8rem;
+      background: rgba(255,255,255,0.01);
+    }
+    .card-qr-area-label {
+      font-family: var(--font-ui);
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gray);
+      display: block;
+      margin-bottom: 1.5rem;
+    }
+    .card-placeholder {
+      width: 200px;
+      height: 130px;
+      border: 1px solid rgba(255,255,255,0.07);
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--black);
+      border-radius: 8px;
+      position: relative;
+    }
+    .card-placeholder i { font-size: 2.5rem; color: rgba(255,255,255,0.08); }
+    .card-placeholder span {
+      font-family: var(--font-ui);
+      font-size: 0.58rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gray);
+    }
+    .card-qr-area p { font-size: 0.8rem; color: var(--gray); line-height: 1.7; }
+
+    /* Formulário de dados do cartão */
+    .card-form { display: flex; flex-direction: column; gap: 1rem; }
+    .card-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .ck-form-group { display: flex; flex-direction: column; gap: 6px; }
+    .ck-form-group label {
+      font-family: var(--font-ui);
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gray);
+    }
+    .ck-form-group input, .ck-form-group select {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--black);
+      border: 1px solid var(--border-soft);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    .ck-form-group input:focus, .ck-form-group select:focus {
+      border-color: var(--gold);
+    }
+    .ck-form-group input::placeholder { color: var(--gray); }
+    .ck-form-group select option { background: var(--black-card); }
+
+    /* Bandeiras */
+    .card-brands {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .card-brand-icon {
+      width: 40px; height: 26px;
+      background: var(--black);
+      border: 1px solid var(--border-soft);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+      color: var(--gray);
+      font-family: var(--font-ui);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── ORDER SUMMARY ── */
+    .order-summary {
+      background: var(--black-card);
+      border: 1px solid var(--border-soft);
+      position: sticky;
+      top: 90px;
+    }
+    .order-summary-header {
+      padding: 1.4rem 1.5rem;
+      border-bottom: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .order-summary-title {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+    .order-items-count {
+      font-family: var(--font-ui);
+      font-size: 0.62rem;
+      color: var(--gray);
+      letter-spacing: 1px;
+    }
+
+    .order-items-list {
+      padding: 1rem 1.5rem;
+      max-height: 300px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .order-item-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .order-item-thumb {
+      width: 44px; height: 44px;
+      background: var(--black);
+      border: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .order-item-thumb i { font-size: 1.2rem; color: rgba(201,168,76,0.25); }
+    .order-item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .order-item-info { flex: 1; min-width: 0; }
+    .order-item-name {
+      font-family: var(--font-ui);
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--white);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+    .order-item-meta {
+      font-size: 0.68rem;
+      color: var(--gray);
+    }
+    .order-item-price {
+      font-family: var(--font-ui);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .order-totals {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .order-total-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .order-total-label {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      color: var(--gray);
+      letter-spacing: 0.5px;
+    }
+    .order-total-val {
+      font-family: var(--font-ui);
+      font-size: 0.78rem;
+      color: var(--white-soft);
+    }
+    .order-total-row.final {
+      border-top: 1px solid var(--border-soft);
+      padding-top: 0.8rem;
+      margin-top: 0.4rem;
+    }
+    .order-total-row.final .order-total-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .order-total-row.final .order-total-val {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .order-security {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .order-security i { color: var(--gold); font-size: 0.9rem; }
+    .order-security span {
+      font-family: var(--font-ui);
+      font-size: 0.62rem;
+      color: var(--gray);
+      letter-spacing: 0.5px;
+    }
+
+    /* Empty cart state */
+    .checkout-empty {
+      text-align: center;
+      padding: 5rem 2rem;
+    }
+    .checkout-empty i { font-size: 4rem; color: rgba(201,168,76,0.15); display: block; margin-bottom: 1.5rem; }
+    .checkout-empty h2 {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 300;
+      margin-bottom: 1rem;
+    }
+    .checkout-empty p { color: var(--gray); margin-bottom: 2rem; }
+
+    /* Confirm button */
+    .confirm-btn-wrap {
+      padding: 0 2rem 2rem;
+    }
+    .confirm-note {
+      font-size: 0.72rem;
+      color: var(--gray);
+      text-align: center;
+      margin-top: 0.8rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 900px) {
+      .checkout-layout { grid-template-columns: 1fr; }
+      .order-summary { position: static; }
+    }
+    @media (max-width: 580px) {
+      .card-form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+
+<!-- ═══ NAVBAR ═══ -->
+<nav class="navbar" id="navbar">
+  <a href="../index.html" class="navbar-brand">
+    <img src="../ee.png" alt="MTS Vendas" id="site-logo">
+    <span class="navbar-brand-text" id="site-name">MTS Vendas</span>
+  </a>
+  <ul class="navbar-nav">
+    <li><a href="../index.html">Início</a></li>
+    <li><a href="produtos.html">Produtos</a></li>
+    <li><a href="perfumes.html">Perfumes</a></li>
+    <li><a href="roupas.html">Roupas</a></li>
+    <li><a href="contato.html">Contato</a></li>
+    <li><a href="minha-conta.html">Minha Conta</a></li>
+  </ul>
+  <div class="navbar-actions">
+    <a href="minha-conta.html" class="btn-icon" title="Minha Conta"><i class="ri-user-line"></i></a>
+    <button class="btn-icon" onclick="toggleCart()" title="Carrinho">
+      <i class="ri-shopping-bag-line"></i>
+      <span class="cart-count" style="display:none">0</span>
+    </button>
+    <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <a href="../index.html">Início</a>
+  <a href="produtos.html">Produtos</a>
+  <a href="perfumes.html">Perfumes</a>
+  <a href="roupas.html">Roupas</a>
+  <a href="contato.html">Contato</a>
+  <a href="minha-conta.html">Minha Conta</a>
+</div>
+
+<!-- ═══ CHECKOUT ═══ -->
+<main class="checkout-page" id="checkout-main">
+
+  <div class="checkout-header">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="../index.html">Início</a>
+      <i class="ri-arrow-right-s-line"></i>
+      <span>Checkout</span>
+    </nav>
+    <h1>Finalizar <em>Pedido</em></h1>
+  </div>
+
+  <!-- EMPTY STATE (mostrado se carrinho vazio) -->
+  <div class="checkout-empty" id="checkout-empty" style="display:none">
+    <i class="ri-shopping-bag-line"></i>
+    <h2>Seu carrinho está vazio</h2>
+    <p>Adicione produtos antes de finalizar o pedido.</p>
+    <a href="produtos.html" class="btn btn-gold">
+      <i class="ri-shopping-bag-line"></i> Ver Produtos
+    </a>
+  </div>
+
+  <!-- LAYOUT PRINCIPAL -->
+  <div class="checkout-layout" id="checkout-layout">
+
+    <!-- PAGAMENTO -->
+    <div class="payment-box">
+
+      <!-- TABS -->
+      <div class="pay-tabs" role="tablist">
+        <button class="pay-tab active" id="tab-pix" role="tab"
+          aria-selected="true" aria-controls="panel-pix"
+          onclick="switchTab('pix')">
+          <i class="ri-qr-code-line"></i> Pix
+        </button>
+        <button class="pay-tab" id="tab-card" role="tab"
+          aria-selected="false" aria-controls="panel-card"
+          onclick="switchTab('card')">
+          <i class="ri-bank-card-line"></i> Cartão de Crédito
+        </button>
+      </div>
+
+      <!-- ══════════════ PIX PANEL ══════════════ -->
+      <div class="pay-panel active" id="panel-pix" role="tabpanel" aria-labelledby="tab-pix">
+
+        <!-- Valor exato -->
+        <div class="pix-amount-display">
+          <span class="pix-amount-label">Valor a pagar via Pix</span>
+          <span class="pix-amount-value" id="pix-total">R$ 0,00</span>
+          <span class="pix-discount-badge">✓ 5% de desconto no Pix</span>
+        </div>
+
+        <div class="pix-info-row">
+          <i class="ri-information-line"></i>
+          <p>Escaneie o QR Code ou copie a chave Pix abaixo. O pagamento é confirmado em até <strong>30 segundos</strong> automaticamente.</p>
+        </div>
+
+        <!-- Área do QR Code — espaço livre para inserir imagem futuramente -->
+        <div class="qr-area">
+          <span class="qr-area-label">QR Code Pix</span>
+          <div class="qr-placeholder" id="qr-code-pix">
+            <span class="qr-corner-tr"></span>
+            <span class="qr-corner-bl"></span>
+            <i class="ri-qr-code-line"></i>
+            <span>QR Code aqui</span>
+          </div>
+          <p class="qr-instruction">
+            Abra o aplicativo do seu banco, acesse <strong>Pix → Ler QR Code</strong><br>
+            e escaneie o código acima.
+          </p>
+        </div>
+
+        <!-- Chave Pix para copiar -->
+        <div class="pix-key-row">
+          <span class="pix-key-value" id="pix-key-display">SUA_CHAVE_PIX_AQUI</span>
+          <button class="pix-key-copy" onclick="copyPixKey()">
+            <i class="ri-file-copy-line"></i> Copiar
+          </button>
+        </div>
+
+        <!-- Passos -->
+        <ol class="pix-steps">
+          <li class="pix-step"><p>Abra o app do seu banco e acesse a seção <strong>Pix</strong></p></li>
+          <li class="pix-step"><p>Selecione <strong>Ler QR Code</strong> ou <strong>Pix Copia e Cola</strong></p></li>
+          <li class="pix-step"><p>Confirme o valor de <strong id="pix-step-amount">R$ 0,00</strong> e finalize</p></li>
+          <li class="pix-step"><p>Envie o comprovante via <strong>WhatsApp</strong> para confirmar seu pedido</p></li>
+        </ol>
+
+        <div class="confirm-btn-wrap">
+          <button class="btn btn-gold w-full" onclick="confirmPixOrder()" style="justify-content:center;width:100%">
+            <i class="ri-whatsapp-line"></i> Confirmar Pedido pelo WhatsApp
+          </button>
+          <p class="confirm-note">
+            Após o pagamento, envie o comprovante pelo WhatsApp.<br>
+            Seu pedido será processado em até 24 horas.
+          </p>
+        </div>
+      </div>
+
+      <!-- ══════════════ CARD PANEL ══════════════ -->
+      <div class="pay-panel" id="panel-card" role="tabpanel" aria-labelledby="tab-card">
+
+        <!-- Valor exato -->
+        <div class="card-amount-display">
+          <span class="card-amount-label">Valor total do pedido</span>
+          <span class="card-amount-value" id="card-total">R$ 0,00</span>
+          <span class="card-amount-installment" id="card-installment">ou até 12x de R$ 0,00 sem juros</span>
+        </div>
+
+        <div class="card-info-row">
+          <i class="ri-shield-check-line"></i>
+          <p>Pagamento processado com <strong>criptografia SSL 256-bit</strong>. Seus dados estão protegidos.</p>
+        </div>
+
+        <!-- Bandeiras aceitas -->
+        <div class="card-brands">
+          <div class="card-brand-icon">VISA</div>
+          <div class="card-brand-icon">MC</div>
+          <div class="card-brand-icon">ELO</div>
+          <div class="card-brand-icon">AMEX</div>
+          <div class="card-brand-icon">HIIPER</div>
+        </div>
+
+        <!-- Área de QR / imagem do cartão — espaço livre -->
+        <div class="card-qr-area">
+          <span class="card-qr-area-label">Dados do pagamento</span>
+          <div class="card-placeholder">
+            <i class="ri-bank-card-2-line"></i>
+            <span>Seu cartão aqui</span>
+          </div>
+          <p>Preencha os dados do seu cartão abaixo para finalizar o pagamento.</p>
+        </div>
+
+        <!-- Formulário do cartão -->
+        <div class="card-form" style="padding: 0 0 1.5rem">
+          <div class="ck-form-group">
+            <label for="card-name">Nome no Cartão</label>
+            <input type="text" id="card-name" placeholder="Como está impresso no cartão" autocomplete="cc-name">
+          </div>
+          <div class="ck-form-group">
+            <label for="card-number">Número do Cartão</label>
+            <input type="text" id="card-number" placeholder="0000 0000 0000 0000" maxlength="19"
+              oninput="formatCardNumber(this)" autocomplete="cc-number">
+          </div>
+          <div class="card-form-row">
+            <div class="ck-form-group">
+              <label for="card-expiry">Validade</label>
+              <input type="text" id="card-expiry" placeholder="MM/AA" maxlength="5"
+                oninput="formatExpiry(this)" autocomplete="cc-exp">
+            </div>
+            <div class="ck-form-group">
+              <label for="card-cvv">CVV</label>
+              <input type="text" id="card-cvv" placeholder="000" maxlength="4"
+                oninput="this.value=this.value.replace(/\D/g,'')" autocomplete="cc-csc">
+            </div>
+          </div>
+          <div class="ck-form-group">
+            <label for="card-installments">Parcelamento</label>
+            <select id="card-installments"></select>
+          </div>
+          <div class="ck-form-group">
+            <label for="card-cpf">CPF do Titular</label>
+            <input type="text" id="card-cpf" placeholder="000.000.000-00" maxlength="14"
+              oninput="formatCPF(this)" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="confirm-btn-wrap">
+          <button class="btn btn-gold w-full" onclick="confirmCardOrder()" style="justify-content:center;width:100%">
+            <i class="ri-lock-line"></i> Pagar &nbsp;<span id="confirm-card-amount">R$ 0,00</span>
+          </button>
+          <p class="confirm-note">
+            Clique em Pagar e aguarde a confirmação.<br>
+            Em caso de dúvidas, entre em contato pelo WhatsApp.
+          </p>
+        </div>
+      </div>
+
+    </div><!-- /payment-box -->
+
+    <!-- ══════════════ ORDER SUMMARY ══════════════ -->
+    <div class="order-summary">
+      <div class="order-summary-header">
+        <span class="order-summary-title">Resumo do Pedido</span>
+        <span class="order-items-count" id="summary-count">0 itens</span>
+      </div>
+
+      <div class="order-items-list" id="summary-items"></div>
+
+      <div class="order-totals">
+        <div class="order-total-row">
+          <span class="order-total-label">Subtotal</span>
+          <span class="order-total-val" id="summary-subtotal">R$ 0,00</span>
+        </div>
+        <div class="order-total-row">
+          <span class="order-total-label">Frete</span>
+          <span class="order-total-val" id="summary-frete" style="color:#27ae60">Calculado no envio</span>
+        </div>
+        <div class="order-total-row final">
+          <span class="order-total-label">Total</span>
+          <span class="order-total-val" id="summary-total">R$ 0,00</span>
+        </div>
+      </div>
+
+      <div class="order-security">
+        <i class="ri-shield-check-line"></i>
+        <span>Compra 100% segura · SSL 256-bit</span>
+      </div>
+    </div>
+
+  </div><!-- /checkout-layout -->
+
+</main>
+
+<!-- CART SIDEBAR (para o header funcionar) -->
+<div class="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-sidebar">
+  <div class="cart-header">
+    <h3><i class="ri-shopping-bag-line"></i> &nbsp;Carrinho</h3>
+    <button class="cart-close" onclick="toggleCart()"><i class="ri-close-line"></i></button>
+  </div>
+  <div class="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-subtotal"><span>Subtotal</span><strong>R$ 0,00</strong></div>
+    <button class="btn btn-gold w-full" onclick="window.location.href='checkout.html'">
+      <i class="ri-secure-payment-line"></i> Finalizar Pedido
+    </button>
+    <button class="btn btn-dark w-full mt-1" onclick="toggleCart()">Continuar Comprando</button>
+  </div>
+</div>
+
+<script src="../js/main.js"></script>
+<script>
+  // ──── CHECKOUT LOGIC ────────────────────────────
+
+  const PIX_KEY = 'SUA_CHAVE_PIX_AQUI'; // ← Troque pela sua chave Pix real
+  const PIX_DISCOUNT = 0.05; // 5% de desconto no Pix
+
+  function fmtBRL(val) {
+    return 'R$ ' + val.toFixed(2).replace('.', ',');
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.pay-tab').forEach(t => {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    document.querySelectorAll('.pay-panel').forEach(p => p.classList.remove('active'));
+
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('tab-' + tab).setAttribute('aria-selected', 'true');
+    document.getElementById('panel-' + tab).classList.add('active');
+  }
+
+  function renderCheckout() {
+    const cart = MTS.cart;
+    const layout = document.getElementById('checkout-layout');
+    const empty = document.getElementById('checkout-empty');
+
+    if (cart.length === 0) {
+      if (layout) layout.style.display = 'none';
+      if (empty) empty.style.display = 'block';
+      return;
+    }
+
+    if (layout) layout.style.display = '';
+    if (empty) empty.style.display = 'none';
+
+    const subtotal = MTS.getTotal();
+    const pixTotal = subtotal * (1 - PIX_DISCOUNT);
+
+    // Atualizar valores PIX
+    const pixTotalEl = document.getElementById('pix-total');
+    if (pixTotalEl) pixTotalEl.textContent = fmtBRL(pixTotal);
+
+    const pixStepEl = document.getElementById('pix-step-amount');
+    if (pixStepEl) pixStepEl.textContent = fmtBRL(pixTotal);
+
+    // Atualizar chave Pix
+    const pixKeyEl = document.getElementById('pix-key-display');
+    if (pixKeyEl) pixKeyEl.textContent = PIX_KEY;
+
+    // Atualizar valores Cartão
+    const cardTotalEl = document.getElementById('card-total');
+    if (cardTotalEl) cardTotalEl.textContent = fmtBRL(subtotal);
+
+    const cardInstEl = document.getElementById('card-installment');
+    if (cardInstEl) cardInstEl.textContent = `ou até 12x de ${fmtBRL(subtotal / 12)} sem juros`;
+
+    const confirmCardEl = document.getElementById('confirm-card-amount');
+    if (confirmCardEl) confirmCardEl.textContent = fmtBRL(subtotal);
+
+    // Preencher select de parcelas
+    const sel = document.getElementById('card-installments');
+    if (sel) {
+      sel.innerHTML = '';
+      for (let i = 1; i <= 12; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = i === 1
+          ? `1x de ${fmtBRL(subtotal)} (à vista)`
+          : `${i}x de ${fmtBRL(subtotal / i)} sem juros`;
+        sel.appendChild(opt);
+      }
+    }
+
+    // Resumo do pedido
+    const countEl = document.getElementById('summary-count');
+    if (countEl) countEl.textContent = `${MTS.getCount()} ${MTS.getCount() === 1 ? 'item' : 'itens'}`;
+
+    const itemsEl = document.getElementById('summary-items');
+    if (itemsEl) {
+      itemsEl.innerHTML = cart.map(item => {
+        const icon = { perfumes:'ri-flask-line', roupas:'ri-t-shirt-line', relogios:'ri-time-line', joias:'ri-gem-line', bones:'ri-shield-star-line' }[item.category] || 'ri-shopping-bag-line';
+        return `
+          <div class="order-item-row">
+            <div class="order-item-thumb">
+              ${item.image
+                ? `<img src="${item.image}" alt="${item.name}">`
+                : `<i class="${icon}"></i>`}
+            </div>
+            <div class="order-item-info">
+              <div class="order-item-name">${item.name}</div>
+              <div class="order-item-meta">${item.qty}x · ${fmtBRL(item.price)}</div>
+            </div>
+            <div class="order-item-price">${fmtBRL(item.price * item.qty)}</div>
+          </div>`;
+      }).join('');
+    }
+
+    // Totais
+    const frete = subtotal >= 299 ? 'GRÁTIS 🎁' : 'A calcular';
+    const subEl = document.getElementById('summary-subtotal');
+    const freteEl = document.getElementById('summary-frete');
+    const totalEl = document.getElementById('summary-total');
+    if (subEl) subEl.textContent = fmtBRL(subtotal);
+    if (freteEl) {
+      freteEl.textContent = frete;
+      freteEl.style.color = subtotal >= 299 ? '#27ae60' : 'var(--gray)';
+    }
+    if (totalEl) totalEl.textContent = fmtBRL(subtotal);
+  }
+
+  function copyPixKey() {
+    const key = document.getElementById('pix-key-display').textContent;
+    navigator.clipboard.writeText(key).then(() => {
+      showToast('Chave Pix copiada!', 'success');
+    }).catch(() => {
+      showToast('Não foi possível copiar. Copie manualmente.', 'warning');
+    });
+  }
+
+  function confirmPixOrder() {
+    if (MTS.cart.length === 0) { showToast('Carrinho vazio!', 'warning'); return; }
+    const total = MTS.getTotal() * (1 - PIX_DISCOUNT);
+    const cfg = JSON.parse(localStorage.getItem('mts_site_config') || '{}');
+    const wpp = (cfg.checkoutWpp || '5524988700312').replace(/\D/g, '');
+
+    let msg = `Olá! Gostaria de confirmar meu pedido na *MTS Vendas* 🛍️\n\n`;
+    msg += `*💰 Pagamento via PIX*\n`;
+    msg += `*Valor exato:* ${fmtBRL(total)}\n\n`;
+    msg += `*📋 Itens do pedido:*\n`;
+    MTS.cart.forEach((item, i) => {
+      msg += `${i + 1}. ${item.name} — ${item.qty}x — ${fmtBRL(item.price * item.qty)}\n`;
+    });
+    msg += `\n*Total do pedido:* ${fmtBRL(MTS.getTotal())}\n`;
+    msg += `*Desconto Pix (5%):* -${fmtBRL(MTS.getTotal() * 0.05)}\n`;
+    msg += `*Total a pagar:* ${fmtBRL(total)}\n\n`;
+    msg += `Estou enviando o comprovante em seguida. ✅\n`;
+    msg += `_Pedido em ${new Date().toLocaleString('pt-BR')}_`;
+
+    // Salvar pedido
+    const pedidos = JSON.parse(localStorage.getItem('mts_pedidos') || '[]');
+    pedidos.push({ id: Date.now(), items: [...MTS.cart], total, status: 'Aguardando Pix', date: new Date().toLocaleString('pt-BR'), method: 'PIX' });
+    localStorage.setItem('mts_pedidos', JSON.stringify(pedidos));
+
+    const url = `https://wa.me/${wpp}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  }
+
+  function confirmCardOrder() {
+    // Validação básica
+    const name = document.getElementById('card-name').value.trim();
+    const number = document.getElementById('card-number').value.replace(/\s/g, '');
+    const expiry = document.getElementById('card-expiry').value.trim();
+    const cvv = document.getElementById('card-cvv').value.trim();
+    const cpf = document.getElementById('card-cpf').value.trim();
+
+    if (!name || number.length < 16 || expiry.length < 5 || cvv.length < 3 || !cpf) {
+      showToast('Preencha todos os dados do cartão.', 'warning');
+      return;
+    }
+
+    const total = MTS.getTotal();
+    const installments = document.getElementById('card-installments').value;
+    const cfg = JSON.parse(localStorage.getItem('mts_site_config') || '{}');
+    const wpp = (cfg.checkoutWpp || '5524988700312').replace(/\D/g, '');
+
+    let msg = `Olá! Gostaria de confirmar meu pedido na *MTS Vendas* 🛍️\n\n`;
+    msg += `*💳 Pagamento via Cartão de Crédito*\n`;
+    msg += `*Parcelamento:* ${installments}x de ${fmtBRL(total / parseInt(installments))}\n`;
+    msg += `*Total:* ${fmtBRL(total)}\n\n`;
+    msg += `*📋 Itens do pedido:*\n`;
+    MTS.cart.forEach((item, i) => {
+      msg += `${i + 1}. ${item.name} — ${item.qty}x — ${fmtBRL(item.price * item.qty)}\n`;
+    });
+    msg += `\n_Pedido em ${new Date().toLocaleString('pt-BR')}_`;
+
+    // Salvar pedido
+    const pedidos = JSON.parse(localStorage.getItem('mts_pedidos') || '[]');
+    pedidos.push({ id: Date.now(), items: [...MTS.cart], total, status: 'Aguardando Cartão', date: new Date().toLocaleString('pt-BR'), method: 'Cartão' });
+    localStorage.setItem('mts_pedidos', JSON.stringify(pedidos));
+
+    const url = `https://wa.me/${wpp}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  }
+
+  // Formatadores de input
+  function formatCardNumber(el) {
+    let v = el.value.replace(/\D/g, '').substring(0, 16);
+    el.value = v.replace(/(.{4})/g, '$1 ').trim();
+  }
+  function formatExpiry(el) {
+    let v = el.value.replace(/\D/g, '').substring(0, 4);
+    if (v.length >= 3) v = v.substring(0, 2) + '/' + v.substring(2);
+    el.value = v;
+  }
+  function formatCPF(el) {
+    let v = el.value.replace(/\D/g, '').substring(0, 11);
+    v = v.replace(/(\d{3})(\d)/, '$1.$2')
+         .replace(/(\d{3})(\d)/, '$1.$2')
+         .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    el.value = v;
+  }
+
+  // Inicializar ao carregar
+  document.addEventListener('DOMContentLoaded', () => {
+    renderCheckout();
+  });
+  document.addEventListener('mts:products-loaded', () => {
+    renderCheckout();
+  });
+</script>
+</body>
+</html>
