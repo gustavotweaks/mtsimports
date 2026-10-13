@@ -1443,3 +1443,97 @@ footer::before {
   .products-grid { grid-template-columns: 1fr; }
   .navbar-brand-text { display: none; }
 }
+
+/* ================================================================
+   CARROSSEL DE CATEGORIAS
+================================================================ */
+.cat-carousel-wrap {
+  position: relative;
+  overflow: hidden;
+  /* Máscaras para sumir nas bordas */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+  mask-image:         linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
+.cat-carousel-track {
+  display: flex;
+  gap: 14px;
+  padding: 0 2.5rem 0.5rem;
+  width: max-content;
+  animation: carouselScroll 22s linear infinite;
+}
+.cat-carousel-track:hover { animation-play-state: paused; }
+
+@keyframes carouselScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.cat-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 1.6rem 1.8rem;
+  background: var(--black-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--r-card);
+  text-decoration: none;
+  min-width: 160px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.cat-slide::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  transform: scaleX(0);
+  transition: transform 0.35s ease;
+}
+.cat-slide:hover {
+  border-color: rgba(201,168,76,0.35);
+  background: var(--black-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(201,168,76,0.06);
+}
+.cat-slide:hover::before { transform: scaleX(1); }
+
+.cat-slide-icon {
+  width: 52px; height: 52px;
+  border: 1px solid var(--border-soft);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  background: rgba(201,168,76,0.04);
+}
+.cat-slide:hover .cat-slide-icon {
+  border-color: var(--gold);
+  background: var(--gold-pale);
+}
+.cat-slide-icon i { font-size: 1.4rem; color: var(--gold); }
+
+.cat-slide span {
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white);
+  transition: color 0.2s;
+  text-align: center;
+}
+.cat-slide:hover span { color: var(--gold); }
+
+.cat-slide small {
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  color: var(--gray);
+  text-align: center;
+  line-height: 1.4;
+}
