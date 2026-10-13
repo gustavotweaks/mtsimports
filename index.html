@@ -68,6 +68,33 @@
       z-index: 1;
     }
 
+    /* ── LOGO BLOCK NO HERO ── */
+    .hero-logo-block {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 2.2rem;
+    }
+    .hero-logo-img {
+      height: 64px;
+      width: auto;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 0 18px rgba(201,168,76,0.55))
+        drop-shadow(0 0 40px rgba(201,168,76,0.2));
+      animation: logoPulse 4s ease-in-out infinite;
+    }
+    @keyframes logoPulse {
+      0%,100% { filter: drop-shadow(0 0 14px rgba(201,168,76,0.5)) drop-shadow(0 0 36px rgba(201,168,76,0.18)); }
+      50%      { filter: drop-shadow(0 0 26px rgba(201,168,76,0.8)) drop-shadow(0 0 60px rgba(201,168,76,0.3)); }
+    }
+    .hero-logo-divider {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(201,168,76,0.5), transparent);
+      max-width: 120px;
+    }
+
     /* LEFT */
     .hero-eyebrow {
       display: inline-flex;
@@ -259,19 +286,18 @@
       transition: all 0.25s;
     }
 
-    /* Chip "Rolex" / destaque no canto */
-    .hero-brand-chip {
+    /* Logo MTS no canto do card */
+    .hero-cat-logo {
       position: absolute;
-      top: -1px; right: 0;
-      background: var(--gold);
-      color: var(--black);
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.55rem;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      padding: 4px 10px;
+      top: 12px; right: 12px;
       z-index: 3;
+    }
+    .hero-cat-logo img {
+      height: 38px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(201,168,76,0.6));
+      opacity: 0.92;
     }
 
     /* Badge flutuante */
@@ -475,6 +501,8 @@
       .promo-new { grid-template-columns: 1fr 1fr; }
       .promo-divider { display: none; }
       .testi-grid { grid-template-columns: 1fr; }
+      .hero-logo-block { justify-content: center; }
+      .hero-logo-divider { display: none; }
     }
     @media (max-width: 600px) {
       .cats-wrap { grid-template-columns: repeat(2, 1fr); }
@@ -541,6 +569,13 @@
   <div class="hero-inner">
     <!-- ESQUERDA -->
     <div class="hero-left">
+
+      <!-- LOGO CLEAN NO TOPO DO HERO -->
+      <div class="hero-logo-block">
+        <img src="ee.png" alt="MTS Vendas" class="hero-logo-img">
+        <div class="hero-logo-divider"></div>
+      </div>
+
       <div class="hero-eyebrow">
         <div class="hero-eyebrow-line"></div>
         <span class="hero-eyebrow-text" id="hero-tag">Produtos Importados</span>
@@ -583,7 +618,10 @@
       </a>
 
       <a href="pages/produtos.html?cat=relogios" class="hero-cat-card">
-        <span class="hero-brand-chip">Premium</span>
+        <!-- Logo MTS no lugar do chip "Premium" -->
+        <div class="hero-cat-logo">
+          <img src="ee.png" alt="MTS Vendas">
+        </div>
         <i class="ri-time-line"></i>
         <span class="hcc-name">Relógios</span>
         <span class="hcc-sub">Sofisticação no pulso</span>
